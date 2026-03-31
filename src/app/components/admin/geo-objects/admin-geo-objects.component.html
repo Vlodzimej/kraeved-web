@@ -1,5 +1,8 @@
 <div class="admin-page">
-  <h1>Объекты</h1>
+  <div class="page-header">
+    <h1>Объекты</h1>
+    <button class="btn btn-info" (click)="openCreate()">+ Добавить</button>
+  </div>
 
   @if (loading()) {
     <div class="loading">Загрузка...</div>
@@ -9,7 +12,7 @@
     <div class="error">{{ error() }}</div>
   }
 
-  @if (showDeleteConfirm()) {
+  @if (crud.showDeleteConfirm()) {
     <app-confirm-dialog
       title="Удаление объекта"
       message="Вы действительно хотите удалить объект?"
@@ -20,7 +23,7 @@
     />
   }
 
-  @if (showCloseConfirm()) {
+  @if (crud.showCloseConfirm()) {
     <app-confirm-dialog
       title="Закрыть карточку"
       message="Вы действительно хотите закрыть карточку объекта? Изменения не сохранятся."
@@ -31,7 +34,7 @@
     />
   }
 
-  <div class="page-layout" [class.with-card]="selectedItem()">
+  <div class="page-layout">
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -48,7 +51,7 @@
           @for (item of items(); track item.id) {
             <tr
               class="table-row"
-              [class.active]="selectedItem()?.id === item.id"
+              [class.active]="crud.selectedItem()?.id === item.id"
               (click)="selectItem(item)"
             >
               <td>{{ item.id }}</td>
@@ -88,97 +91,88 @@
       </table>
     </div>
 
-    @if (selectedItem()) {
-      <div class="detail-card">
-        <div class="card-header">
-          <h2>{{ isNewItem() ? "Новый объект" : "Карточка объекта" }}</h2>
-          <button class="btn-close" (click)="closeCard()">✕</button>
-        </div>
-
+    @if (crud.selectedItem()) {
+      <app-admin-card
+        [title]="crud.isNewItem() ? 'Новый объект' : 'Карточка объекта'"
+        (saved)="onSave()"
+        (closed)="closeCard()"
+      >
         @if (cardLoading()) {
           <div class="card-loading">Загрузка...</div>
         } @else {
-          <div class="card-body">
+          <div class="field-group">
+            <label>Название</label>
+            <input
+              [ngModel]="formName()"
+              (ngModelChange)="formName.set($event)"
+              placeholder="Название"
+            />
+          </div>
+
+          <div class="field-group">
+            <label>Краткое описание</label>
+            <input
+              [ngModel]="formShortDescription()"
+              (ngModelChange)="formShortDescription.set($event)"
+              placeholder="Краткое описание"
+            />
+          </div>
+
+          <div class="field-group">
+            <label>Описание</label>
+            <textarea
+              [ngModel]="formDescription()"
+              (ngModelChange)="formDescription.set($event)"
+              placeholder="Полное описание"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="field-row">
             <div class="field-group">
-              <label>Название</label>
+              <label>Широта</label>
               <input
-                [ngModel]="formName()"
-                (ngModelChange)="formName.set($event)"
-                placeholder="Название"
+                type="number"
+                [ngModel]="formLatitude()"
+                (ngModelChange)="formLatitude.set($event)"
+                placeholder="Latitude"
               />
             </div>
 
             <div class="field-group">
-              <label>Краткое описание</label>
+              <label>Долгота</label>
               <input
-                [ngModel]="formShortDescription()"
-                (ngModelChange)="formShortDescription.set($event)"
-                placeholder="Краткое описание"
+                type="number"
+                [ngModel]="formLongitude()"
+                (ngModelChange)="formLongitude.set($event)"
+                placeholder="Longitude"
               />
-            </div>
-
-            <div class="field-group">
-              <label>Описание</label>
-              <textarea
-                [ngModel]="formDescription()"
-                (ngModelChange)="formDescription.set($event)"
-                placeholder="Полное описание"
-                rows="3"
-              ></textarea>
-            </div>
-
-            <div class="field-row">
-              <div class="field-group">
-                <label>Широта</label>
-                <input
-                  type="number"
-                  [ngModel]="formLatitude()"
-                  (ngModelChange)="formLatitude.set($event)"
-                  placeholder="Latitude"
-                />
-              </div>
-
-              <div class="field-group">
-                <label>Долгота</label>
-                <input
-                  type="number"
-                  [ngModel]="formLongitude()"
-                  (ngModelChange)="formLongitude.set($event)"
-                  placeholder="Longitude"
-                />
-              </div>
-            </div>
-
-            <div class="field-row">
-              <div class="field-group">
-                <label>Регион ID</label>
-                <input
-                  type="number"
-                  [ngModel]="formRegionId()"
-                  (ngModelChange)="formRegionId.set($event)"
-                  placeholder="Region ID"
-                />
-              </div>
-
-              <div class="field-group">
-                <label>Тип ID</label>
-                <input
-                  type="number"
-                  [ngModel]="formTypeId()"
-                  (ngModelChange)="formTypeId.set($event)"
-                  placeholder="Type ID"
-                />
-              </div>
             </div>
           </div>
 
-          <div class="card-footer">
-            <button class="btn btn-save" (click)="onSave()">
-              {{ isNewItem() ? "Создать" : "Сохранить" }}
-            </button>
+          <div class="field-row">
+            <div class="field-group">
+              <label>Регион ID</label>
+              <input
+                type="number"
+                [ngModel]="formRegionId()"
+                (ngModelChange)="formRegionId.set($event)"
+                placeholder="Region ID"
+              />
+            </div>
+
+            <div class="field-group">
+              <label>Тип ID</label>
+              <input
+                type="number"
+                [ngModel]="formTypeId()"
+                (ngModelChange)="formTypeId.set($event)"
+                placeholder="Type ID"
+              />
+            </div>
           </div>
         }
-      </div>
+      </app-admin-card>
     }
   </div>
 </div>

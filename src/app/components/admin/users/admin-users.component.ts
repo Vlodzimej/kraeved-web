@@ -1,5 +1,6 @@
-import { Component, inject, OnInit, signal, computed } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
 import { DatePipe } from "@angular/common";
+import { FormsModule } from "@angular/forms";
 import { Store } from "@ngxs/store";
 import { UsersState } from "../../../store/users/users.state";
 import {
@@ -8,13 +9,14 @@ import {
   UpdateUserRole,
 } from "../../../store/users/users.actions";
 import { UserOutDto } from "../../../models/admin/user.model";
-import { FormsModule } from "@angular/forms";
 import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dialog.component";
+import { AdminCardComponent } from "../shared/card/admin-card.component";
+import { useAdminCrud } from "../shared/use-admin-crud";
 
 @Component({
   selector: "app-admin-users",
   standalone: true,
-  imports: [FormsModule, DatePipe, ConfirmDialogComponent],
+  imports: [DatePipe, FormsModule, ConfirmDialogComponent, AdminCardComponent],
   templateUrl: "./admin-users.component.html",
   styleUrl: "./admin-users.component.scss",
 })
@@ -25,72 +27,66 @@ export class AdminUsersComponent implements OnInit {
   loading = this.store.selectSignal(UsersState.loading);
   error = this.store.selectSignal(UsersState.error);
 
-  selectedUser = signal<UserOutDto | null>(null);
   editedRole = signal("");
   availableRoles = ["USER", "ADMIN"];
 
-  showDeleteConfirm = signal(false);
-  deleteUserId = signal<number | null>(null);
-
-  showCloseConfirm = signal(false);
-
-  hasChanges = computed(() => {
-    const user = this.selectedUser();
-    return user ? user.role !== this.editedRole() : false;
-  });
+  crud = useAdminCrud<UserOutDto>(
+    () => ({
+      id: 0,
+      phone: "",
+      email: "",
+      name: "",
+      surname: "",
+      startDate: "",
+      role: "",
+    }),
+    (item) => (item ? item.role !== this.editedRole() : false),
+  );
 
   ngOnInit(): void {
     this.store.dispatch(new LoadUsers());
   }
 
   selectUser(user: UserOutDto): void {
-    this.selectedUser.set(user);
+    this.crud.selectItem(user);
     this.editedRole.set(user.role);
   }
 
-  closeCard(): void {
-    if (this.hasChanges()) {
-      this.showCloseConfirm.set(true);
-    } else {
-      this.selectedUser.set(null);
+  onDelete(id: number): void {
+    this.crud.onDelete(id);
+  }
+
+  confirmDelete(): void {
+    const id = this.crud.deleteItemId();
+    if (id !== null) {
+      this.store.dispatch(new DeleteUser(id));
     }
+    this.crud.confirmDelete();
+  }
+
+  cancelDelete(): void {
+    this.crud.cancelDelete();
+  }
+
+  closeCard(): void {
+    this.crud.closeCard();
   }
 
   confirmClose(): void {
-    this.showCloseConfirm.set(false);
-    this.selectedUser.set(null);
+    this.crud.confirmClose();
   }
 
   cancelClose(): void {
-    this.showCloseConfirm.set(false);
+    this.crud.cancelClose();
   }
 
   onSave(): void {
-    const user = this.selectedUser();
+    const user = this.crud.selectedItem();
     if (!user) return;
 
     if (user.role !== this.editedRole()) {
       this.store.dispatch(new UpdateUserRole(user.id, this.editedRole()));
     }
-    this.selectedUser.set(null);
-  }
-
-  onDelete(id: number): void {
-    this.deleteUserId.set(id);
-    this.showDeleteConfirm.set(true);
-  }
-
-  confirmDelete(): void {
-    const id = this.deleteUserId();
-    if (id !== null) {
-      this.store.dispatch(new DeleteUser(id));
-    }
-    this.showDeleteConfirm.set(false);
-    this.deleteUserId.set(null);
-  }
-
-  cancelDelete(): void {
-    this.showDeleteConfirm.set(false);
-    this.deleteUserId.set(null);
+    this.crud.resetCard();
   }
 }

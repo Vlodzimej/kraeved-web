@@ -1,5 +1,8 @@
 <div class="admin-page">
-  <h1>Исторические события</h1>
+  <div class="page-header">
+    <h1>Исторические события</h1>
+    <button class="btn btn-info" (click)="openCreate()">+ Добавить</button>
+  </div>
 
   @if (loading()) {
     <div class="loading">Загрузка...</div>
@@ -9,7 +12,7 @@
     <div class="error">{{ error() }}</div>
   }
 
-  @if (showDeleteConfirm()) {
+  @if (crud.showDeleteConfirm()) {
     <app-confirm-dialog
       title="Удаление события"
       message="Вы действительно хотите удалить событие?"
@@ -20,7 +23,7 @@
     />
   }
 
-  @if (showCloseConfirm()) {
+  @if (crud.showCloseConfirm()) {
     <app-confirm-dialog
       title="Закрыть карточку"
       message="Вы действительно хотите закрыть карточку объекта? Изменения не сохранятся."
@@ -31,7 +34,7 @@
     />
   }
 
-  <div class="page-layout" [class.with-card]="selectedItem()">
+  <div class="page-layout">
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -47,7 +50,7 @@
           @for (item of items(); track item.id) {
             <tr
               class="table-row"
-              [class.active]="selectedItem()?.id === item.id"
+              [class.active]="crud.selectedItem()?.id === item.id"
               (click)="selectItem(item)"
             >
               <td>{{ item.id }}</td>
@@ -86,65 +89,56 @@
       </table>
     </div>
 
-    @if (selectedItem()) {
-      <div class="detail-card">
-        <div class="card-header">
-          <h2>{{ isNewItem() ? "Новое событие" : "Карточка события" }}</h2>
-          <button class="btn-close" (click)="closeCard()">✕</button>
-        </div>
-
+    @if (crud.selectedItem()) {
+      <app-admin-card
+        [title]="crud.isNewItem() ? 'Новое событие' : 'Карточка события'"
+        (saved)="onSave()"
+        (closed)="closeCard()"
+      >
         @if (cardLoading()) {
           <div class="card-loading">Загрузка...</div>
         } @else {
-          <div class="card-body">
+          <div class="field-group">
+            <label>Название</label>
+            <input
+              [ngModel]="formName()"
+              (ngModelChange)="formName.set($event)"
+              placeholder="Название события"
+            />
+          </div>
+
+          <div class="field-group">
+            <label>Описание</label>
+            <textarea
+              [ngModel]="formDescription()"
+              (ngModelChange)="formDescription.set($event)"
+              placeholder="Описание события"
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="field-row">
             <div class="field-group">
-              <label>Название</label>
+              <label>Дата</label>
               <input
-                [ngModel]="formName()"
-                (ngModelChange)="formName.set($event)"
-                placeholder="Название события"
+                type="date"
+                [ngModel]="formDate()"
+                (ngModelChange)="formDate.set($event)"
               />
             </div>
 
             <div class="field-group">
-              <label>Описание</label>
-              <textarea
-                [ngModel]="formDescription()"
-                (ngModelChange)="formDescription.set($event)"
-                placeholder="Описание события"
-                rows="3"
-              ></textarea>
+              <label>Регион ID</label>
+              <input
+                type="number"
+                [ngModel]="formRegionId()"
+                (ngModelChange)="formRegionId.set($event)"
+                placeholder="Region ID"
+              />
             </div>
-
-            <div class="field-row">
-              <div class="field-group">
-                <label>Дата</label>
-                <input
-                  type="date"
-                  [ngModel]="formDate()"
-                  (ngModelChange)="formDate.set($event)"
-                />
-              </div>
-
-              <div class="field-group">
-                <label>Регион ID</label>
-                <input
-                  type="number"
-                  [ngModel]="formRegionId()"
-                  (ngModelChange)="formRegionId.set($event)"
-                  placeholder="Region ID"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div class="card-footer">
-            <button class="btn btn-save" (click)="onSave()">
-              {{ isNewItem() ? "Создать" : "Сохранить" }}
-            </button>
           </div>
         }
-      </div>
+      </app-admin-card>
     }
   </div>
 </div>

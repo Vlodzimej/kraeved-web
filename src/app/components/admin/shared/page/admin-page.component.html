@@ -1,0 +1,37 @@
+<div class="admin-page">
+  <h1>{{ title() }}</h1>
+
+  @if (loading()) {
+    <div class="loading">Загрузка...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (showDeleteConfirm()) {
+    <app-confirm-dialog
+      title="Удаление"
+      message="Вы действительно хотите удалить?"
+      confirmText="Удалить"
+      cancelText="Отмена"
+      (confirmed)="deleteConfirmed.emit()"
+      (cancelled)="deleteCancelled.emit()"
+    />
+  }
+
+  @if (showCloseConfirm()) {
+    <app-confirm-dialog
+      title="Закрыть карточку"
+      message="Вы действительно хотите закрыть карточку объекта? Изменения не сохранятся."
+      confirmText="Закрыть"
+      cancelText="Отмена"
+      (confirmed)="closeConfirmed.emit()"
+      (cancelled)="closeCancelled.emit()"
+    />
+  }
+
+  <div class="page-layout">
+    <ng-content />
+  </div>
+</div>

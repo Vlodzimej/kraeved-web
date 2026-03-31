@@ -1,9 +1,16 @@
 .admin-page {
   h1 {
-    margin: 0 0 24px;
+    margin: 0;
     font-size: 24px;
     color: #1a1a2e;
   }
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
 }
 
 .loading {
@@ -88,65 +95,6 @@
   }
 }
 
-.detail-card {
-  width: 400px;
-  flex-shrink: 0;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  overflow: hidden;
-  animation: slideIn 0.2s ease-out;
-}
-
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 24px;
-  border-bottom: 1px solid #eee;
-
-  h2 {
-    margin: 0;
-    font-size: 16px;
-    color: #1a1a2e;
-  }
-}
-
-.btn-close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #999;
-  font-size: 18px;
-  padding: 4px;
-  transition: color 0.2s;
-
-  &:hover {
-    color: #333;
-  }
-}
-
-.card-loading {
-  padding: 40px;
-  text-align: center;
-  color: #999;
-}
-
-.card-body {
-  padding: 24px;
-}
-
 .field-group {
   margin-bottom: 16px;
 
@@ -182,28 +130,8 @@
   gap: 16px;
 }
 
-.card-footer {
-  padding: 16px 24px;
-  border-top: 1px solid #eee;
-  display: flex;
-  justify-content: flex-end;
-}
-
-.btn {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background 0.2s;
-
-  &-save {
-    background: #4a90d9;
-    color: white;
-
-    &:hover {
-      background: #3a7bc8;
-    }
-  }
+.card-loading {
+  padding: 40px;
+  text-align: center;
+  color: #999;
 }

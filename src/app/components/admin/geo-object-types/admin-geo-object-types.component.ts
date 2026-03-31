@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal, computed } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { Store } from "@ngxs/store";
 import { GeoObjectTypesState } from "../../../store/geo-object-types/geo-object-types.state";
 import {
@@ -8,13 +9,14 @@ import {
   DeleteGeoObjectType,
 } from "../../../store/geo-object-types/geo-object-types.actions";
 import { GeoObjectType } from "../../../models/admin/entities.model";
-import { FormsModule } from "@angular/forms";
 import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dialog.component";
+import { AdminCardComponent } from "../shared/card/admin-card.component";
+import { useAdminCrud } from "../shared/use-admin-crud";
 
 @Component({
   selector: "app-admin-geo-object-types",
   standalone: true,
-  imports: [FormsModule, ConfirmDialogComponent],
+  imports: [FormsModule, ConfirmDialogComponent, AdminCardComponent],
   templateUrl: "./admin-geo-object-types.component.html",
   styleUrl: "./admin-geo-object-types.component.scss",
 })
@@ -25,91 +27,75 @@ export class AdminGeoObjectTypesComponent implements OnInit {
   loading = this.store.selectSignal(GeoObjectTypesState.loading);
   error = this.store.selectSignal(GeoObjectTypesState.error);
 
-  selectedItem = signal<GeoObjectType | null>(null);
   formName = signal("");
   formTitle = signal("");
-  isNewItem = signal(false);
 
-  showDeleteConfirm = signal(false);
-  deleteItemId = signal<number | null>(null);
-  showCloseConfirm = signal(false);
-
-  hasChanges = computed(() => {
-    const item = this.selectedItem();
-    if (!item) return false;
-    return item.name !== this.formName() || item.title !== this.formTitle();
-  });
+  crud = useAdminCrud<GeoObjectType>(
+    () => ({ name: "", title: "" }),
+    (item) =>
+      item
+        ? item.name !== this.formName() || item.title !== this.formTitle()
+        : false,
+  );
 
   ngOnInit(): void {
     this.store.dispatch(new LoadGeoObjectTypes());
   }
 
   selectItem(item: GeoObjectType): void {
-    this.isNewItem.set(false);
-    this.selectedItem.set(item);
+    this.crud.selectItem(item);
     this.formName.set(item.name);
     this.formTitle.set(item.title);
   }
 
   openCreate(): void {
-    this.isNewItem.set(true);
-    this.selectedItem.set({
-      name: "",
-      title: "",
-    });
+    this.crud.openCreate();
     this.formName.set("");
     this.formTitle.set("");
   }
 
   closeCard(): void {
-    if (this.hasChanges()) {
-      this.showCloseConfirm.set(true);
-    } else {
-      this.selectedItem.set(null);
-    }
+    this.crud.closeCard();
   }
 
   confirmClose(): void {
-    this.showCloseConfirm.set(false);
-    this.selectedItem.set(null);
+    this.crud.confirmClose();
   }
 
   cancelClose(): void {
-    this.showCloseConfirm.set(false);
+    this.crud.cancelClose();
   }
 
   onSave(): void {
-    const item: GeoObjectType = {
-      id: this.selectedItem()?.id,
+    const item = this.crud.selectedItem();
+    const type: GeoObjectType = {
+      id: item?.id,
       name: this.formName(),
       title: this.formTitle(),
     };
 
-    if (this.isNewItem()) {
-      this.store.dispatch(new CreateGeoObjectType(item));
+    if (this.crud.isNewItem()) {
+      this.store.dispatch(new CreateGeoObjectType(type));
     } else {
-      this.store.dispatch(new UpdateGeoObjectType(item));
+      this.store.dispatch(new UpdateGeoObjectType(type));
     }
 
-    this.selectedItem.set(null);
+    this.crud.resetCard();
   }
 
   onDelete(id: number): void {
-    this.deleteItemId.set(id);
-    this.showDeleteConfirm.set(true);
+    this.crud.onDelete(id);
   }
 
   confirmDelete(): void {
-    const id = this.deleteItemId();
+    const id = this.crud.deleteItemId();
     if (id !== null) {
       this.store.dispatch(new DeleteGeoObjectType(id));
     }
-    this.showDeleteConfirm.set(false);
-    this.deleteItemId.set(null);
+    this.crud.confirmDelete();
   }
 
   cancelDelete(): void {
-    this.showDeleteConfirm.set(false);
-    this.deleteItemId.set(null);
+    this.crud.cancelDelete();
   }
 }

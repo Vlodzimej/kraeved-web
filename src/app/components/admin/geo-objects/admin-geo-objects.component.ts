@@ -1,5 +1,7 @@
-import { Component, inject, OnInit, signal, computed } from "@angular/core";
+import { Component, inject, OnInit, signal } from "@angular/core";
+import { FormsModule } from "@angular/forms";
 import { Store } from "@ngxs/store";
+import { finalize } from "rxjs";
 import { GeoObjectsState } from "../../../store/geo-objects/geo-objects.state";
 import {
   LoadGeoObjects,
@@ -11,15 +13,15 @@ import {
   GeoObject,
   GeoObjectBrief,
 } from "../../../models/admin/entities.model";
-import { FormsModule } from "@angular/forms";
-import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dialog.component";
 import { AdminGeoObjectsService } from "../../../services/admin/admin-geo-objects.service";
-import { finalize } from "rxjs";
+import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dialog.component";
+import { AdminCardComponent } from "../shared/card/admin-card.component";
+import { useAdminCrud } from "../shared/use-admin-crud";
 
 @Component({
   selector: "app-admin-geo-objects",
   standalone: true,
-  imports: [FormsModule, ConfirmDialogComponent],
+  imports: [FormsModule, ConfirmDialogComponent, AdminCardComponent],
   templateUrl: "./admin-geo-objects.component.html",
   styleUrl: "./admin-geo-objects.component.scss",
 })
@@ -31,7 +33,6 @@ export class AdminGeoObjectsComponent implements OnInit {
   loading = this.store.selectSignal(GeoObjectsState.loading);
   error = this.store.selectSignal(GeoObjectsState.error);
 
-  selectedItem = signal<GeoObject | null>(null);
   cardLoading = signal(false);
 
   formName = signal("");
@@ -41,40 +42,42 @@ export class AdminGeoObjectsComponent implements OnInit {
   formLongitude = signal<number | null>(null);
   formRegionId = signal<number | null>(null);
   formTypeId = signal<number | null>(null);
-  isNewItem = signal(false);
 
-  showDeleteConfirm = signal(false);
-  deleteItemId = signal<number | null>(null);
-
-  showCloseConfirm = signal(false);
-
-  hasChanges = computed(() => {
-    const item = this.selectedItem();
-    if (!item) return false;
-    return (
-      item.name !== this.formName() ||
-      item.description !== this.formDescription() ||
-      item.shortDescription !== this.formShortDescription() ||
-      (item.latitude ?? null) !== this.formLatitude() ||
-      (item.longitude ?? null) !== this.formLongitude() ||
-      (item.regionId ?? null) !== this.formRegionId() ||
-      (item.typeId ?? null) !== this.formTypeId()
-    );
-  });
+  crud = useAdminCrud<GeoObject>(
+    () => ({
+      name: "",
+      description: "",
+      shortDescription: "",
+      images: [],
+      thumbnail: "",
+    }),
+    (item) => {
+      if (!item) return false;
+      return (
+        item.name !== this.formName() ||
+        item.description !== this.formDescription() ||
+        item.shortDescription !== this.formShortDescription() ||
+        (item.latitude ?? null) !== this.formLatitude() ||
+        (item.longitude ?? null) !== this.formLongitude() ||
+        (item.regionId ?? null) !== this.formRegionId() ||
+        (item.typeId ?? null) !== this.formTypeId()
+      );
+    },
+  );
 
   ngOnInit(): void {
     this.store.dispatch(new LoadGeoObjects());
   }
 
   selectItem(item: GeoObjectBrief): void {
-    this.isNewItem.set(false);
+    this.crud.isNewItem.set(false);
     this.cardLoading.set(true);
     this.service
       .getById(item.id!)
       .pipe(finalize(() => this.cardLoading.set(false)))
       .subscribe({
         next: (data) => {
-          this.selectedItem.set(data);
+          this.crud.selectItem(data);
           this.formName.set(data.name);
           this.formDescription.set(data.description);
           this.formShortDescription.set(data.shortDescription);
@@ -87,12 +90,7 @@ export class AdminGeoObjectsComponent implements OnInit {
   }
 
   openCreate(): void {
-    this.isNewItem.set(true);
-    this.selectedItem.set({
-      name: "",
-      description: "",
-      shortDescription: "",
-    });
+    this.crud.openCreate();
     this.formName.set("");
     this.formDescription.set("");
     this.formShortDescription.set("");
@@ -103,25 +101,21 @@ export class AdminGeoObjectsComponent implements OnInit {
   }
 
   closeCard(): void {
-    if (this.hasChanges()) {
-      this.showCloseConfirm.set(true);
-    } else {
-      this.selectedItem.set(null);
-    }
+    this.crud.closeCard();
   }
 
   confirmClose(): void {
-    this.showCloseConfirm.set(false);
-    this.selectedItem.set(null);
+    this.crud.confirmClose();
   }
 
   cancelClose(): void {
-    this.showCloseConfirm.set(false);
+    this.crud.cancelClose();
   }
 
   onSave(): void {
+    const item = this.crud.selectedItem();
     const geoObject: GeoObject = {
-      id: this.selectedItem()?.id,
+      id: item?.id,
       name: this.formName(),
       description: this.formDescription(),
       shortDescription: this.formShortDescription(),
@@ -131,31 +125,28 @@ export class AdminGeoObjectsComponent implements OnInit {
       typeId: this.formTypeId(),
     };
 
-    if (this.isNewItem()) {
+    if (this.crud.isNewItem()) {
       this.store.dispatch(new CreateGeoObject(geoObject));
     } else {
       this.store.dispatch(new UpdateGeoObject(geoObject));
     }
 
-    this.selectedItem.set(null);
+    this.crud.resetCard();
   }
 
   onDelete(id: number): void {
-    this.deleteItemId.set(id);
-    this.showDeleteConfirm.set(true);
+    this.crud.onDelete(id);
   }
 
   confirmDelete(): void {
-    const id = this.deleteItemId();
+    const id = this.crud.deleteItemId();
     if (id !== null) {
       this.store.dispatch(new DeleteGeoObject(id));
     }
-    this.showDeleteConfirm.set(false);
-    this.deleteItemId.set(null);
+    this.crud.confirmDelete();
   }
 
   cancelDelete(): void {
-    this.showDeleteConfirm.set(false);
-    this.deleteItemId.set(null);
+    this.crud.cancelDelete();
   }
 }

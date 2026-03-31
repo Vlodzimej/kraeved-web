@@ -9,7 +9,7 @@
     <div class="error">{{ error() }}</div>
   }
 
-  @if (showDeleteConfirm()) {
+  @if (crud.showDeleteConfirm()) {
     <app-confirm-dialog
       title="Удаление пользователя"
       message="Вы действительно хотите удалить пользователя?"
@@ -20,7 +20,7 @@
     />
   }
 
-  @if (showCloseConfirm()) {
+  @if (crud.showCloseConfirm()) {
     <app-confirm-dialog
       title="Закрыть карточку"
       message="Вы действительно хотите закрыть карточку объекта? Изменения не сохранятся."
@@ -31,7 +31,7 @@
     />
   }
 
-  <div class="page-layout" [class.with-card]="selectedUser()">
+  <div class="page-layout">
     <div class="table-container">
       <table class="data-table">
         <thead>
@@ -49,7 +49,7 @@
           @for (user of users(); track user.id) {
             <tr
               class="table-row"
-              [class.active]="selectedUser()?.id === user.id"
+              [class.active]="crud.selectedItem()?.id === user.id"
               (click)="selectUser(user)"
             >
               <td>{{ user.id }}</td>
@@ -94,61 +94,55 @@
       </table>
     </div>
 
-    @if (selectedUser()) {
-      <div class="detail-card">
-        <div class="card-header">
-          <h2>Карточка пользователя</h2>
-          <button class="btn-close" (click)="closeCard()">✕</button>
+    @if (crud.selectedItem()) {
+      <app-admin-card
+        title="Карточка пользователя"
+        (saved)="onSave()"
+        (closed)="closeCard()"
+      >
+        <div class="field-group">
+          <label>ID</label>
+          <span class="field-value">{{ crud.selectedItem()!.id }}</span>
         </div>
 
-        <div class="card-body">
-          <div class="field-group">
-            <label>ID</label>
-            <span class="field-value">{{ selectedUser()!.id }}</span>
-          </div>
-
-          <div class="field-group">
-            <label>Имя</label>
-            <span class="field-value"
-              >{{ selectedUser()!.name }} {{ selectedUser()!.surname }}</span
-            >
-          </div>
-
-          <div class="field-group">
-            <label>Email</label>
-            <span class="field-value">{{ selectedUser()!.email }}</span>
-          </div>
-
-          <div class="field-group">
-            <label>Телефон</label>
-            <span class="field-value">{{ selectedUser()!.phone }}</span>
-          </div>
-
-          <div class="field-group">
-            <label>Дата регистрации</label>
-            <span class="field-value">{{
-              selectedUser()!.startDate | date: "dd.MM.yyyy"
-            }}</span>
-          </div>
-
-          <div class="field-group">
-            <label>Роль</label>
-            <select
-              [ngModel]="editedRole()"
-              (ngModelChange)="editedRole.set($event)"
-              class="role-select"
-            >
-              @for (role of availableRoles; track role) {
-                <option [value]="role">{{ role }}</option>
-              }
-            </select>
-          </div>
+        <div class="field-group">
+          <label>Имя</label>
+          <span class="field-value"
+            >{{ crud.selectedItem()!.name }}
+            {{ crud.selectedItem()!.surname }}</span
+          >
         </div>
 
-        <div class="card-footer">
-          <button class="btn btn-save" (click)="onSave()">Сохранить</button>
+        <div class="field-group">
+          <label>Email</label>
+          <span class="field-value">{{ crud.selectedItem()!.email }}</span>
         </div>
-      </div>
+
+        <div class="field-group">
+          <label>Телефон</label>
+          <span class="field-value">{{ crud.selectedItem()!.phone }}</span>
+        </div>
+
+        <div class="field-group">
+          <label>Дата регистрации</label>
+          <span class="field-value">{{
+            crud.selectedItem()!.startDate | date: "dd.MM.yyyy"
+          }}</span>
+        </div>
+
+        <div class="field-group">
+          <label>Роль</label>
+          <select
+            [ngModel]="editedRole()"
+            (ngModelChange)="editedRole.set($event)"
+            class="role-select"
+          >
+            @for (role of availableRoles; track role) {
+              <option [value]="role">{{ role }}</option>
+            }
+          </select>
+        </div>
+      </app-admin-card>
     }
   </div>
 </div>

@@ -1,0 +1,27 @@
+.admin-page {
+  h1 {
+    margin: 0 0 24px;
+    font-size: 24px;
+    color: #1a1a2e;
+  }
+}
+
+.loading {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+}
+
+.error {
+  padding: 12px 16px;
+  background: #fee;
+  color: #c00;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.page-layout {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
