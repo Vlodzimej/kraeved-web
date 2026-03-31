@@ -1,14 +1,15 @@
-import { inject } from '@angular/core';
-import { Router, type CanActivateFn } from '@angular/router';
-import { AuthService } from '../services/auth.service';
+import { inject } from "@angular/core";
+import { Router, type CanActivateFn } from "@angular/router";
+import { Store } from "@ngxs/store";
+import { AuthState } from "../store/auth/auth.state";
 
 export const redirectGuard: CanActivateFn = () => {
-  const authService = inject(AuthService);
+  const store = inject(Store);
   const router = inject(Router);
 
-  if (authService.isAuthenticated()) {
-    return router.createUrlTree(['/home']);
+  if (store.selectSnapshot(AuthState.isAuthenticated)) {
+    return router.createUrlTree(["/home"]);
   }
 
-  return router.createUrlTree(['/login']);
+  return router.createUrlTree(["/login"]);
 };

@@ -1,21 +1,20 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { Component, inject } from "@angular/core";
+import { Router } from "@angular/router";
+import { Store } from "@ngxs/store";
+import { Logout } from "../../store/auth/auth.actions";
 
 @Component({
-  selector: 'app-home',
+  selector: "app-home",
   standalone: true,
-  templateUrl: './home.component.html',
-  styleUrl: './home.component.scss',
+  templateUrl: "./home.component.html",
+  styleUrl: "./home.component.scss",
 })
 export class HomeComponent {
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  private store = inject(Store);
+  private router = inject(Router);
 
   onLogout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
+    this.store.dispatch(new Logout());
+    this.router.navigate(["/login"]);
   }
 }

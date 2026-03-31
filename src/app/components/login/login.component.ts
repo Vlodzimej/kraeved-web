@@ -2,8 +2,9 @@ import { Component, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { HttpErrorResponse } from "@angular/common/http";
+import { Store } from "@ngxs/store";
 import { finalize } from "rxjs";
-import { AuthService } from "../../services/auth.service";
+import { Login } from "../../store/auth/auth.actions";
 
 @Component({
   selector: "app-login",
@@ -13,7 +14,7 @@ import { AuthService } from "../../services/auth.service";
   styleUrl: "./login.component.scss",
 })
 export class LoginComponent {
-  private authService = inject(AuthService);
+  private store = inject(Store);
   private router = inject(Router);
 
   email = signal("");
@@ -30,8 +31,8 @@ export class LoginComponent {
     this.isLoading.set(true);
     this.errorMessage.set("");
 
-    this.authService
-      .login({ email: this.email(), password: this.password() })
+    this.store
+      .dispatch(new Login(this.email(), this.password()))
       .pipe(
         finalize(() => {
           this.isLoading.set(false);
