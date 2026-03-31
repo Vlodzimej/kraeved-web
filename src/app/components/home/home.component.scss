@@ -22,6 +22,27 @@
     font-size: 14px;
   }
 
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .admin-link {
+      padding: 8px 20px;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 14px;
+      transition: background 0.2s;
+
+      &:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+    }
+  }
+
   .logout-button {
     padding: 8px 20px;
     background: rgba(255, 255, 255, 0.2);

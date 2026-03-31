@@ -1,0 +1,32 @@
+<div class="admin-layout">
+  <aside class="admin-sidebar">
+    <div class="sidebar-header">
+      <h2>Админ-панель</h2>
+    </div>
+
+    <nav class="sidebar-nav">
+      @for (link of navLinks; track link.path) {
+        <a
+          [routerLink]="link.path"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="nav-link"
+        >
+          {{ link.label }}
+        </a>
+      }
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-info">
+        <span>{{ currentUser()?.name }} {{ currentUser()?.surname }}</span>
+        <small>{{ currentUser()?.email }}</small>
+      </div>
+      <button class="logout-btn" (click)="onLogout()">Выйти</button>
+    </div>
+  </aside>
+
+  <main class="admin-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

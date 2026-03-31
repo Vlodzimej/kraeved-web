@@ -2,15 +2,20 @@
   <header class="home-header">
     <h1>Краевед</h1>
     <p>Путеводитель по Калуге</p>
-    <button class="logout-button" (click)="onLogout()">Выйти</button>
+    <div class="header-actions">
+      @if (isAdmin()) {
+        <a [routerLink]="'/admin'" class="admin-link">Админ-панель</a>
+      }
+      <button class="logout-button" (click)="onLogout()">Выйти</button>
+    </div>
   </header>
 
   <main class="home-content">
     <section class="intro">
       <h2>Добро пожаловать!</h2>
       <p>
-        Здесь вы найдёте подробные сведения о Калуге и её достопримечательностях,
-        представляющих культурно-историческую ценность.
+        Здесь вы найдёте подробные сведения о Калуге и её
+        достопримечательностях, представляющих культурно-историческую ценность.
       </p>
     </section>
 

@@ -1,0 +1,184 @@
+<div class="admin-page">
+  <h1>Объекты</h1>
+
+  @if (loading()) {
+    <div class="loading">Загрузка...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (showDeleteConfirm()) {
+    <app-confirm-dialog
+      title="Удаление объекта"
+      message="Вы действительно хотите удалить объект?"
+      confirmText="Удалить"
+      cancelText="Отмена"
+      (confirmed)="confirmDelete()"
+      (cancelled)="cancelDelete()"
+    />
+  }
+
+  @if (showCloseConfirm()) {
+    <app-confirm-dialog
+      title="Закрыть карточку"
+      message="Вы действительно хотите закрыть карточку объекта? Изменения не сохранятся."
+      confirmText="Закрыть"
+      cancelText="Отмена"
+      (confirmed)="confirmClose()"
+      (cancelled)="cancelClose()"
+    />
+  }
+
+  <div class="page-layout" [class.with-card]="selectedItem()">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Название</th>
+            <th>Краткое описание</th>
+            <th>Тип</th>
+            <th>Координаты</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of items(); track item.id) {
+            <tr
+              class="table-row"
+              [class.active]="selectedItem()?.id === item.id"
+              (click)="selectItem(item)"
+            >
+              <td>{{ item.id }}</td>
+              <td>{{ item.name }}</td>
+              <td class="truncate">{{ item.shortDescription }}</td>
+              <td>{{ item.type || "—" }}</td>
+              <td>{{ item.latitude }}, {{ item.longitude }}</td>
+              <td>
+                <button
+                  class="btn-delete-icon"
+                  (click)="onDelete(item.id!); $event.stopPropagation()"
+                  title="Удалить"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path
+                      d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                    ></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (selectedItem()) {
+      <div class="detail-card">
+        <div class="card-header">
+          <h2>{{ isNewItem() ? "Новый объект" : "Карточка объекта" }}</h2>
+          <button class="btn-close" (click)="closeCard()">✕</button>
+        </div>
+
+        @if (cardLoading()) {
+          <div class="card-loading">Загрузка...</div>
+        } @else {
+          <div class="card-body">
+            <div class="field-group">
+              <label>Название</label>
+              <input
+                [ngModel]="formName()"
+                (ngModelChange)="formName.set($event)"
+                placeholder="Название"
+              />
+            </div>
+
+            <div class="field-group">
+              <label>Краткое описание</label>
+              <input
+                [ngModel]="formShortDescription()"
+                (ngModelChange)="formShortDescription.set($event)"
+                placeholder="Краткое описание"
+              />
+            </div>
+
+            <div class="field-group">
+              <label>Описание</label>
+              <textarea
+                [ngModel]="formDescription()"
+                (ngModelChange)="formDescription.set($event)"
+                placeholder="Полное описание"
+                rows="3"
+              ></textarea>
+            </div>
+
+            <div class="field-row">
+              <div class="field-group">
+                <label>Широта</label>
+                <input
+                  type="number"
+                  [ngModel]="formLatitude()"
+                  (ngModelChange)="formLatitude.set($event)"
+                  placeholder="Latitude"
+                />
+              </div>
+
+              <div class="field-group">
+                <label>Долгота</label>
+                <input
+                  type="number"
+                  [ngModel]="formLongitude()"
+                  (ngModelChange)="formLongitude.set($event)"
+                  placeholder="Longitude"
+                />
+              </div>
+            </div>
+
+            <div class="field-row">
+              <div class="field-group">
+                <label>Регион ID</label>
+                <input
+                  type="number"
+                  [ngModel]="formRegionId()"
+                  (ngModelChange)="formRegionId.set($event)"
+                  placeholder="Region ID"
+                />
+              </div>
+
+              <div class="field-group">
+                <label>Тип ID</label>
+                <input
+                  type="number"
+                  [ngModel]="formTypeId()"
+                  (ngModelChange)="formTypeId.set($event)"
+                  placeholder="Type ID"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <button class="btn btn-save" (click)="onSave()">
+              {{ isNewItem() ? "Создать" : "Сохранить" }}
+            </button>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>

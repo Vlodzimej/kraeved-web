@@ -1,0 +1,154 @@
+<div class="admin-page">
+  <h1>Пользователи</h1>
+
+  @if (loading()) {
+    <div class="loading">Загрузка...</div>
+  }
+
+  @if (error()) {
+    <div class="error">{{ error() }}</div>
+  }
+
+  @if (showDeleteConfirm()) {
+    <app-confirm-dialog
+      title="Удаление пользователя"
+      message="Вы действительно хотите удалить пользователя?"
+      confirmText="Удалить"
+      cancelText="Отмена"
+      (confirmed)="confirmDelete()"
+      (cancelled)="cancelDelete()"
+    />
+  }
+
+  @if (showCloseConfirm()) {
+    <app-confirm-dialog
+      title="Закрыть карточку"
+      message="Вы действительно хотите закрыть карточку объекта? Изменения не сохранятся."
+      confirmText="Закрыть"
+      cancelText="Отмена"
+      (confirmed)="confirmClose()"
+      (cancelled)="cancelClose()"
+    />
+  }
+
+  <div class="page-layout" [class.with-card]="selectedUser()">
+    <div class="table-container">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Email</th>
+            <th>Телефон</th>
+            <th>Роль</th>
+            <th>Дата регистрации</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users(); track user.id) {
+            <tr
+              class="table-row"
+              [class.active]="selectedUser()?.id === user.id"
+              (click)="selectUser(user)"
+            >
+              <td>{{ user.id }}</td>
+              <td>{{ user.name }} {{ user.surname }}</td>
+              <td>{{ user.email }}</td>
+              <td>{{ user.phone }}</td>
+              <td>
+                <span class="role-badge" [class.admin]="user.role === 'ADMIN'">
+                  {{ user.role }}
+                </span>
+              </td>
+              <td>{{ user.startDate | date: "dd.MM.yyyy" }}</td>
+              <td>
+                <button
+                  class="btn-delete-icon"
+                  (click)="onDelete(user.id); $event.stopPropagation()"
+                  title="Удалить"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  >
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path
+                      d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                    ></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (selectedUser()) {
+      <div class="detail-card">
+        <div class="card-header">
+          <h2>Карточка пользователя</h2>
+          <button class="btn-close" (click)="closeCard()">✕</button>
+        </div>
+
+        <div class="card-body">
+          <div class="field-group">
+            <label>ID</label>
+            <span class="field-value">{{ selectedUser()!.id }}</span>
+          </div>
+
+          <div class="field-group">
+            <label>Имя</label>
+            <span class="field-value"
+              >{{ selectedUser()!.name }} {{ selectedUser()!.surname }}</span
+            >
+          </div>
+
+          <div class="field-group">
+            <label>Email</label>
+            <span class="field-value">{{ selectedUser()!.email }}</span>
+          </div>
+
+          <div class="field-group">
+            <label>Телефон</label>
+            <span class="field-value">{{ selectedUser()!.phone }}</span>
+          </div>
+
+          <div class="field-group">
+            <label>Дата регистрации</label>
+            <span class="field-value">{{
+              selectedUser()!.startDate | date: "dd.MM.yyyy"
+            }}</span>
+          </div>
+
+          <div class="field-group">
+            <label>Роль</label>
+            <select
+              [ngModel]="editedRole()"
+              (ngModelChange)="editedRole.set($event)"
+              class="role-select"
+            >
+              @for (role of availableRoles; track role) {
+                <option [value]="role">{{ role }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="card-footer">
+          <button class="btn btn-save" (click)="onSave()">Сохранить</button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -3,8 +3,8 @@ import { Router } from "@angular/router";
 import { FormsModule } from "@angular/forms";
 import { HttpErrorResponse } from "@angular/common/http";
 import { Store } from "@ngxs/store";
-import { finalize } from "rxjs";
-import { Login } from "../../store/auth/auth.actions";
+import { finalize, switchMap } from "rxjs";
+import { Login, LoadCurrentUser } from "../../store/auth/auth.actions";
 
 @Component({
   selector: "app-login",
@@ -17,10 +17,10 @@ export class LoginComponent {
   private store = inject(Store);
   private router = inject(Router);
 
-  email = signal("");
-  password = signal("");
-  errorMessage = signal("");
-  isLoading = signal(false);
+  protected email = signal("");
+  protected password = signal("");
+  protected errorMessage = signal("");
+  protected isLoading = signal(false);
 
   onSubmit(): void {
     if (!this.email() || !this.password()) {
@@ -34,13 +34,17 @@ export class LoginComponent {
     this.store
       .dispatch(new Login(this.email(), this.password()))
       .pipe(
+        switchMap(() => this.store.dispatch(new LoadCurrentUser())),
         finalize(() => {
           this.isLoading.set(false);
         }),
       )
       .subscribe({
         next: () => {
-          this.router.navigate(["/home"]);
+          const isAdmin = this.store.selectSnapshot(
+            (state: any) => state.auth.isAdmin,
+          );
+          this.router.navigate([isAdmin ? "/admin" : "/home"]);
         },
         error: (err: HttpErrorResponse) => {
           if (err.status === 401) {

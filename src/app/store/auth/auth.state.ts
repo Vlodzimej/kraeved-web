@@ -1,9 +1,12 @@
-import { Injectable } from "@angular/core";
+import { Injectable, inject } from "@angular/core";
 import { State, Selector, Action, StateContext } from "@ngxs/store";
-import { tap } from "rxjs";
+import { HttpClient } from "@angular/common/http";
+import { tap, catchError } from "rxjs";
 import { AuthService } from "../../services/auth.service";
-import { Login, Logout, CheckAuth } from "./auth.actions";
+import { Login, Logout, CheckAuth, LoadCurrentUser } from "./auth.actions";
 import { AuthStateModel, authStateDefaults } from "./auth.model";
+import { KraevedResponse } from "../../models/kraeved-response";
+import { UserOutDto } from "../../models/admin/user.model";
 
 @State<AuthStateModel>({
   name: "auth",
@@ -21,7 +24,18 @@ export class AuthState {
     return state.isAuthenticated;
   }
 
-  constructor(private authService: AuthService) {}
+  @Selector()
+  static currentUser(state: AuthStateModel): UserOutDto | null {
+    return state.currentUser;
+  }
+
+  @Selector()
+  static isAdmin(state: AuthStateModel): boolean {
+    return state.isAdmin;
+  }
+
+  private authService = inject(AuthService);
+  private http = inject(HttpClient);
 
   @Action(Login)
   login(ctx: StateContext<AuthStateModel>, { email, password }: Login) {
@@ -41,6 +55,8 @@ export class AuthState {
     ctx.patchState({
       token: null,
       isAuthenticated: false,
+      currentUser: null,
+      isAdmin: false,
     });
   }
 
@@ -51,5 +67,29 @@ export class AuthState {
       token,
       isAuthenticated: !!token,
     });
+  }
+
+  @Action(LoadCurrentUser)
+  loadCurrentUser(ctx: StateContext<AuthStateModel>) {
+    return this.http
+      .get<
+        KraevedResponse<UserOutDto>
+      >("http://localhost:5000/api/users/current")
+      .pipe(
+        tap((response) => {
+          const user = response.data;
+          ctx.patchState({
+            currentUser: user,
+            isAdmin: user?.role === "ADMIN",
+          });
+        }),
+        catchError(() => {
+          ctx.patchState({
+            currentUser: null,
+            isAdmin: false,
+          });
+          throw new Error("Failed to load user info");
+        }),
+      );
   }
 }
