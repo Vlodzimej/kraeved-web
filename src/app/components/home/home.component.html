@@ -5,8 +5,12 @@
     <div class="header-actions">
       @if (isAdmin()) {
         <button class="admin-link" (click)="goToAdmin()">Админ-панель</button>
+        <button class="logout-button" (click)="onLogout()">Выйти</button>
+      } @else if (isAuthenticated()) {
+        <button class="logout-button" (click)="onLogout()">Выйти</button>
+      } @else {
+        <button class="login-link" (click)="goToLogin()">Войти</button>
       }
-      <button class="logout-button" (click)="onLogout()">Выйти</button>
     </div>
   </header>
 

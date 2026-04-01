@@ -37,6 +37,7 @@ export class HomeComponent implements OnInit {
   private geoObjectsService = inject(GeoObjectsService);
 
   isAdmin = this.store.selectSignal(AuthState.isAdmin);
+  isAuthenticated = this.store.selectSignal(AuthState.isAuthenticated);
   mapContainer = viewChild<ElementRef<HTMLDivElement>>("mapContainer");
 
   geoObjects = signal<GeoObjectBrief[]>([]);
@@ -241,5 +242,9 @@ export class HomeComponent implements OnInit {
 
   goToAdmin(): void {
     this.router.navigate(["/admin"]);
+  }
+
+  goToLogin(): void {
+    this.router.navigate(["/login"]);
   }
 }
