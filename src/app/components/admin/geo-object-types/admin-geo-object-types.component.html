@@ -98,19 +98,23 @@
         <div class="field-group">
           <label>Системное имя</label>
           <input
-            [ngModel]="formName()"
-            (ngModelChange)="formName.set($event)"
+            [formControl]="form.controls.name"
             placeholder="Например: museum"
           />
+          @if (form.controls.name.invalid && form.controls.name.touched) {
+            <div class="error-text">Обязательное поле</div>
+          }
         </div>
 
         <div class="field-group">
           <label>Отображаемое название</label>
           <input
-            [ngModel]="formTitle()"
-            (ngModelChange)="formTitle.set($event)"
+            [formControl]="form.controls.title"
             placeholder="Например: Музей"
           />
+          @if (form.controls.title.invalid && form.controls.title.touched) {
+            <div class="error-text">Обязательное поле</div>
+          }
         </div>
       </app-admin-card>
     }

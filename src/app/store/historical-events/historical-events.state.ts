@@ -55,9 +55,19 @@ export class HistoricalEventsState {
     ctx: StateContext<HistoricalEventsStateModel>,
     { item }: CreateHistoricalEvent,
   ) {
+    const state = ctx.getState();
+    ctx.patchState({ loading: true, error: null });
+
     return this.service.create(item).pipe(
-      tap(() => {
-        ctx.dispatch(new LoadHistoricalEvents());
+      tap((createdItem) => {
+        ctx.patchState({
+          items: [...state.items, createdItem],
+          loading: false,
+        });
+      }),
+      catchError((err) => {
+        ctx.patchState({ loading: false, error: err.message });
+        throw err;
       }),
     );
   }
@@ -67,9 +77,19 @@ export class HistoricalEventsState {
     ctx: StateContext<HistoricalEventsStateModel>,
     { item }: UpdateHistoricalEvent,
   ) {
+    const state = ctx.getState();
+    ctx.patchState({ loading: true, error: null });
+
     return this.service.update(item).pipe(
-      tap(() => {
-        ctx.dispatch(new LoadHistoricalEvents());
+      tap((updatedItem) => {
+        ctx.patchState({
+          items: state.items.map((i) => (i.id === updatedItem.id ? updatedItem : i)),
+          loading: false,
+        });
+      }),
+      catchError((err) => {
+        ctx.patchState({ loading: false, error: err.message });
+        throw err;
       }),
     );
   }
@@ -79,9 +99,19 @@ export class HistoricalEventsState {
     ctx: StateContext<HistoricalEventsStateModel>,
     { id }: DeleteHistoricalEvent,
   ) {
+    const state = ctx.getState();
+    ctx.patchState({ loading: true, error: null });
+
     return this.service.delete(id).pipe(
       tap(() => {
-        ctx.dispatch(new LoadHistoricalEvents());
+        ctx.patchState({
+          items: state.items.filter((i) => i.id !== id),
+          loading: false,
+        });
+      }),
+      catchError((err) => {
+        ctx.patchState({ loading: false, error: err.message });
+        throw err;
       }),
     );
   }

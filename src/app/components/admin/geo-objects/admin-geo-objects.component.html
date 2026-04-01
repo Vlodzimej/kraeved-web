@@ -103,17 +103,18 @@
           <div class="field-group">
             <label>Название</label>
             <input
-              [ngModel]="formName()"
-              (ngModelChange)="formName.set($event)"
+              [formControl]="form.controls.name"
               placeholder="Название"
             />
+            @if (form.controls.name.invalid && form.controls.name.touched) {
+              <div class="error-text">Обязательное поле</div>
+            }
           </div>
 
           <div class="field-group">
             <label>Краткое описание</label>
             <input
-              [ngModel]="formShortDescription()"
-              (ngModelChange)="formShortDescription.set($event)"
+              [formControl]="form.controls.shortDescription"
               placeholder="Краткое описание"
             />
           </div>
@@ -121,8 +122,7 @@
           <div class="field-group">
             <label>Описание</label>
             <textarea
-              [ngModel]="formDescription()"
-              (ngModelChange)="formDescription.set($event)"
+              [formControl]="form.controls.description"
               placeholder="Полное описание"
               rows="3"
             ></textarea>
@@ -133,8 +133,7 @@
               <label>Широта</label>
               <input
                 type="number"
-                [ngModel]="formLatitude()"
-                (ngModelChange)="formLatitude.set($event)"
+                [formControl]="form.controls.latitude"
                 placeholder="Latitude"
               />
             </div>
@@ -143,8 +142,7 @@
               <label>Долгота</label>
               <input
                 type="number"
-                [ngModel]="formLongitude()"
-                (ngModelChange)="formLongitude.set($event)"
+                [formControl]="form.controls.longitude"
                 placeholder="Longitude"
               />
             </div>
@@ -155,8 +153,7 @@
               <label>Регион ID</label>
               <input
                 type="number"
-                [ngModel]="formRegionId()"
-                (ngModelChange)="formRegionId.set($event)"
+                [formControl]="form.controls.regionId"
                 placeholder="Region ID"
               />
             </div>
@@ -165,8 +162,7 @@
               <label>Тип ID</label>
               <input
                 type="number"
-                [ngModel]="formTypeId()"
-                (ngModelChange)="formTypeId.set($event)"
+                [formControl]="form.controls.typeId"
                 placeholder="Type ID"
               />
             </div>

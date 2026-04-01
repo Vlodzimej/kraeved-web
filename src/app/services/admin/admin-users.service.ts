@@ -3,11 +3,12 @@ import { HttpClient } from "@angular/common/http";
 import { Observable, map } from "rxjs";
 import { UserOutDto } from "../../models/admin/user.model";
 import { KraevedResponse } from "../../models/kraeved-response";
+import { environment } from "../../../environments/environment";
 
 @Injectable({ providedIn: "root" })
 export class AdminUsersService {
   private http = inject(HttpClient);
-  private apiUrl = "http://localhost:5000/api/users";
+  private apiUrl = `${environment.apiUrl}/users`;
 
   getAll(): Observable<UserOutDto[]> {
     return this.http

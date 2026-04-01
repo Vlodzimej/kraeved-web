@@ -3,11 +3,12 @@ import { HttpClient } from "@angular/common/http";
 import { Observable, map } from "rxjs";
 import { HistoricalEvent } from "../../models/admin/entities.model";
 import { KraevedResponse } from "../../models/kraeved-response";
+import { environment } from "../../../environments/environment";
 
 @Injectable({ providedIn: "root" })
 export class AdminHistoricalEventsService {
   private http = inject(HttpClient);
-  private apiUrl = "http://localhost:5000/api/HistoricalEvents";
+  private apiUrl = `${environment.apiUrl}/HistoricalEvents`;
 
   getAll(): Observable<HistoricalEvent[]> {
     return this.http

@@ -1,5 +1,15 @@
-import { Component, inject, OnInit, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+  signal,
+} from "@angular/core";
+import {
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { Store } from "@ngxs/store";
 import { finalize } from "rxjs";
 import { GeoObjectsState } from "../../../store/geo-objects/geo-objects.state";
@@ -21,13 +31,15 @@ import { useAdminCrud } from "../shared/use-admin-crud";
 @Component({
   selector: "app-admin-geo-objects",
   standalone: true,
-  imports: [FormsModule, ConfirmDialogComponent, AdminCardComponent],
+  imports: [ReactiveFormsModule, ConfirmDialogComponent, AdminCardComponent],
   templateUrl: "./admin-geo-objects.component.html",
   styleUrl: "./admin-geo-objects.component.scss",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminGeoObjectsComponent implements OnInit {
   private store = inject(Store);
   private service = inject(AdminGeoObjectsService);
+  private fb = inject(NonNullableFormBuilder);
 
   items = this.store.selectSignal(GeoObjectsState.items);
   loading = this.store.selectSignal(GeoObjectsState.loading);
@@ -35,13 +47,15 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   cardLoading = signal(false);
 
-  formName = signal("");
-  formDescription = signal("");
-  formShortDescription = signal("");
-  formLatitude = signal<number | null>(null);
-  formLongitude = signal<number | null>(null);
-  formRegionId = signal<number | null>(null);
-  formTypeId = signal<number | null>(null);
+  form = this.fb.group({
+    name: ["", Validators.required],
+    description: [""],
+    shortDescription: [""],
+    latitude: this.fb.control<number | null>(null),
+    longitude: this.fb.control<number | null>(null),
+    regionId: this.fb.control<number | null>(null),
+    typeId: this.fb.control<number | null>(null),
+  });
 
   crud = useAdminCrud<GeoObject>(
     () => ({
@@ -53,14 +67,15 @@ export class AdminGeoObjectsComponent implements OnInit {
     }),
     (item) => {
       if (!item) return false;
+      const formValue = this.form.getRawValue();
       return (
-        item.name !== this.formName() ||
-        item.description !== this.formDescription() ||
-        item.shortDescription !== this.formShortDescription() ||
-        (item.latitude ?? null) !== this.formLatitude() ||
-        (item.longitude ?? null) !== this.formLongitude() ||
-        (item.regionId ?? null) !== this.formRegionId() ||
-        (item.typeId ?? null) !== this.formTypeId()
+        item.name !== formValue.name ||
+        item.description !== formValue.description ||
+        item.shortDescription !== formValue.shortDescription ||
+        (item.latitude ?? null) !== formValue.latitude ||
+        (item.longitude ?? null) !== formValue.longitude ||
+        (item.regionId ?? null) !== formValue.regionId ||
+        (item.typeId ?? null) !== formValue.typeId
       );
     },
   );
@@ -78,26 +93,30 @@ export class AdminGeoObjectsComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.crud.selectItem(data);
-          this.formName.set(data.name);
-          this.formDescription.set(data.description);
-          this.formShortDescription.set(data.shortDescription);
-          this.formLatitude.set(data.latitude ?? null);
-          this.formLongitude.set(data.longitude ?? null);
-          this.formRegionId.set(data.regionId ?? null);
-          this.formTypeId.set(data.typeId ?? null);
+          this.form.patchValue({
+            name: data.name,
+            description: data.description,
+            shortDescription: data.shortDescription,
+            latitude: data.latitude ?? null,
+            longitude: data.longitude ?? null,
+            regionId: data.regionId ?? null,
+            typeId: data.typeId ?? null,
+          });
         },
       });
   }
 
   openCreate(): void {
     this.crud.openCreate();
-    this.formName.set("");
-    this.formDescription.set("");
-    this.formShortDescription.set("");
-    this.formLatitude.set(null);
-    this.formLongitude.set(null);
-    this.formRegionId.set(null);
-    this.formTypeId.set(null);
+    this.form.reset({
+      name: "",
+      description: "",
+      shortDescription: "",
+      latitude: null,
+      longitude: null,
+      regionId: null,
+      typeId: null,
+    });
   }
 
   closeCard(): void {
@@ -106,6 +125,15 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   confirmClose(): void {
     this.crud.confirmClose();
+    this.form.reset({
+      name: "",
+      description: "",
+      shortDescription: "",
+      latitude: null,
+      longitude: null,
+      regionId: null,
+      typeId: null,
+    });
   }
 
   cancelClose(): void {
@@ -113,16 +141,22 @@ export class AdminGeoObjectsComponent implements OnInit {
   }
 
   onSave(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     const item = this.crud.selectedItem();
+    const formValue = this.form.getRawValue();
     const geoObject: GeoObject = {
       id: item?.id,
-      name: this.formName(),
-      description: this.formDescription(),
-      shortDescription: this.formShortDescription(),
-      latitude: this.formLatitude(),
-      longitude: this.formLongitude(),
-      regionId: this.formRegionId(),
-      typeId: this.formTypeId(),
+      name: formValue.name,
+      description: formValue.description,
+      shortDescription: formValue.shortDescription,
+      latitude: formValue.latitude,
+      longitude: formValue.longitude,
+      regionId: formValue.regionId,
+      typeId: formValue.typeId,
     };
 
     if (this.crud.isNewItem()) {

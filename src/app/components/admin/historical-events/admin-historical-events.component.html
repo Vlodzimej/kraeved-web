@@ -101,17 +101,18 @@
           <div class="field-group">
             <label>Название</label>
             <input
-              [ngModel]="formName()"
-              (ngModelChange)="formName.set($event)"
+              [formControl]="form.controls.name"
               placeholder="Название события"
             />
+            @if (form.controls.name.invalid && form.controls.name.touched) {
+              <div class="error-text">Обязательное поле</div>
+            }
           </div>
 
           <div class="field-group">
             <label>Описание</label>
             <textarea
-              [ngModel]="formDescription()"
-              (ngModelChange)="formDescription.set($event)"
+              [formControl]="form.controls.description"
               placeholder="Описание события"
               rows="3"
             ></textarea>
@@ -122,8 +123,7 @@
               <label>Дата</label>
               <input
                 type="date"
-                [ngModel]="formDate()"
-                (ngModelChange)="formDate.set($event)"
+                [formControl]="form.controls.date"
               />
             </div>
 
@@ -131,8 +131,7 @@
               <label>Регион ID</label>
               <input
                 type="number"
-                [ngModel]="formRegionId()"
-                (ngModelChange)="formRegionId.set($event)"
+                [formControl]="form.controls.regionId"
                 placeholder="Region ID"
               />
             </div>

@@ -12,6 +12,7 @@ import {
   GeoObjectsStateModel,
   geoObjectsStateDefaults,
 } from "./geo-objects.model";
+import { GeoObjectBrief } from "../../models/admin/entities.model";
 
 @State<GeoObjectsStateModel>({
   name: "geoObjects",
@@ -60,9 +61,28 @@ export class GeoObjectsState {
     ctx: StateContext<GeoObjectsStateModel>,
     { geoObject }: CreateGeoObject,
   ) {
+    const state = ctx.getState();
+    ctx.patchState({ loading: true, error: null });
+
     return this.service.create(geoObject).pipe(
-      tap(() => {
-        ctx.dispatch(new LoadGeoObjects());
+      tap((createdItem) => {
+        const briefItem: GeoObjectBrief = {
+          id: createdItem.id,
+          name: createdItem.name,
+          shortDescription: createdItem.shortDescription,
+          type: createdItem.type?.title ?? null,
+          latitude: createdItem.latitude,
+          longitude: createdItem.longitude,
+          thumbnail: createdItem.thumbnail,
+        };
+        ctx.patchState({
+          items: [...state.items, briefItem],
+          loading: false,
+        });
+      }),
+      catchError((err) => {
+        ctx.patchState({ loading: false, error: err.message });
+        throw err;
       }),
     );
   }
@@ -72,18 +92,49 @@ export class GeoObjectsState {
     ctx: StateContext<GeoObjectsStateModel>,
     { geoObject }: UpdateGeoObject,
   ) {
+    const state = ctx.getState();
+    ctx.patchState({ loading: true, error: null });
+
     return this.service.update(geoObject).pipe(
-      tap(() => {
-        ctx.dispatch(new LoadGeoObjects());
+      tap((updatedItem) => {
+        const briefItem: GeoObjectBrief = {
+          id: updatedItem.id,
+          name: updatedItem.name,
+          shortDescription: updatedItem.shortDescription,
+          type: updatedItem.type?.title ?? null,
+          latitude: updatedItem.latitude,
+          longitude: updatedItem.longitude,
+          thumbnail: updatedItem.thumbnail,
+        };
+        ctx.patchState({
+          items: state.items.map((i) => (i.id === updatedItem.id ? briefItem : i)),
+          selectedItem: updatedItem,
+          loading: false,
+        });
+      }),
+      catchError((err) => {
+        ctx.patchState({ loading: false, error: err.message });
+        throw err;
       }),
     );
   }
 
   @Action(DeleteGeoObject)
   delete(ctx: StateContext<GeoObjectsStateModel>, { id }: DeleteGeoObject) {
+    const state = ctx.getState();
+    ctx.patchState({ loading: true, error: null });
+
     return this.service.delete(id).pipe(
       tap(() => {
-        ctx.dispatch(new LoadGeoObjects());
+        ctx.patchState({
+          items: state.items.filter((i) => i.id !== id),
+          selectedItem: state.selectedItem?.id === id ? null : state.selectedItem,
+          loading: false,
+        });
+      }),
+      catchError((err) => {
+        ctx.patchState({ loading: false, error: err.message });
+        throw err;
       }),
     );
   }

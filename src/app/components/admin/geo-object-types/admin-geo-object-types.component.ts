@@ -1,5 +1,14 @@
-import { Component, inject, OnInit, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from "@angular/core";
+import {
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { Store } from "@ngxs/store";
 import { GeoObjectTypesState } from "../../../store/geo-object-types/geo-object-types.state";
 import {
@@ -16,26 +25,31 @@ import { useAdminCrud } from "../shared/use-admin-crud";
 @Component({
   selector: "app-admin-geo-object-types",
   standalone: true,
-  imports: [FormsModule, ConfirmDialogComponent, AdminCardComponent],
+  imports: [ReactiveFormsModule, ConfirmDialogComponent, AdminCardComponent],
   templateUrl: "./admin-geo-object-types.component.html",
   styleUrl: "./admin-geo-object-types.component.scss",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminGeoObjectTypesComponent implements OnInit {
   private store = inject(Store);
+  private fb = inject(NonNullableFormBuilder);
 
   items = this.store.selectSignal(GeoObjectTypesState.items);
   loading = this.store.selectSignal(GeoObjectTypesState.loading);
   error = this.store.selectSignal(GeoObjectTypesState.error);
 
-  formName = signal("");
-  formTitle = signal("");
+  form = this.fb.group({
+    name: ["", Validators.required],
+    title: ["", Validators.required],
+  });
 
   crud = useAdminCrud<GeoObjectType>(
     () => ({ name: "", title: "" }),
-    (item) =>
-      item
-        ? item.name !== this.formName() || item.title !== this.formTitle()
-        : false,
+    (item) => {
+      if (!item) return false;
+      const formValue = this.form.getRawValue();
+      return item.name !== formValue.name || item.title !== formValue.title;
+    },
   );
 
   ngOnInit(): void {
@@ -44,14 +58,18 @@ export class AdminGeoObjectTypesComponent implements OnInit {
 
   selectItem(item: GeoObjectType): void {
     this.crud.selectItem(item);
-    this.formName.set(item.name);
-    this.formTitle.set(item.title);
+    this.form.patchValue({
+      name: item.name,
+      title: item.title,
+    });
   }
 
   openCreate(): void {
     this.crud.openCreate();
-    this.formName.set("");
-    this.formTitle.set("");
+    this.form.reset({
+      name: "",
+      title: "",
+    });
   }
 
   closeCard(): void {
@@ -60,6 +78,10 @@ export class AdminGeoObjectTypesComponent implements OnInit {
 
   confirmClose(): void {
     this.crud.confirmClose();
+    this.form.reset({
+      name: "",
+      title: "",
+    });
   }
 
   cancelClose(): void {
@@ -67,11 +89,17 @@ export class AdminGeoObjectTypesComponent implements OnInit {
   }
 
   onSave(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     const item = this.crud.selectedItem();
+    const formValue = this.form.getRawValue();
     const type: GeoObjectType = {
       id: item?.id,
-      name: this.formName(),
-      title: this.formTitle(),
+      name: formValue.name,
+      title: formValue.title,
     };
 
     if (this.crud.isNewItem()) {

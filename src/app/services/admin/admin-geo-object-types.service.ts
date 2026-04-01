@@ -3,11 +3,12 @@ import { HttpClient } from "@angular/common/http";
 import { Observable, map } from "rxjs";
 import { GeoObjectType } from "../../models/admin/entities.model";
 import { KraevedResponse } from "../../models/kraeved-response";
+import { environment } from "../../../environments/environment";
 
 @Injectable({ providedIn: "root" })
 export class AdminGeoObjectTypesService {
   private http = inject(HttpClient);
-  private apiUrl = "http://localhost:5000/api/GeoObjectTypes";
+  private apiUrl = `${environment.apiUrl}/GeoObjectTypes`;
 
   getAll(): Observable<GeoObjectType[]> {
     return this.http

@@ -133,8 +133,7 @@
         <div class="field-group">
           <label>Роль</label>
           <select
-            [ngModel]="editedRole()"
-            (ngModelChange)="editedRole.set($event)"
+            [formControl]="form.controls.role"
             class="role-select"
           >
             @for (role of availableRoles; track role) {

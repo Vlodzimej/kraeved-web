@@ -1,6 +1,15 @@
-import { Component, inject, OnInit, signal } from "@angular/core";
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  OnInit,
+} from "@angular/core";
+import {
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  Validators,
+} from "@angular/forms";
 import { DatePipe } from "@angular/common";
-import { FormsModule } from "@angular/forms";
 import { Store } from "@ngxs/store";
 import { UsersState } from "../../../store/users/users.state";
 import {
@@ -16,19 +25,24 @@ import { useAdminCrud } from "../shared/use-admin-crud";
 @Component({
   selector: "app-admin-users",
   standalone: true,
-  imports: [DatePipe, FormsModule, ConfirmDialogComponent, AdminCardComponent],
+  imports: [DatePipe, ReactiveFormsModule, ConfirmDialogComponent, AdminCardComponent],
   templateUrl: "./admin-users.component.html",
   styleUrl: "./admin-users.component.scss",
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminUsersComponent implements OnInit {
   private store = inject(Store);
+  private fb = inject(NonNullableFormBuilder);
 
   users = this.store.selectSignal(UsersState.users);
   loading = this.store.selectSignal(UsersState.loading);
   error = this.store.selectSignal(UsersState.error);
 
-  editedRole = signal("");
   availableRoles = ["USER", "ADMIN"];
+
+  form = this.fb.group({
+    role: ["", Validators.required],
+  });
 
   crud = useAdminCrud<UserOutDto>(
     () => ({
@@ -40,7 +54,10 @@ export class AdminUsersComponent implements OnInit {
       startDate: "",
       role: "",
     }),
-    (item) => (item ? item.role !== this.editedRole() : false),
+    (item) => {
+      if (!item) return false;
+      return item.role !== this.form.getRawValue().role;
+    },
   );
 
   ngOnInit(): void {
@@ -49,7 +66,7 @@ export class AdminUsersComponent implements OnInit {
 
   selectUser(user: UserOutDto): void {
     this.crud.selectItem(user);
-    this.editedRole.set(user.role);
+    this.form.patchValue({ role: user.role });
   }
 
   onDelete(id: number): void {
@@ -74,6 +91,7 @@ export class AdminUsersComponent implements OnInit {
 
   confirmClose(): void {
     this.crud.confirmClose();
+    this.form.reset({ role: "" });
   }
 
   cancelClose(): void {
@@ -81,11 +99,17 @@ export class AdminUsersComponent implements OnInit {
   }
 
   onSave(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
     const user = this.crud.selectedItem();
     if (!user) return;
 
-    if (user.role !== this.editedRole()) {
-      this.store.dispatch(new UpdateUserRole(user.id, this.editedRole()));
+    const formValue = this.form.getRawValue();
+    if (user.role !== formValue.role) {
+      this.store.dispatch(new UpdateUserRole(user.id, formValue.role));
     }
     this.crud.resetCard();
   }

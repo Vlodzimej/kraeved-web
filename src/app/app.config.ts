@@ -8,6 +8,7 @@ import { provideStore } from "@ngxs/store";
 
 import { routes } from "./app.routes";
 import { authInterceptor } from "./interceptors/auth.interceptor";
+import { errorInterceptor } from "./interceptors/error.interceptor";
 import { AuthState } from "./store/auth/auth.state";
 import { UsersState } from "./store/users/users.state";
 import { GeoObjectsState } from "./store/geo-objects/geo-objects.state";
@@ -20,7 +21,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     provideStore(
       [
         AuthState,
