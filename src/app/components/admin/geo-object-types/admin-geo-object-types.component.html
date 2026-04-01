@@ -42,6 +42,7 @@
             <th>ID</th>
             <th>Системное имя</th>
             <th>Название</th>
+            <th>Категория</th>
             <th></th>
           </tr>
         </thead>
@@ -57,6 +58,7 @@
                 <code>{{ item.name }}</code>
               </td>
               <td>{{ item.title }}</td>
+              <td>{{ item.category?.title || "—" }}</td>
               <td>
                 <button
                   class="btn-delete-icon"
@@ -115,6 +117,18 @@
           @if (form.controls.title.invalid && form.controls.title.touched) {
             <div class="error-text">Обязательное поле</div>
           }
+        </div>
+
+        <div class="field-group">
+          <label>Категория</label>
+          <select
+            [formControl]="form.controls.categoryId"
+          >
+            <option [ngValue]="null">Без категории</option>
+            @for (category of categories(); track category.id) {
+              <option [ngValue]="category.id">{{ category.title }}</option>
+            }
+          </select>
         </div>
       </app-admin-card>
     }

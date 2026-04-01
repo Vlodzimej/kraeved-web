@@ -11,13 +11,15 @@ import {
 } from "@angular/forms";
 import { Store } from "@ngxs/store";
 import { GeoObjectTypesState } from "../../../store/geo-object-types/geo-object-types.state";
+import { GeoObjectCategoriesState } from "../../../store/geo-object-categories/geo-object-categories.state";
 import {
   LoadGeoObjectTypes,
   CreateGeoObjectType,
   UpdateGeoObjectType,
   DeleteGeoObjectType,
 } from "../../../store/geo-object-types/geo-object-types.actions";
-import { GeoObjectType } from "../../../models/admin/entities.model";
+import { LoadGeoObjectCategories } from "../../../store/geo-object-categories/geo-object-categories.actions";
+import { GeoObjectType, GeoObjectCategory } from "../../../models/admin/entities.model";
 import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dialog.component";
 import { AdminCardComponent } from "../shared/card/admin-card.component";
 import { useAdminCrud } from "../shared/use-admin-crud";
@@ -38,9 +40,12 @@ export class AdminGeoObjectTypesComponent implements OnInit {
   loading = this.store.selectSignal(GeoObjectTypesState.loading);
   error = this.store.selectSignal(GeoObjectTypesState.error);
 
+  categories = this.store.selectSignal(GeoObjectCategoriesState.items);
+
   form = this.fb.group({
     name: ["", Validators.required],
     title: ["", Validators.required],
+    categoryId: this.fb.control<number | null>(null),
   });
 
   crud = useAdminCrud<GeoObjectType>(
@@ -48,11 +53,16 @@ export class AdminGeoObjectTypesComponent implements OnInit {
     (item) => {
       if (!item) return false;
       const formValue = this.form.getRawValue();
-      return item.name !== formValue.name || item.title !== formValue.title;
+      return (
+        item.name !== formValue.name ||
+        item.title !== formValue.title ||
+        (item.categoryId ?? null) !== formValue.categoryId
+      );
     },
   );
 
   ngOnInit(): void {
+    this.store.dispatch(new LoadGeoObjectCategories());
     this.store.dispatch(new LoadGeoObjectTypes());
   }
 
@@ -61,6 +71,7 @@ export class AdminGeoObjectTypesComponent implements OnInit {
     this.form.patchValue({
       name: item.name,
       title: item.title,
+      categoryId: item.categoryId ?? null,
     });
   }
 
@@ -69,6 +80,7 @@ export class AdminGeoObjectTypesComponent implements OnInit {
     this.form.reset({
       name: "",
       title: "",
+      categoryId: null,
     });
   }
 
@@ -81,6 +93,7 @@ export class AdminGeoObjectTypesComponent implements OnInit {
     this.form.reset({
       name: "",
       title: "",
+      categoryId: null,
     });
   }
 
@@ -96,10 +109,15 @@ export class AdminGeoObjectTypesComponent implements OnInit {
 
     const item = this.crud.selectedItem();
     const formValue = this.form.getRawValue();
+    const selectedCategory = this.categories().find(
+      (c) => c.id === formValue.categoryId,
+    );
     const type: GeoObjectType = {
       id: item?.id,
       name: formValue.name,
       title: formValue.title,
+      categoryId: formValue.categoryId,
+      category: selectedCategory ?? null,
     };
 
     if (this.crud.isNewItem()) {
@@ -125,5 +143,9 @@ export class AdminGeoObjectTypesComponent implements OnInit {
 
   cancelDelete(): void {
     this.crud.cancelDelete();
+  }
+
+  trackCategory(_index: number, category: GeoObjectCategory): number | null {
+    return category.id ?? null;
   }
 }
