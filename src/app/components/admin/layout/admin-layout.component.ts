@@ -26,6 +26,7 @@ export class AdminLayoutComponent implements OnInit {
     { label: "Пользователи", path: "/admin/users" },
     { label: "Объекты", path: "/admin/geo-objects" },
     { label: "Типы объектов", path: "/admin/geo-object-types" },
+    { label: "Категории объектов", path: "/admin/geo-object-categories" },
     { label: "События", path: "/admin/historical-events" },
   ];
 

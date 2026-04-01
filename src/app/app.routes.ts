@@ -47,6 +47,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: "geo-object-categories",
+        loadComponent: () =>
+          import("./components/admin/geo-object-categories/admin-geo-object-categories.component").then(
+            (m) => m.AdminGeoObjectCategoriesComponent,
+          ),
+      },
+      {
         path: "historical-events",
         loadComponent: () =>
           import("./components/admin/historical-events/admin-historical-events.component").then(
