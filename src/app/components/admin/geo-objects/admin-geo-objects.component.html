@@ -156,12 +156,15 @@
       </div>
 
       <div class="field-group">
-        <label>Тип ID</label>
-        <input
-          type="number"
+        <label>Тип</label>
+        <select
           [formControl]="form.controls.typeId"
-          placeholder="Type ID"
-        />
+        >
+          <option [ngValue]="null">Без типа</option>
+          @for (type of types(); track type.id) {
+            <option [ngValue]="type.id">{{ type.title }}</option>
+          }
+        </select>
       </div>
     </div>
   </app-admin-card>

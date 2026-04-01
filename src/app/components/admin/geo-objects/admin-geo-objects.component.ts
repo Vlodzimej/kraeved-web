@@ -13,15 +13,18 @@ import {
 import { Store } from "@ngxs/store";
 import { finalize } from "rxjs";
 import { GeoObjectsState } from "../../../store/geo-objects/geo-objects.state";
+import { GeoObjectTypesState } from "../../../store/geo-object-types/geo-object-types.state";
 import {
   LoadGeoObjects,
   CreateGeoObject,
   UpdateGeoObject,
   DeleteGeoObject,
 } from "../../../store/geo-objects/geo-objects.actions";
+import { LoadGeoObjectTypes } from "../../../store/geo-object-types/geo-object-types.actions";
 import {
   GeoObject,
   GeoObjectBrief,
+  GeoObjectType,
 } from "../../../models/admin/entities.model";
 import { AdminGeoObjectsService } from "../../../services/admin/admin-geo-objects.service";
 import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dialog.component";
@@ -46,6 +49,8 @@ export class AdminGeoObjectsComponent implements OnInit {
   items = this.store.selectSignal(GeoObjectsState.items);
   loading = this.store.selectSignal(GeoObjectsState.loading);
   error = this.store.selectSignal(GeoObjectsState.error);
+
+  types = this.store.selectSignal(GeoObjectTypesState.items);
 
   cardLoading = signal(false);
 
@@ -83,6 +88,7 @@ export class AdminGeoObjectsComponent implements OnInit {
   );
 
   ngOnInit(): void {
+    this.store.dispatch(new LoadGeoObjectTypes());
     this.store.dispatch(new LoadGeoObjects());
   }
 
@@ -185,5 +191,9 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   cancelDelete(): void {
     this.crud.cancelDelete();
+  }
+
+  trackType(_index: number, type: GeoObjectType): number | null {
+    return type.id ?? null;
   }
 }
