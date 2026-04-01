@@ -1,11 +1,8 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  effect,
   inject,
   OnInit,
-  signal,
-  untracked,
   viewChild,
   ElementRef,
 } from "@angular/core";
@@ -13,8 +10,6 @@ import { Router } from "@angular/router";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
-import { GeoObjectsService } from "../../services/geo-objects.service";
-import { GeoObject } from "../../models/admin/entities.model";
 import * as L from "leaflet";
 
 @Component({
@@ -28,28 +23,14 @@ import * as L from "leaflet";
 export class HomeComponent implements OnInit {
   private store = inject(Store);
   private router = inject(Router);
-  private geoObjectsService = inject(GeoObjectsService);
 
   isAdmin = this.store.selectSignal(AuthState.isAdmin);
   mapContainer = viewChild<ElementRef<HTMLDivElement>>("mapContainer");
 
-  geoObjects = signal<GeoObject[]>([]);
-  selectedObject = signal<GeoObject | null>(null);
-  showObjectModal = signal(false);
-
   private map: L.Map | null = null;
-  private markersLayer: L.LayerGroup | null = null;
 
   ngOnInit(): void {
-    this.geoObjectsService.getAll().subscribe({
-      next: (objects) => {
-        this.geoObjects.set(objects);
-        this.initMap();
-      },
-      error: () => {
-        this.geoObjects.set([]);
-      },
-    });
+    setTimeout(() => this.initMap(), 0);
   }
 
   private initMap(): void {
@@ -71,43 +52,9 @@ export class HomeComponent implements OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
-    this.markersLayer = L.layerGroup().addTo(this.map);
-    this.addMarkers();
-
     setTimeout(() => {
       this.map?.invalidateSize();
-    }, 100);
-  }
-
-  private addMarkers(): void {
-    if (!this.markersLayer) return;
-    this.markersLayer.clearLayers();
-
-    const objects = this.geoObjects();
-    for (const obj of objects) {
-      if (obj.latitude == null || obj.longitude == null) continue;
-
-      const marker = L.marker([obj.latitude, obj.longitude]);
-      marker.bindTooltip(obj.name, {
-        permanent: false,
-        direction: "top",
-        offset: [0, -10],
-      });
-      marker.on("click", () => {
-        this.openObjectDetails(obj);
-      });
-      this.markersLayer!.addLayer(marker);
-    }
-  }
-
-  openObjectDetails(obj: GeoObject): void {
-    this.selectedObject.set(obj);
-    this.showObjectModal.set(true);
-  }
-
-  closeObjectModal(): void {
-    this.showObjectModal.set(false);
-    this.selectedObject.set(null);
+    }, 200);
   }
 
   onLogout(): void {
