@@ -80,10 +80,10 @@ export class HomeComponent implements OnInit {
 
     this.markersLayer = L.layerGroup().addTo(this.map);
     this.createMarkers();
-    this.resolveOverlaps();
+    this.updateVisibleMarkers();
 
     this.map.on("zoomend moveend", () => {
-      setTimeout(() => this.resolveOverlaps(), 50);
+      setTimeout(() => this.updateVisibleMarkers(), 50);
     });
 
     setTimeout(() => {
@@ -113,34 +113,76 @@ export class HomeComponent implements OnInit {
         lat: obj.latitude,
         lng: obj.longitude,
       });
-      this.markersLayer!.addLayer(marker);
     }
   }
 
-  private resolveOverlaps(): void {
+  private updateVisibleMarkers(): void {
     if (!this.map || !this.markersLayer) return;
+    this.markersLayer.clearLayers();
+
+    const zoom = this.map.getZoom();
+    const cellSize = this.getCellSize(zoom);
+    const grid = new Map<string, MarkerData>();
+
+    for (const md of this.allMarkers) {
+      const cellKey = this.getCellKey(md.lat, md.lng, cellSize);
+      if (!grid.has(cellKey)) {
+        grid.set(cellKey, md);
+      }
+    }
+
+    for (const md of grid.values()) {
+      md.marker.setLatLng([md.lat, md.lng]);
+      this.markersLayer!.addLayer(md.marker);
+    }
+
+    this.resolveOverlaps();
+  }
+
+  private getCellSize(zoom: number): number {
+    if (zoom >= 18) return 0.00005;
+    if (zoom >= 17) return 0.0001;
+    if (zoom >= 16) return 0.0003;
+    if (zoom >= 15) return 0.0008;
+    if (zoom >= 14) return 0.002;
+    if (zoom >= 13) return 0.005;
+    if (zoom >= 12) return 0.01;
+    return 0.02;
+  }
+
+  private getCellKey(lat: number, lng: number, cellSize: number): string {
+    const cellX = Math.floor(lat / cellSize);
+    const cellY = Math.floor(lng / cellSize);
+    return `${cellX},${cellY}`;
+  }
+
+  private resolveOverlaps(): void {
+    if (!this.map) return;
 
     const minPx = 52;
     const map = this.map;
+    const visible = this.allMarkers.filter((md) =>
+      this.markersLayer!.hasLayer(md.marker),
+    );
 
-    for (const md of this.allMarkers) {
+    for (const md of visible) {
       md.marker.setLatLng([md.lat, md.lng]);
     }
 
     let changed = true;
     let iterations = 0;
-    const maxIterations = 20;
+    const maxIterations = 10;
 
     while (changed && iterations < maxIterations) {
       changed = false;
       iterations++;
 
-      for (let i = 0; i < this.allMarkers.length; i++) {
-        const a = this.allMarkers[i];
+      for (let i = 0; i < visible.length; i++) {
+        const a = visible[i];
         const pA = map.latLngToContainerPoint(a.marker.getLatLng());
 
-        for (let j = i + 1; j < this.allMarkers.length; j++) {
-          const b = this.allMarkers[j];
+        for (let j = i + 1; j < visible.length; j++) {
+          const b = visible[j];
           const pB = map.latLngToContainerPoint(b.marker.getLatLng());
 
           const dx = pB.x - pA.x;
