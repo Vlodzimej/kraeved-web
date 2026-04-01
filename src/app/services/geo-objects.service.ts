@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, map } from "rxjs";
-import { GeoObject } from "../models/admin/entities.model";
+import { GeoObject, GeoObjectBrief } from "../models/admin/entities.model";
 import { KraevedResponse } from "../models/kraeved-response";
 import { environment } from "../../environments/environment";
 
@@ -10,9 +10,9 @@ export class GeoObjectsService {
   private http = inject(HttpClient);
   private apiUrl = `${environment.apiUrl}/GeoObjects`;
 
-  getAll(): Observable<GeoObject[]> {
+  getAll(): Observable<GeoObjectBrief[]> {
     return this.http
-      .get<KraevedResponse<GeoObject[]>>(this.apiUrl)
+      .get<KraevedResponse<GeoObjectBrief[]>>(this.apiUrl)
       .pipe(map((res) => res.data));
   }
 

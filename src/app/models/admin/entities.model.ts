@@ -16,7 +16,9 @@ export interface GeoObjectBrief {
   id?: number | null;
   name: string;
   shortDescription: string;
-  type?: string | null;
+  typeName?: string | null;
+  typeTitle?: string | null;
+  typeCategoryName?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   thumbnail?: string | null;
@@ -34,6 +36,7 @@ export interface GeoObjectTypeBrief {
   id?: number | null;
   name: string;
   title: string;
+  categoryName?: string | null;
 }
 
 export interface GeoObjectCategory {
@@ -43,17 +46,18 @@ export interface GeoObjectCategory {
 }
 
 export interface HistoricalEvent {
-  id: number;
+  id?: number | null;
   name: string;
   description: string;
+  date: string | null;
   regionId?: number | null;
-  date?: string | null;
-  images: string[];
-  thumbnail: string;
+  images?: string[] | null;
+  thumbnail?: string | null;
 }
 
 export interface HistoricalEventBrief {
   id: number;
   name: string;
-  thumbnail: string;
+  date: string | null;
+  regionId: number | null;
 }

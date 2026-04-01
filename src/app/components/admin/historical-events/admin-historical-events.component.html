@@ -100,7 +100,7 @@
               <td>
                 <button
                   class="btn-delete-icon"
-                  (click)="onDelete(item.id); $event.stopPropagation()"
+                  (click)="onDelete(item.id!); $event.stopPropagation()"
                   title="Удалить"
                 >
                   <svg

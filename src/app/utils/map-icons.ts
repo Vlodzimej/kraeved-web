@@ -1,30 +1,19 @@
 import * as L from "leaflet";
 
-export const typeIconMap: Record<string, string> = {
-  museum: "🏛️",
-  monument: "🗿",
-  church: "⛪",
-  park: "🌳",
-  theater: "🎭",
-  library: "📚",
-  school: "🏫",
-  hospital: "🏥",
-  station: "🚉",
-  bridge: "🌉",
-  building: "🏢",
-  square: "🏙️",
-  memorial: "🕯️",
-  house: "🏠",
-  factory: "🏭",
-  fortress: "🏰",
-  cemetery: "🪦",
-  fountain: "⛲",
-  market: "🏪",
-  stadium: "🏟️",
+export const categoryIconMap: Record<string, string> = {
+  historical_cultural: "🏛️",
+  natural: "🌿",
+  archaeological: "🏺",
+  toponymic: "📍",
+  infrastructure: "🗺️",
 };
 
-export function createTypeIcon(typeName: string | undefined): L.DivIcon {
-  const emoji = typeName ? typeIconMap[typeName.toLowerCase()] : "📍";
+export function createTypeIcon(
+  categoryName: string | undefined,
+): L.DivIcon {
+  const emoji = categoryName
+    ? categoryIconMap[categoryName.toLowerCase()]
+    : "📍";
 
   return L.divIcon({
     html: `<div class="custom-marker">${emoji}</div>`,

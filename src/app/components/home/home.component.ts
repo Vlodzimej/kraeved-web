@@ -12,7 +12,7 @@ import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
 import { GeoObjectsService } from "../../services/geo-objects.service";
-import { GeoObject } from "../../models/admin/entities.model";
+import { GeoObject, GeoObjectBrief } from "../../models/admin/entities.model";
 import { createTypeIcon } from "../../utils/map-icons";
 import * as L from "leaflet";
 
@@ -32,7 +32,7 @@ export class HomeComponent implements OnInit {
   isAdmin = this.store.selectSignal(AuthState.isAdmin);
   mapContainer = viewChild<ElementRef<HTMLDivElement>>("mapContainer");
 
-  geoObjects = signal<GeoObject[]>([]);
+  geoObjects = signal<GeoObjectBrief[]>([]);
   selectedObject = signal<GeoObject | null>(null);
 
   private map: L.Map | null = null;
@@ -82,8 +82,7 @@ export class HomeComponent implements OnInit {
     for (const obj of objects) {
       if (obj.latitude == null || obj.longitude == null) continue;
 
-      const typeName = obj.type?.name;
-      const icon = createTypeIcon(typeName);
+      const icon = createTypeIcon(obj.typeCategoryName ?? undefined);
       const marker = L.marker([obj.latitude, obj.longitude], { icon });
       marker.bindTooltip(obj.name, {
         permanent: false,
@@ -91,10 +90,18 @@ export class HomeComponent implements OnInit {
         offset: [0, -10],
       });
       marker.on("click", () => {
-        this.selectedObject.set(obj);
+        this.loadObjectDetails(obj.id!);
       });
       this.markersLayer!.addLayer(marker);
     }
+  }
+
+  private loadObjectDetails(id: number): void {
+    this.geoObjectsService.getById(id).subscribe({
+      next: (obj) => {
+        this.selectedObject.set(obj);
+      },
+    });
   }
 
   closeObjectModal(): void {

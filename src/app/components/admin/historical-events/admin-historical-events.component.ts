@@ -76,7 +76,7 @@ export class AdminHistoricalEventsComponent implements OnInit {
   });
 
   crud = useAdminCrud<HistoricalEvent>(
-    () => ({ id: 0, name: "", description: "", images: [], thumbnail: "" }),
+    () => ({ id: 0, name: "", description: "", date: null, images: [], thumbnail: "" }),
     (item) => {
       if (!item) return false;
       const formValue = this.form.getRawValue();
@@ -138,11 +138,11 @@ export class AdminHistoricalEventsComponent implements OnInit {
     this.store.dispatch(new LoadHistoricalEvents());
   }
 
-  selectItem(item: HistoricalEventBrief): void {
+  selectItem(item: HistoricalEvent): void {
     this.crud.isNewItem.set(false);
     this.cardLoading.set(true);
     this.service
-      .getById(item.id)
+      .getById(item.id!)
       .pipe(finalize(() => this.cardLoading.set(false)))
       .subscribe({
         next: (data) => {

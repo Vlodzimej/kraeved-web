@@ -114,7 +114,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       (i) =>
         i.name.toLowerCase().includes(query) ||
         (i.shortDescription?.toLowerCase().includes(query) ?? false) ||
-        (i.type?.toLowerCase().includes(query) ?? false),
+        (i.typeTitle?.toLowerCase().includes(query) ?? false),
     );
   });
 
