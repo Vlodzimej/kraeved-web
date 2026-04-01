@@ -86,7 +86,7 @@ export class HomeComponent implements OnInit {
     for (const obj of objects) {
       if (obj.latitude == null || obj.longitude == null) continue;
 
-      const icon = createTypeIcon(obj.typeCategoryName ?? undefined);
+      const icon = createTypeIcon(obj.typeName ?? undefined);
       const marker = L.marker([obj.latitude, obj.longitude], { icon });
       marker.bindTooltip(obj.name, {
         permanent: false,
