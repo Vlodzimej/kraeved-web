@@ -29,6 +29,8 @@ import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dial
 import { AdminCardComponent } from "../shared/card/admin-card.component";
 import { useAdminCrud } from "../shared/use-admin-crud";
 
+const DEFAULT_REGION_ID = 40;
+
 @Component({
   selector: "app-admin-historical-events",
   standalone: true,
@@ -52,7 +54,7 @@ export class AdminHistoricalEventsComponent implements OnInit {
     name: ["", Validators.required],
     description: [""],
     date: [""],
-    regionId: this.fb.control<number | null>(null),
+    regionId: this.fb.control<number | null>({ value: DEFAULT_REGION_ID, disabled: true }),
   });
 
   crud = useAdminCrud<HistoricalEvent>(
@@ -98,8 +100,9 @@ export class AdminHistoricalEventsComponent implements OnInit {
       name: "",
       description: "",
       date: "",
-      regionId: null,
+      regionId: DEFAULT_REGION_ID,
     });
+    this.form.controls.regionId.disable();
   }
 
   closeCard(): void {

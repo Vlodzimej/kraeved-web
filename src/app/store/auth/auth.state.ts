@@ -7,6 +7,7 @@ import { Login, Logout, CheckAuth, LoadCurrentUser } from "./auth.actions";
 import { AuthStateModel, authStateDefaults } from "./auth.model";
 import { KraevedResponse } from "../../models/kraeved-response";
 import { UserOutDto } from "../../models/admin/user.model";
+import { environment } from "../../../environments/environment";
 
 @State<AuthStateModel>({
   name: "auth",
@@ -74,7 +75,7 @@ export class AuthState {
     return this.http
       .get<
         KraevedResponse<UserOutDto>
-      >("http://localhost:5000/api/users/current")
+      >(`${environment.apiUrl}/users/current`)
       .pipe(
         tap((response) => {
           const user = response.data;

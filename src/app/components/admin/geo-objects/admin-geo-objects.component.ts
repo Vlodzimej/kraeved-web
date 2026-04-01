@@ -28,6 +28,8 @@ import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dial
 import { AdminCardComponent } from "../shared/card/admin-card.component";
 import { useAdminCrud } from "../shared/use-admin-crud";
 
+const DEFAULT_REGION_ID = 40;
+
 @Component({
   selector: "app-admin-geo-objects",
   standalone: true,
@@ -53,7 +55,7 @@ export class AdminGeoObjectsComponent implements OnInit {
     shortDescription: [""],
     latitude: this.fb.control<number | null>(null),
     longitude: this.fb.control<number | null>(null),
-    regionId: this.fb.control<number | null>(null),
+    regionId: this.fb.control<number | null>({ value: DEFAULT_REGION_ID, disabled: true }),
     typeId: this.fb.control<number | null>(null),
   });
 
@@ -114,9 +116,10 @@ export class AdminGeoObjectsComponent implements OnInit {
       shortDescription: "",
       latitude: null,
       longitude: null,
-      regionId: null,
+      regionId: DEFAULT_REGION_ID,
       typeId: null,
     });
+    this.form.controls.regionId.disable();
   }
 
   closeCard(): void {
