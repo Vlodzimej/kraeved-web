@@ -1,7 +1,9 @@
 <div class="home-container">
   <header class="home-header">
-    <h1>Краевед</h1>
-    <p>Путеводитель по Калуге</p>
+    <div class="header-left">
+      <h1>Краевед</h1>
+      <p>Путеводитель по Калуге</p>
+    </div>
     <div class="header-actions">
       @if (isAdmin()) {
         <button class="admin-link" (click)="goToAdmin()">Админ-панель</button>
@@ -13,6 +15,57 @@
       }
     </div>
   </header>
+
+  <aside class="filter-panel">
+    <div class="filter-group">
+      <label>Поиск</label>
+      <input
+        type="text"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="searchQuery.set($event)"
+        (keyup.enter)="applyFilters()"
+        placeholder="Название, описание..."
+        class="filter-input"
+      />
+    </div>
+
+    <div class="filter-group">
+      <label>Категория</label>
+      <select
+        [ngModel]="selectedCategory()"
+        (ngModelChange)="selectedCategory.set($event); onCategoryChange()"
+        class="filter-select"
+      >
+        <option [ngValue]="null">Все категории</option>
+        @for (cat of categories(); track cat) {
+          <option [ngValue]="cat">{{ getCategoryTitle(cat) }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label>Тип</label>
+      <select
+        [ngModel]="selectedType()"
+        (ngModelChange)="selectedType.set($event); applyFilters()"
+        class="filter-select"
+      >
+        <option [ngValue]="null">Все типы</option>
+        @for (t of types(); track t[0]) {
+          <option [ngValue]="t[0]">{{ t[1] }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn-apply" (click)="applyFilters()">Применить</button>
+      <button class="btn-clear" (click)="clearFilters()">Сбросить</button>
+    </div>
+
+    <div class="filter-count">
+      Найдено: {{ filteredObjects().length }}
+    </div>
+  </aside>
 
   <main class="home-content">
     <div class="map-wrapper">
