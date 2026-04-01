@@ -27,14 +27,7 @@
   margin-bottom: 16px;
 }
 
-.page-layout {
-  display: flex;
-  gap: 24px;
-  align-items: flex-start;
-}
-
 .table-container {
-  flex: 1;
   background: white;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -102,31 +95,21 @@ code {
   }
 }
 
-.field-group {
-  margin-bottom: 16px;
+.btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background 0.2s;
 
-  label {
-    display: block;
-    font-size: 12px;
-    font-weight: 500;
-    color: #999;
-    text-transform: uppercase;
-    margin-bottom: 4px;
-  }
+  &.btn-info {
+    background: #17a2b8;
+    color: white;
 
-  input,
-  textarea,
-  select {
-    width: 100%;
-    padding: 10px 14px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    transition: border-color 0.2s;
-
-    &:focus {
-      outline: none;
-      border-color: #4a90d9;
+    &:hover {
+      background: #138496;
     }
   }
 }

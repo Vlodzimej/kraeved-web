@@ -34,89 +34,86 @@
     />
   }
 
-  <div class="page-layout">
-    <div class="table-container">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Системное имя</th>
-            <th>Название</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (item of items(); track item.id) {
-            <tr
-              class="table-row"
-              [class.active]="crud.selectedItem()?.id === item.id"
-              (click)="selectItem(item)"
-            >
-              <td>{{ item.id }}</td>
-              <td>
-                <code>{{ item.name }}</code>
-              </td>
-              <td>{{ item.title }}</td>
-              <td>
-                <button
-                  class="btn-delete-icon"
-                  (click)="onDelete(item.id!); $event.stopPropagation()"
-                  title="Удалить"
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Системное имя</th>
+          <th>Название</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of items(); track item.id) {
+          <tr
+            class="table-row"
+            [class.active]="crud.selectedItem()?.id === item.id"
+            (click)="selectItem(item)"
+          >
+            <td>{{ item.id }}</td>
+            <td>
+              <code>{{ item.name }}</code>
+            </td>
+            <td>{{ item.title }}</td>
+            <td>
+              <button
+                class="btn-delete-icon"
+                (click)="onDelete(item.id!); $event.stopPropagation()"
+                title="Удалить"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="18"
-                    height="18"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  >
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path
-                      d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                    ></path>
-                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                  </svg>
-                </button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
+                  <polyline points="3 6 5 6 21 6"></polyline>
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  ></path>
+                  <line x1="10" y1="11" x2="10" y2="17"></line>
+                  <line x1="14" y1="11" x2="14" y2="17"></line>
+                </svg>
+              </button>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <app-admin-card
+    [isOpen]="!!crud.selectedItem()"
+    [title]="crud.isNewItem() ? 'Новая категория' : 'Карточка категории'"
+    (saved)="onSave()"
+    (closed)="closeCard()"
+  >
+    <div class="field-group">
+      <label>Системное имя</label>
+      <input
+        [formControl]="form.controls.name"
+        placeholder="Например: landmark"
+      />
+      @if (form.controls.name.invalid && form.controls.name.touched) {
+        <div class="error-text">Обязательное поле</div>
+      }
     </div>
 
-    @if (crud.selectedItem()) {
-      <app-admin-card
-        [title]="crud.isNewItem() ? 'Новая категория' : 'Карточка категории'"
-        (saved)="onSave()"
-        (closed)="closeCard()"
-      >
-        <div class="field-group">
-          <label>Системное имя</label>
-          <input
-            [formControl]="form.controls.name"
-            placeholder="Например: landmark"
-          />
-          @if (form.controls.name.invalid && form.controls.name.touched) {
-            <div class="error-text">Обязательное поле</div>
-          }
-        </div>
-
-        <div class="field-group">
-          <label>Отображаемое название</label>
-          <input
-            [formControl]="form.controls.title"
-            placeholder="Например: Достопримечательность"
-          />
-          @if (form.controls.title.invalid && form.controls.title.touched) {
-            <div class="error-text">Обязательное поле</div>
-          }
-        </div>
-      </app-admin-card>
-    }
-  </div>
+    <div class="field-group">
+      <label>Отображаемое название</label>
+      <input
+        [formControl]="form.controls.title"
+        placeholder="Например: Достопримечательность"
+      />
+      @if (form.controls.title.invalid && form.controls.title.touched) {
+        <div class="error-text">Обязательное поле</div>
+      }
+    </div>
+  </app-admin-card>
 </div>

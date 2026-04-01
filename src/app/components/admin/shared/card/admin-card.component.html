@@ -1,9 +1,8 @@
-<div class="detail-card">
-  <div class="card-header">
-    <h2>{{ title() }}</h2>
-    <button class="btn-close" (click)="closed.emit()">✕</button>
-  </div>
-
+<app-modal
+  [isOpen]="isOpen()"
+  [title]="title()"
+  (closed)="closed.emit()"
+>
   @if (loading()) {
     <div class="card-loading">Загрузка...</div>
   } @else {
@@ -17,4 +16,4 @@
       </button>
     </div>
   }
-</div>
+</app-modal>
