@@ -66,6 +66,10 @@ export class HomeComponent implements OnInit {
       maxZoom: 20,
     }).addTo(this.map);
 
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png", {
+      maxZoom: 20,
+    }).addTo(this.map);
+
     this.markersLayer = L.layerGroup().addTo(this.map);
     this.addMarkers();
 
