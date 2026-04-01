@@ -16,6 +16,11 @@ import { GeoObject, GeoObjectBrief } from "../../models/admin/entities.model";
 import { createTypeIcon } from "../../utils/map-icons";
 import * as L from "leaflet";
 
+interface MarkerData {
+  obj: GeoObjectBrief;
+  marker: L.Marker;
+}
+
 @Component({
   selector: "app-home",
   standalone: true,
@@ -37,6 +42,7 @@ export class HomeComponent implements OnInit {
 
   private map: L.Map | null = null;
   private markersLayer: L.LayerGroup | null = null;
+  private allMarkers: MarkerData[] = [];
 
   ngOnInit(): void {
     this.geoObjectsService.getAll().subscribe({
@@ -71,17 +77,18 @@ export class HomeComponent implements OnInit {
     }).addTo(this.map);
 
     this.markersLayer = L.layerGroup().addTo(this.map);
-    this.addMarkers();
+    this.createMarkers();
+
+    this.map.on("zoomend", () => this.updateVisibleMarkers());
+    this.updateVisibleMarkers();
 
     setTimeout(() => {
       this.map?.invalidateSize();
     }, 200);
   }
 
-  private addMarkers(): void {
-    if (!this.markersLayer) return;
-    this.markersLayer.clearLayers();
-
+  private createMarkers(): void {
+    this.allMarkers = [];
     const objects = this.geoObjects();
     for (const obj of objects) {
       if (obj.latitude == null || obj.longitude == null) continue;
@@ -96,8 +103,44 @@ export class HomeComponent implements OnInit {
       marker.on("click", () => {
         this.loadObjectDetails(obj.id!);
       });
-      this.markersLayer!.addLayer(marker);
+      this.allMarkers.push({ obj, marker });
     }
+  }
+
+  private updateVisibleMarkers(): void {
+    if (!this.markersLayer || !this.map) return;
+    this.markersLayer.clearLayers();
+
+    const zoom = this.map.getZoom();
+    const cellSize = this.getCellSize(zoom);
+    const grid = new Map<string, MarkerData>();
+
+    for (const md of this.allMarkers) {
+      const cellKey = this.getCellKey(md.obj.latitude!, md.obj.longitude!, cellSize);
+      if (!grid.has(cellKey)) {
+        grid.set(cellKey, md);
+      }
+    }
+
+    for (const md of grid.values()) {
+      this.markersLayer!.addLayer(md.marker);
+    }
+  }
+
+  private getCellSize(zoom: number): number {
+    if (zoom >= 17) return 0.0001;
+    if (zoom >= 16) return 0.0003;
+    if (zoom >= 15) return 0.0008;
+    if (zoom >= 14) return 0.002;
+    if (zoom >= 13) return 0.005;
+    if (zoom >= 12) return 0.01;
+    return 0.02;
+  }
+
+  private getCellKey(lat: number, lng: number, cellSize: number): string {
+    const cellX = Math.floor(lat / cellSize);
+    const cellY = Math.floor(lng / cellSize);
+    return `${cellX},${cellY}`;
   }
 
   private loadObjectDetails(id: number): void {
