@@ -18,8 +18,8 @@ export function createTypeIcon(
   return L.divIcon({
     html: `<div class="custom-marker">${emoji}</div>`,
     className: "custom-marker-wrapper",
-    iconSize: [30, 30],
-    iconAnchor: [15, 15],
-    tooltipAnchor: [0, -15],
+    iconSize: [90, 90],
+    iconAnchor: [45, 45],
+    tooltipAnchor: [0, -45],
   });
 }
