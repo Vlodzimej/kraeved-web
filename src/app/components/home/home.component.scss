@@ -185,39 +185,3 @@
     transform: translateY(0) scale(1);
   }
 }
-
-.custom-marker-wrapper {
-  background: none;
-  border: none;
-  width: 48px;
-  height: 48px;
-}
-
-.marker-bg {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-  transition: transform 0.15s, box-shadow 0.15s;
-  cursor: pointer;
-}
-
-.marker-bg:hover {
-  transform: scale(1.15);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-}
-
-.marker-icon {
-  display: block;
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  min-height: 34px;
-  max-width: 34px;
-  max-height: 34px;
-}
-
