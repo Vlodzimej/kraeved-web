@@ -13,6 +13,7 @@ import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { GeoObject } from "../../models/admin/entities.model";
+import { createTypeIcon } from "../../utils/map-icons";
 import * as L from "leaflet";
 
 @Component({
@@ -81,7 +82,9 @@ export class HomeComponent implements OnInit {
     for (const obj of objects) {
       if (obj.latitude == null || obj.longitude == null) continue;
 
-      const marker = L.marker([obj.latitude, obj.longitude]);
+      const typeName = obj.type?.name;
+      const icon = createTypeIcon(typeName);
+      const marker = L.marker([obj.latitude, obj.longitude], { icon });
       marker.bindTooltip(obj.name, {
         permanent: false,
         direction: "top",
