@@ -77,8 +77,7 @@ export class AdminGeoObjectsComponent implements OnInit {
     name: ["", Validators.required],
     description: [""],
     shortDescription: [""],
-    latitude: this.fb.control<number | null>(null),
-    longitude: this.fb.control<number | null>(null),
+    coordinates: this.fb.control<string>(""),
     regionId: this.fb.control<number | null>({ value: DEFAULT_REGION_ID, disabled: true }),
     typeId: this.fb.control<number | null>(null),
   });
@@ -94,12 +93,15 @@ export class AdminGeoObjectsComponent implements OnInit {
     (item) => {
       if (!item) return false;
       const formValue = this.form.getRawValue();
+      const coords = formValue.coordinates.split(",").map((s) => s.trim());
+      const formLat = coords[0] ? parseFloat(coords[0]) : null;
+      const formLng = coords[1] ? parseFloat(coords[1]) : null;
       return (
         item.name !== formValue.name ||
         item.description !== formValue.description ||
         item.shortDescription !== formValue.shortDescription ||
-        (item.latitude ?? null) !== formValue.latitude ||
-        (item.longitude ?? null) !== formValue.longitude ||
+        (item.latitude ?? null) !== formLat ||
+        (item.longitude ?? null) !== formLng ||
         (item.regionId ?? null) !== formValue.regionId ||
         (item.typeId ?? null) !== formValue.typeId
       );
@@ -171,8 +173,9 @@ export class AdminGeoObjectsComponent implements OnInit {
             name: data.name,
             description: data.description,
             shortDescription: data.shortDescription,
-            latitude: data.latitude ?? null,
-            longitude: data.longitude ?? null,
+            coordinates: data.latitude != null && data.longitude != null
+              ? `${data.latitude}, ${data.longitude}`
+              : "",
             regionId: data.regionId ?? null,
             typeId: data.typeId ?? null,
           });
@@ -186,12 +189,10 @@ export class AdminGeoObjectsComponent implements OnInit {
       name: "",
       description: "",
       shortDescription: "",
-      latitude: null,
-      longitude: null,
+      coordinates: "",
       regionId: DEFAULT_REGION_ID,
       typeId: null,
     });
-    this.form.controls.regionId.disable();
   }
 
   closeCard(): void {
@@ -204,8 +205,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       name: "",
       description: "",
       shortDescription: "",
-      latitude: null,
-      longitude: null,
+      coordinates: "",
       regionId: null,
       typeId: null,
     });
@@ -223,13 +223,14 @@ export class AdminGeoObjectsComponent implements OnInit {
 
     const item = this.crud.selectedItem();
     const formValue = this.form.getRawValue();
+    const coords = formValue.coordinates.split(",").map((s) => s.trim());
     const geoObject: GeoObject = {
       id: item?.id,
       name: formValue.name,
       description: formValue.description,
       shortDescription: formValue.shortDescription,
-      latitude: formValue.latitude,
-      longitude: formValue.longitude,
+      latitude: coords[0] ? parseFloat(coords[0]) : null,
+      longitude: coords[1] ? parseFloat(coords[1]) : null,
       regionId: formValue.regionId,
       typeId: formValue.typeId,
     };

@@ -179,24 +179,13 @@
       ></textarea>
     </div>
 
-    <div class="field-row">
-      <div class="field-group">
-        <label>Широта</label>
-        <input
-          type="number"
-          [formControl]="form.controls.latitude"
-          placeholder="Latitude"
-        />
-      </div>
-
-      <div class="field-group">
-        <label>Долгота</label>
-        <input
-          type="number"
-          [formControl]="form.controls.longitude"
-          placeholder="Longitude"
-        />
-      </div>
+    <div class="field-group">
+      <label>Координаты (широта, долгота)</label>
+      <input
+        type="text"
+        [formControl]="form.controls.coordinates"
+        placeholder="54.5293, 36.2754"
+      />
     </div>
 
     <div class="field-row">
