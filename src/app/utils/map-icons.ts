@@ -58,10 +58,10 @@ export function createTypeIcon(typeName: string | undefined): L.DivIcon {
     : "map_icon_unknown.svg";
 
   return L.divIcon({
-    html: `<img src="${baseIconPath}/${iconFile}" class="marker-icon" alt="${typeName ?? "unknown"}" />`,
+    html: `<div class="marker-bg"><img src="${baseIconPath}/${iconFile}" class="marker-icon" alt="${typeName ?? "unknown"}" /></div>`,
     className: "custom-marker-wrapper",
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    tooltipAnchor: [0, -40],
+    iconSize: [48, 48],
+    iconAnchor: [24, 48],
+    tooltipAnchor: [0, -48],
   });
 }
