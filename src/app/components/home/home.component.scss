@@ -92,7 +92,8 @@
 .filter-panel {
   position: absolute;
   top: 64px;
-  left: 16px;
+  right: 16px;
+  left: auto;
   z-index: 500;
   background: #fff;
   border-radius: 8px;
