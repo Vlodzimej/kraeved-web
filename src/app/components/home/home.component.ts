@@ -3,6 +3,7 @@ import {
   Component,
   inject,
   OnInit,
+  signal,
   viewChild,
   ElementRef,
 } from "@angular/core";
@@ -10,6 +11,8 @@ import { Router } from "@angular/router";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
+import { GeoObjectsService } from "../../services/geo-objects.service";
+import { GeoObject } from "../../models/admin/entities.model";
 import * as L from "leaflet";
 
 @Component({
@@ -23,14 +26,24 @@ import * as L from "leaflet";
 export class HomeComponent implements OnInit {
   private store = inject(Store);
   private router = inject(Router);
+  private geoObjectsService = inject(GeoObjectsService);
 
   isAdmin = this.store.selectSignal(AuthState.isAdmin);
   mapContainer = viewChild<ElementRef<HTMLDivElement>>("mapContainer");
 
+  geoObjects = signal<GeoObject[]>([]);
+  selectedObject = signal<GeoObject | null>(null);
+
   private map: L.Map | null = null;
+  private markersLayer: L.LayerGroup | null = null;
 
   ngOnInit(): void {
-    setTimeout(() => this.initMap(), 0);
+    this.geoObjectsService.getAll().subscribe({
+      next: (objects) => {
+        this.geoObjects.set(objects);
+        setTimeout(() => this.initMap(), 0);
+      },
+    });
   }
 
   private initMap(): void {
@@ -52,9 +65,37 @@ export class HomeComponent implements OnInit {
       maxZoom: 19,
     }).addTo(this.map);
 
+    this.markersLayer = L.layerGroup().addTo(this.map);
+    this.addMarkers();
+
     setTimeout(() => {
       this.map?.invalidateSize();
     }, 200);
+  }
+
+  private addMarkers(): void {
+    if (!this.markersLayer) return;
+    this.markersLayer.clearLayers();
+
+    const objects = this.geoObjects();
+    for (const obj of objects) {
+      if (obj.latitude == null || obj.longitude == null) continue;
+
+      const marker = L.marker([obj.latitude, obj.longitude]);
+      marker.bindTooltip(obj.name, {
+        permanent: false,
+        direction: "top",
+        offset: [0, -10],
+      });
+      marker.on("click", () => {
+        this.selectedObject.set(obj);
+      });
+      this.markersLayer!.addLayer(marker);
+    }
+  }
+
+  closeObjectModal(): void {
+    this.selectedObject.set(null);
   }
 
   onLogout(): void {
