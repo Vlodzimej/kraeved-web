@@ -7,7 +7,13 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -32,7 +38,9 @@ body {
   background: #fff;
   border-radius: 50%;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s;
   cursor: pointer;
 }
 
@@ -51,3 +59,6 @@ body {
   max-height: 34px;
 }
 
+.leaflet-bottom.leaflet-right > svg {
+  display: none !important;
+}

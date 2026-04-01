@@ -19,6 +19,8 @@ import * as L from "leaflet";
 interface MarkerData {
   obj: GeoObjectBrief;
   marker: L.Marker;
+  lat: number;
+  lng: number;
 }
 
 @Component({
@@ -78,9 +80,11 @@ export class HomeComponent implements OnInit {
 
     this.markersLayer = L.layerGroup().addTo(this.map);
     this.createMarkers();
+    this.resolveOverlaps();
 
-    this.map.on("zoomend", () => this.updateVisibleMarkers());
-    this.updateVisibleMarkers();
+    this.map.on("zoomend moveend", () => {
+      setTimeout(() => this.resolveOverlaps(), 50);
+    });
 
     setTimeout(() => {
       this.map?.invalidateSize();
@@ -103,44 +107,77 @@ export class HomeComponent implements OnInit {
       marker.on("click", () => {
         this.loadObjectDetails(obj.id!);
       });
-      this.allMarkers.push({ obj, marker });
+      this.allMarkers.push({
+        obj,
+        marker,
+        lat: obj.latitude,
+        lng: obj.longitude,
+      });
+      this.markersLayer!.addLayer(marker);
     }
   }
 
-  private updateVisibleMarkers(): void {
-    if (!this.markersLayer || !this.map) return;
-    this.markersLayer.clearLayers();
+  private resolveOverlaps(): void {
+    if (!this.map || !this.markersLayer) return;
 
-    const zoom = this.map.getZoom();
-    const cellSize = this.getCellSize(zoom);
-    const grid = new Map<string, MarkerData>();
+    const minPx = 52;
+    const map = this.map;
 
     for (const md of this.allMarkers) {
-      const cellKey = this.getCellKey(md.obj.latitude!, md.obj.longitude!, cellSize);
-      if (!grid.has(cellKey)) {
-        grid.set(cellKey, md);
+      md.marker.setLatLng([md.lat, md.lng]);
+    }
+
+    let changed = true;
+    let iterations = 0;
+    const maxIterations = 20;
+
+    while (changed && iterations < maxIterations) {
+      changed = false;
+      iterations++;
+
+      for (let i = 0; i < this.allMarkers.length; i++) {
+        const a = this.allMarkers[i];
+        const pA = map.latLngToContainerPoint(a.marker.getLatLng());
+
+        for (let j = i + 1; j < this.allMarkers.length; j++) {
+          const b = this.allMarkers[j];
+          const pB = map.latLngToContainerPoint(b.marker.getLatLng());
+
+          const dx = pB.x - pA.x;
+          const dy = pB.y - pA.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < minPx && dist > 0) {
+            changed = true;
+            const push = (minPx - dist) / 2 + 2;
+            const nx = dx / dist;
+            const ny = dy / dist;
+
+            const newA = map.containerPointToLatLng(
+              L.point(pA.x - nx * push, pA.y - ny * push),
+            );
+            const newB = map.containerPointToLatLng(
+              L.point(pB.x + nx * push, pB.y + ny * push),
+            );
+
+            a.marker.setLatLng(newA);
+            b.marker.setLatLng(newB);
+          } else if (dist === 0) {
+            changed = true;
+            const angle = (i * 137.5 * Math.PI) / 180;
+            const r = 30 + iterations * 5;
+            const newA = map.containerPointToLatLng(
+              L.point(pA.x + Math.cos(angle) * r, pA.y + Math.sin(angle) * r),
+            );
+            const newB = map.containerPointToLatLng(
+              L.point(pB.x - Math.cos(angle) * r, pB.y - Math.sin(angle) * r),
+            );
+            a.marker.setLatLng(newA);
+            b.marker.setLatLng(newB);
+          }
+        }
       }
     }
-
-    for (const md of grid.values()) {
-      this.markersLayer!.addLayer(md.marker);
-    }
-  }
-
-  private getCellSize(zoom: number): number {
-    if (zoom >= 17) return 0.0001;
-    if (zoom >= 16) return 0.0003;
-    if (zoom >= 15) return 0.0008;
-    if (zoom >= 14) return 0.002;
-    if (zoom >= 13) return 0.005;
-    if (zoom >= 12) return 0.01;
-    return 0.02;
-  }
-
-  private getCellKey(lat: number, lng: number, cellSize: number): string {
-    const cellX = Math.floor(lat / cellSize);
-    const cellY = Math.floor(lng / cellSize);
-    return `${cellX},${cellY}`;
   }
 
   private loadObjectDetails(id: number): void {
