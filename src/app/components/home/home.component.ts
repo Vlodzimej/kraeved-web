@@ -1,14 +1,12 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   inject,
   OnInit,
   signal,
   viewChild,
   ElementRef,
 } from "@angular/core";
-import { FormsModule } from "@angular/forms";
 import { Router } from "@angular/router";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
@@ -25,18 +23,10 @@ interface MarkerData {
   lng: number;
 }
 
-const categoryTitles: Record<string, string> = {
-  historical_cultural: "Историко-культурное наследие",
-  natural: "Природные объекты",
-  archaeological: "Археологические объекты",
-  toponymic: "Топонимические ориентиры",
-  infrastructure: "Инфраструктура и туризм",
-};
-
 @Component({
   selector: "app-home",
   standalone: true,
-  imports: [FormsModule],
+  imports: [],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -52,54 +42,6 @@ export class HomeComponent implements OnInit {
 
   geoObjects = signal<GeoObjectBrief[]>([]);
   selectedObject = signal<GeoObject | null>(null);
-
-  searchQuery = signal("");
-  selectedCategory = signal<string | null>(null);
-  selectedType = signal<string | null>(null);
-
-  categories = computed(() => {
-    const objects = this.geoObjects();
-    const cats = new Set<string>();
-    for (const obj of objects) {
-      if (obj.typeCategoryName) cats.add(obj.typeCategoryName);
-    }
-    return Array.from(cats).sort();
-  });
-
-  types = computed(() => {
-    const objects = this.geoObjects();
-    const cat = this.selectedCategory();
-    const types = new Map<string, string>();
-    for (const obj of objects) {
-      if (cat && obj.typeCategoryName !== cat) continue;
-      if (obj.typeName && obj.typeTitle) {
-        if (!types.has(obj.typeName)) {
-          types.set(obj.typeName, obj.typeTitle);
-        }
-      }
-    }
-    return Array.from(types.entries()).sort((a, b) => a[1].localeCompare(b[1], "ru"));
-  });
-
-  filteredObjects = computed(() => {
-    const objects = this.geoObjects();
-    const query = this.searchQuery().toLowerCase().trim();
-    const category = this.selectedCategory();
-    const type = this.selectedType();
-
-    return objects.filter((obj) => {
-      if (category && obj.typeCategoryName !== category) return false;
-      if (type && obj.typeName !== type) return false;
-      if (query) {
-        const searchable = [obj.name, obj.shortDescription, obj.typeTitle]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-        if (!searchable.includes(query)) return false;
-      }
-      return true;
-    });
-  });
 
   private map: L.Map | null = null;
   private markersLayer: L.LayerGroup | null = null;
@@ -139,7 +81,11 @@ export class HomeComponent implements OnInit {
 
     this.markersLayer = L.layerGroup().addTo(this.map);
     this.createMarkers();
-    this.applyFilters();
+    this.updateVisibleMarkers();
+
+    this.map.on("zoomend moveend", () => {
+      setTimeout(() => this.updateVisibleMarkers(), 50);
+    });
 
     setTimeout(() => {
       this.map?.invalidateSize();
@@ -171,51 +117,54 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  applyFilters(): void {
+  private updateVisibleMarkers(): void {
     if (!this.map || !this.markersLayer) return;
     this.markersLayer.clearLayers();
 
-    const filtered = this.filteredObjects();
-    const filteredIds = new Set(filtered.map((o) => o.id));
-    const visibleMarkers = this.allMarkers.filter((md) =>
-      filteredIds.has(md.obj.id),
-    );
+    const zoom = this.map.getZoom();
+    const cellSize = this.getCellSize(zoom);
+    const grid = new Map<string, MarkerData>();
 
-    for (const md of visibleMarkers) {
+    for (const md of this.allMarkers) {
+      const cellKey = this.getCellKey(md.lat, md.lng, cellSize);
+      if (!grid.has(cellKey)) {
+        grid.set(cellKey, md);
+      }
+    }
+
+    for (const md of grid.values()) {
       md.marker.setLatLng([md.lat, md.lng]);
       this.markersLayer!.addLayer(md.marker);
     }
 
-    this.fitMapToMarkers(visibleMarkers);
-    if (visibleMarkers.length > 0) {
-      setTimeout(() => this.resolveOverlaps(visibleMarkers), 100);
-    }
+    this.resolveOverlaps();
   }
 
-  private fitMapToMarkers(markers: MarkerData[]): void {
-    if (!this.map) return;
-
-    if (markers.length === 0) {
-      this.map.setView([54.5293, 36.2754], 13);
-      return;
-    }
-
-    if (markers.length === 1) {
-      this.map.setView([markers[0].lat, markers[0].lng], 18);
-      return;
-    }
-
-    const bounds = L.latLngBounds(
-      markers.map((md) => [md.lat, md.lng]),
-    );
-    this.map.fitBounds(bounds, { padding: [60, 60], maxZoom: 17 });
+  private getCellSize(zoom: number): number {
+    if (zoom >= 18) return 0.00005;
+    if (zoom >= 17) return 0.0001;
+    if (zoom >= 16) return 0.0003;
+    if (zoom >= 15) return 0.0008;
+    if (zoom >= 14) return 0.002;
+    if (zoom >= 13) return 0.005;
+    if (zoom >= 12) return 0.01;
+    return 0.02;
   }
 
-  private resolveOverlaps(visible: MarkerData[]): void {
+  private getCellKey(lat: number, lng: number, cellSize: number): string {
+    const cellX = Math.floor(lat / cellSize);
+    const cellY = Math.floor(lng / cellSize);
+    return `${cellX},${cellY}`;
+  }
+
+  private resolveOverlaps(): void {
     if (!this.map) return;
 
     const minPx = 52;
     const map = this.map;
+    const visible = this.allMarkers.filter((md) =>
+      this.markersLayer!.hasLayer(md.marker),
+    );
 
     for (const md of visible) {
       md.marker.setLatLng([md.lat, md.lng]);
@@ -297,21 +246,5 @@ export class HomeComponent implements OnInit {
 
   goToLogin(): void {
     this.router.navigate(["/login"]);
-  }
-
-  clearFilters(): void {
-    this.searchQuery.set("");
-    this.selectedCategory.set(null);
-    this.selectedType.set(null);
-    this.applyFilters();
-  }
-
-  onCategoryChange(): void {
-    this.selectedType.set(null);
-    this.applyFilters();
-  }
-
-  getCategoryTitle(key: string): string {
-    return categoryTitles[key] || key;
   }
 }

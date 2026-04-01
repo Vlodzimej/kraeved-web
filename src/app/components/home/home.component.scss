@@ -15,23 +15,17 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   z-index: 10;
 
-  .header-left {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+  h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
 
-    h1 {
-      margin: 0;
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: #1a1a2e;
-    }
-
-    p {
-      margin: 0;
-      font-size: 0.8125rem;
-      color: #666;
-    }
+  p {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: #666;
   }
 }
 
@@ -89,106 +83,9 @@
   }
 }
 
-.filter-panel {
-  position: absolute;
-  top: 64px;
-  left: 16px;
-  z-index: 500;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
-  padding: 1rem;
-  width: 280px;
-  max-height: calc(100vh - 100px);
-  overflow-y: auto;
-}
-
-.filter-group {
-  margin-bottom: 0.75rem;
-
-  label {
-    display: block;
-    margin-bottom: 0.25rem;
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: #666;
-    text-transform: uppercase;
-  }
-}
-
-.filter-input,
-.filter-select {
-  width: 100%;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 0.875rem;
-  transition: border-color 0.15s;
-
-  &:focus {
-    outline: none;
-    border-color: #2196f3;
-    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.15);
-  }
-}
-
-.filter-select {
-  background: #fff;
-  cursor: pointer;
-}
-
-.filter-actions {
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
-}
-
-.btn-apply {
-  flex: 1;
-  padding: 0.5rem;
-  border: none;
-  background: #2196f3;
-  color: #fff;
-  border-radius: 4px;
-  font-size: 0.8125rem;
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover {
-    background: #1976d2;
-  }
-}
-
-.btn-clear {
-  flex: 1;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  background: #fff;
-  color: #666;
-  border-radius: 4px;
-  font-size: 0.8125rem;
-  cursor: pointer;
-  transition: all 0.15s;
-
-  &:hover {
-    background: #f5f5f5;
-    color: #333;
-  }
-}
-
-.filter-count {
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid #eee;
-  font-size: 0.8125rem;
-  color: #666;
-  text-align: center;
-}
-
 .home-content {
   flex: 1;
   padding: 0;
-  position: relative;
 }
 
 .map-wrapper {
@@ -303,39 +200,4 @@
     opacity: 1;
     transform: translateY(0) scale(1);
   }
-}
-
-.custom-marker-wrapper {
-  background: none;
-  border: none;
-  width: 48px;
-  height: 48px;
-}
-
-.marker-bg {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 48px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
-  transition: transform 0.15s, box-shadow 0.15s;
-  cursor: pointer;
-}
-
-.marker-bg:hover {
-  transform: scale(1.15);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
-}
-
-.marker-icon {
-  display: block;
-  width: 34px;
-  height: 34px;
-  min-width: 34px;
-  min-height: 34px;
-  max-width: 34px;
-  max-height: 34px;
 }
