@@ -189,11 +189,18 @@
 .custom-marker-wrapper {
   background: none;
   border: none;
+  width: 40px;
+  height: 40px;
 }
 
 .marker-icon {
-  width: 64px;
-  height: 64px;
+  display: block;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px;
+  min-height: 40px;
+  max-width: 40px;
+  max-height: 40px;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
   transition: transform 0.15s, filter 0.15s;
   cursor: pointer;

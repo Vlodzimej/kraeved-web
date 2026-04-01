@@ -60,8 +60,8 @@ export function createTypeIcon(typeName: string | undefined): L.DivIcon {
   return L.divIcon({
     html: `<img src="${baseIconPath}/${iconFile}" class="marker-icon" alt="${typeName ?? "unknown"}" />`,
     className: "custom-marker-wrapper",
-    iconSize: [64, 64],
-    iconAnchor: [32, 64],
-    tooltipAnchor: [0, -64],
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    tooltipAnchor: [0, -40],
   });
 }
