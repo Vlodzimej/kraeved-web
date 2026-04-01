@@ -41,10 +41,7 @@ export class LoginComponent {
       )
       .subscribe({
         next: () => {
-          const isAdmin = this.store.selectSnapshot(
-            (state: any) => state.auth.isAdmin,
-          );
-          this.router.navigate([isAdmin ? "/admin" : "/home"]);
+          this.router.navigate(["/home"]);
         },
         error: (err: HttpErrorResponse) => {
           if (err.status === 401) {
