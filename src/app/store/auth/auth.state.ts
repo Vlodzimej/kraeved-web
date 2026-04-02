@@ -41,9 +41,8 @@ export class AuthState {
   @Action(Login)
   login(ctx: StateContext<AuthStateModel>, { email, password }: Login) {
     return this.authService.login({ email, password }).pipe(
-      tap((data) => {
+      tap(() => {
         ctx.patchState({
-          token: data.token,
           isAuthenticated: true,
         });
       }),
@@ -52,35 +51,27 @@ export class AuthState {
 
   @Action(Logout)
   logout(ctx: StateContext<AuthStateModel>) {
-    this.authService.logout();
-    ctx.patchState({
-      token: null,
-      isAuthenticated: false,
-      currentUser: null,
-      isAdmin: false,
-    });
+    return this.authService.logout().pipe(
+      tap(() => {
+        ctx.patchState({
+          token: null,
+          isAuthenticated: false,
+          currentUser: null,
+          isAdmin: false,
+        });
+      }),
+    );
   }
 
   @Action(CheckAuth)
   checkAuth(ctx: StateContext<AuthStateModel>) {
-    const token = this.authService.getToken();
     ctx.patchState({
-      token,
-      isAuthenticated: !!token,
+      isAuthenticated: true,
     });
   }
 
   @Action(LoadCurrentUser)
   loadCurrentUser(ctx: StateContext<AuthStateModel>) {
-    const token = ctx.getState().token;
-    if (!token) {
-      ctx.patchState({
-        currentUser: null,
-        isAdmin: false,
-      });
-      return;
-    }
-
     return this.http
       .get<
         KraevedResponse<UserOutDto>
@@ -91,6 +82,7 @@ export class AuthState {
           ctx.patchState({
             currentUser: user,
             isAdmin: user?.role === "ADMIN",
+            isAuthenticated: true,
           });
         }),
         catchError(() => {

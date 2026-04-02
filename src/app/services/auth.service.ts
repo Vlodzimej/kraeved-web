@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { map } from "rxjs/operators";
 import { LoginInDto } from "../models/login-in-dto";
 import { LoginOutDto } from "../models/login-out-dto";
 import { KraevedResponse } from "../models/kraeved-response";
@@ -9,7 +9,6 @@ import { environment } from "../../environments/environment";
 
 @Injectable({ providedIn: "root" })
 export class AuthService {
-  private readonly TOKEN_KEY = "auth_token";
   private apiUrl = `${environment.apiUrl}/auth`;
   private http = inject(HttpClient);
 
@@ -23,19 +22,14 @@ export class AuthService {
           }
           return response.data;
         }),
-        tap((data) => {
-          if (data.token) {
-            localStorage.setItem(this.TOKEN_KEY, data.token);
-          }
-        }),
       );
   }
 
-  logout(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/logout`, {});
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return null;
   }
 }
