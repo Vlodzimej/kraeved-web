@@ -85,7 +85,7 @@
                 @for (img of selectedObject()?.images; track img) {
                   <div
                     class="carousel-item"
-                    (click)="openImagePreview(img)"
+                    (click)="openImagePreview(img, selectedObject()?.images ?? [])"
                   >
                     <img [src]="thumbnailUrl(img)" [alt]="img" />
                   </div>
@@ -104,7 +104,7 @@
         <div class="modal-header">
           @if (selectedPerson()?.photos && selectedPerson()!.photos!.length > 0) {
             <img
-              class="modal-thumbnail"
+              class="modal-person-photo"
               [src]="thumbnailUrl(selectedPerson()!.photos![0])"
               [alt]="selectedPerson()?.surname"
             />
@@ -139,7 +139,7 @@
                 @for (img of selectedPerson()?.photos; track img) {
                   <div
                     class="carousel-item"
-                    (click)="openImagePreview(img)"
+                    (click)="openImagePreview(img, selectedPerson()?.photos ?? [])"
                   >
                     <img [src]="thumbnailUrl(img)" [alt]="img" />
                   </div>
@@ -173,11 +173,11 @@
         <img class="preview-image" [src]="previewUrl(previewImage() ?? '')" [alt]="previewImage()" />
 
         <div class="preview-counter">
-          {{ previewImageIndex() + 1 }} / {{ selectedObject()?.images?.length ?? 0 }}
+          {{ previewImageIndex() + 1 }} / {{ previewImages().length }}
         </div>
       </div>
 
-      @if (previewImageIndex() < (selectedObject()?.images?.length ?? 0) - 1) {
+      @if (previewImageIndex() < previewImages().length - 1) {
         <button class="preview-nav preview-nav-next" (click)="nextImage(); $event.stopPropagation()" aria-label="Следующее">
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 18 15 12 9 6"></polyline>

@@ -144,6 +144,14 @@
   flex-shrink: 0;
 }
 
+.modal-person-photo {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
 .modal-title {
   margin: 0;
   flex: 1;

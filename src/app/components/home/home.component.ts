@@ -50,6 +50,7 @@ export class HomeComponent implements OnInit {
   selectedPerson = signal<Person | null>(null);
   previewImage = signal<string | null>(null);
   previewImageIndex = signal(0);
+  previewImages = signal<string[]>([]);
 
   private map: L.Map | null = null;
   private markersLayer: L.LayerGroup | null = null;
@@ -315,20 +316,22 @@ export class HomeComponent implements OnInit {
   previewUrl = (name: string): string =>
     `${environment.apiUrl}/Images/preview/${name}`;
 
-  openImagePreview(filename: string): void {
-    const images = this.selectedObject()?.images ?? [];
-    const index = images.indexOf(filename);
+  openImagePreview(filename: string, images?: string[]): void {
+    const imgList = images ?? [];
+    const index = imgList.indexOf(filename);
     this.previewImage.set(filename);
     this.previewImageIndex.set(index >= 0 ? index : 0);
+    this.previewImages.set(imgList);
   }
 
   closeImagePreview(): void {
     this.previewImage.set(null);
     this.previewImageIndex.set(0);
+    this.previewImages.set([]);
   }
 
   prevImage(): void {
-    const images = this.selectedObject()?.images ?? [];
+    const images = this.previewImages();
     if (this.previewImageIndex() > 0) {
       const newIndex = this.previewImageIndex() - 1;
       this.previewImageIndex.set(newIndex);
@@ -337,7 +340,7 @@ export class HomeComponent implements OnInit {
   }
 
   nextImage(): void {
-    const images = this.selectedObject()?.images ?? [];
+    const images = this.previewImages();
     if (this.previewImageIndex() < images.length - 1) {
       const newIndex = this.previewImageIndex() + 1;
       this.previewImageIndex.set(newIndex);
