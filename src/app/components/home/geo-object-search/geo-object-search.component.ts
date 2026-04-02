@@ -31,6 +31,7 @@ export class GeoObjectSearchComponent {
 
   selectObject = output<GeoObjectBrief>();
   openObjectDetails = output<GeoObjectBrief>();
+  panelClosed = output<void>();
 
   isOpen = signal(false);
   searchText = signal("");
@@ -74,6 +75,9 @@ export class GeoObjectSearchComponent {
   }
 
   togglePanel(): void {
+    if (this.isOpen()) {
+      this.panelClosed.emit();
+    }
     this.isOpen.set(!this.isOpen());
     if (!this.isOpen()) {
       this.clearFilters();
@@ -83,6 +87,7 @@ export class GeoObjectSearchComponent {
   clearFilters(): void {
     if (!this.searchText() && this.selectedTypeId() === null) {
       this.isOpen.set(false);
+      this.panelClosed.emit();
       return;
     }
     this.searchText.set("");

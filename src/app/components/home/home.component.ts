@@ -47,6 +47,7 @@ export class HomeComponent implements OnInit {
   private map: L.Map | null = null;
   private markersLayer: L.LayerGroup | null = null;
   private allMarkers: MarkerData[] = [];
+  private highlightedMarker: MarkerData | null = null;
 
   ngOnInit(): void {
     this.geoObjectsService.getAll().subscribe({
@@ -252,11 +253,38 @@ export class HomeComponent implements OnInit {
   onSearchSelectObject(obj: GeoObjectBrief): void {
     if (obj.latitude == null || obj.longitude == null || !this.map) return;
     this.map.setView([obj.latitude, obj.longitude], 16, { animate: true });
+    this.highlightMarker(obj);
   }
 
   onSearchOpenDetails(obj: GeoObjectBrief): void {
     if (obj.id != null) {
       this.loadObjectDetails(obj.id);
+    }
+  }
+
+  onSearchPanelClosed(): void {
+    this.clearHighlight();
+  }
+
+  private highlightMarker(obj: GeoObjectBrief): void {
+    this.clearHighlight();
+    const md = this.allMarkers.find((m) => m.obj.id === obj.id);
+    if (!md) return;
+
+    const el = (md.marker as any)._icon as HTMLElement | undefined;
+    if (el) {
+      el.classList.add("marker-highlight");
+    }
+    this.highlightedMarker = md;
+  }
+
+  private clearHighlight(): void {
+    if (this.highlightedMarker) {
+      const el = (this.highlightedMarker.marker as any)._icon as HTMLElement | undefined;
+      if (el) {
+        el.classList.remove("marker-highlight");
+      }
+      this.highlightedMarker = null;
     }
   }
 }

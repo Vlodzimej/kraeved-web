@@ -105,6 +105,18 @@
   z-index: 1000;
 }
 
+::ng-deep .marker-highlight {
+  outline: 3px solid #2196f3;
+  outline-offset: 4px;
+  border-radius: 50%;
+  animation: markerPulse 1s ease-in-out infinite;
+}
+
+@keyframes markerPulse {
+  0%, 100% { outline-color: #2196f3; }
+  50% { outline-color: #64b5f6; }
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
