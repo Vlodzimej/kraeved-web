@@ -1,0 +1,70 @@
+<div class="search-wrapper">
+  <button
+    class="search-toggle-btn"
+    (click)="togglePanel()"
+    [class.active]="isOpen()"
+    aria-label="Поиск по объектам"
+  >
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+  </button>
+
+  @if (isOpen()) {
+    <div class="search-panel">
+      <div class="search-filters">
+        <div class="filter-row">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Поиск по названию, описанию..."
+            [value]="searchText()"
+            (input)="onSearchInput($any($event.target).value)"
+          />
+          <button class="clear-btn" (click)="clearFilters()" aria-label="Очистить">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="filter-row">
+          <select
+            class="filter-select"
+            [value]="selectedTypeId() ?? ''"
+            (change)="onTypeChange($any($event.target).value)"
+          >
+            <option value="">Все типы</option>
+            @for (type of geoObjectTypes(); track type.id) {
+              <option [value]="type.id">{{ type.title }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="search-results">
+        @if (filteredResults().length === 0 && (searchText() || selectedTypeId())) {
+          <div class="no-results">Ничего не найдено</div>
+        } @else {
+          @for (result of filteredResults(); track trackByResult($index, result)) {
+            <div
+              class="result-item"
+              (click)="onResultClick(result)"
+              (dblclick)="onResultDblClick(result)"
+            >
+              <div class="result-name">{{ result.obj.name }}</div>
+              @if (result.obj.typeTitle) {
+                <div class="result-type">{{ result.obj.typeTitle }}</div>
+              }
+              @if (result.obj.shortDescription) {
+                <div class="result-desc">{{ result.obj.shortDescription | slice:0:80 }}{{ result.obj.shortDescription.length > 80 ? '...' : '' }}</div>
+              }
+            </div>
+          }
+        }
+      </div>
+    </div>
+  }
+</div>

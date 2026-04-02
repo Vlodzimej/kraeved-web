@@ -14,6 +14,7 @@ import { Logout } from "../../store/auth/auth.actions";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { GeoObject, GeoObjectBrief } from "../../models/admin/entities.model";
 import { createTypeIcon } from "../../utils/map-icons";
+import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
 import * as L from "leaflet";
 
 interface MarkerData {
@@ -26,7 +27,7 @@ interface MarkerData {
 @Component({
   selector: "app-home",
   standalone: true,
-  imports: [],
+  imports: [GeoObjectSearchComponent],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -246,5 +247,16 @@ export class HomeComponent implements OnInit {
 
   goToLogin(): void {
     this.router.navigate(["/login"]);
+  }
+
+  onSearchSelectObject(obj: GeoObjectBrief): void {
+    if (obj.latitude == null || obj.longitude == null || !this.map) return;
+    this.map.setView([obj.latitude, obj.longitude], 16, { animate: true });
+  }
+
+  onSearchOpenDetails(obj: GeoObjectBrief): void {
+    if (obj.id != null) {
+      this.loadObjectDetails(obj.id);
+    }
   }
 }

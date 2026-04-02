@@ -16,6 +16,7 @@ export interface GeoObjectBrief {
   id?: number | null;
   name: string;
   shortDescription: string;
+  typeId?: number | null;
   typeName?: string | null;
   typeTitle?: string | null;
   typeCategoryName?: string | null;

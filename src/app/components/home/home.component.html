@@ -17,6 +17,12 @@
   <main class="home-content">
     <div class="map-wrapper">
       <div class="map-container" #mapContainer></div>
+      <div class="search-map-control">
+        <app-geo-object-search
+          (selectObject)="onSearchSelectObject($event)"
+          (openObjectDetails)="onSearchOpenDetails($event)"
+        ></app-geo-object-search>
+      </div>
     </div>
   </main>
 

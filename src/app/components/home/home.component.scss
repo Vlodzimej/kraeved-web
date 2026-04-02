@@ -98,6 +98,13 @@
   height: 100%;
 }
 
+.search-map-control {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 1000;
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
