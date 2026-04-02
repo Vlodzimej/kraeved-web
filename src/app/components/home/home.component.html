@@ -60,7 +60,7 @@
               <label>Персоналии</label>
               <div class="persons-carousel">
                 @for (person of selectedObjectPersons(); track person.id) {
-                  <div class="person-card">
+                  <div class="person-card" (click)="openPersonDetails(person.id!)">
                     @if (person.photos && person.photos.length > 0) {
                       <img [src]="thumbnailUrl(person.photos[0])" [alt]="person.surname" />
                     } @else {
@@ -83,6 +83,60 @@
               <label>Изображения</label>
               <div class="carousel">
                 @for (img of selectedObject()?.images; track img) {
+                  <div
+                    class="carousel-item"
+                    (click)="openImagePreview(img)"
+                  >
+                    <img [src]="thumbnailUrl(img)" [alt]="img" />
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (selectedPerson()) {
+    <div class="modal-backdrop" (click)="closePersonModal()">
+      <div class="modal-container" (click)="$event.stopPropagation()">
+        <div class="modal-header">
+          @if (selectedPerson()?.photos && selectedPerson()!.photos!.length > 0) {
+            <img
+              class="modal-thumbnail"
+              [src]="thumbnailUrl(selectedPerson()!.photos![0])"
+              [alt]="selectedPerson()?.surname"
+            />
+          }
+          <h2 class="modal-title">{{ getPersonFullName(selectedPerson()) }}</h2>
+          <button class="modal-close" (click)="closePersonModal()" aria-label="Закрыть">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          @if (selectedPerson()?.birthDate || selectedPerson()?.deathDate) {
+            <div class="detail-section">
+              <label>Годы жизни</label>
+              <span>{{ formatDate(selectedPerson()?.birthDate) }} — {{ formatDate(selectedPerson()?.deathDate) }}</span>
+            </div>
+          }
+
+          @if (selectedPerson()?.biography) {
+            <div class="detail-section">
+              <label>Биография</label>
+              <p>{{ selectedPerson()?.biography }}</p>
+            </div>
+          }
+
+          @if (selectedPerson()?.photos && selectedPerson()!.photos!.length > 0) {
+            <div class="detail-section">
+              <label>Фотографии</label>
+              <div class="carousel">
+                @for (img of selectedPerson()?.photos; track img) {
                   <div
                     class="carousel-item"
                     (click)="openImagePreview(img)"

@@ -12,7 +12,8 @@ import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
 import { GeoObjectsService } from "../../services/geo-objects.service";
-import { GeoObject, GeoObjectBrief, PersonBrief } from "../../models/admin/entities.model";
+import { AdminPersonsService } from "../../services/admin/admin-persons.service";
+import { GeoObject, GeoObjectBrief, Person, PersonBrief } from "../../models/admin/entities.model";
 import { createTypeIcon } from "../../utils/map-icons";
 import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
 import { environment } from "../../../environments/environment";
@@ -37,6 +38,7 @@ export class HomeComponent implements OnInit {
   private store = inject(Store);
   private router = inject(Router);
   private geoObjectsService = inject(GeoObjectsService);
+  private personsService = inject(AdminPersonsService);
 
   isAdmin = this.store.selectSignal(AuthState.isAdmin);
   isAuthenticated = this.store.selectSignal(AuthState.isAuthenticated);
@@ -45,6 +47,7 @@ export class HomeComponent implements OnInit {
   geoObjects = signal<GeoObjectBrief[]>([]);
   selectedObject = signal<GeoObject | null>(null);
   selectedObjectPersons = signal<PersonBrief[]>([]);
+  selectedPerson = signal<Person | null>(null);
   previewImage = signal<string | null>(null);
   previewImageIndex = signal(0);
 
@@ -281,6 +284,26 @@ export class HomeComponent implements OnInit {
 
   closeObjectModal(): void {
     this.selectedObject.set(null);
+  }
+
+  openPersonDetails(personId: number): void {
+    this.personsService.getById(personId).subscribe({
+      next: (person) => this.selectedPerson.set(person),
+    });
+  }
+
+  closePersonModal(): void {
+    this.selectedPerson.set(null);
+  }
+
+  getPersonFullName(person: Person | null): string {
+    if (!person) return "";
+    return [person.surname, person.firstName, person.patronymic].filter(Boolean).join(" ");
+  }
+
+  formatDate(date: string | null | undefined): string {
+    if (!date) return "—";
+    return new Date(date).toLocaleDateString("ru-RU", { year: "numeric" });
   }
 
   imageUrl = (name: string): string =>

@@ -63,4 +63,10 @@ export class AdminPersonsService {
       .get<KraevedResponse<Person[]>>(`${this.apiUrl}/geo-object/${geoObjectId}`)
       .pipe(map((res) => res.data));
   }
+
+  getPersonById(id: number): Observable<Person> {
+    return this.http
+      .get<KraevedResponse<Person>>(`${this.apiUrl}/${id}`)
+      .pipe(map((res) => res.data));
+  }
 }
