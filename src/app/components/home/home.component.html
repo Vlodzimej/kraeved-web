@@ -84,6 +84,14 @@
 
   @if (previewImage()) {
     <div class="image-preview-backdrop" (click)="closeImagePreview()" (keydown.arrowleft)="prevImage()" (keydown.arrowright)="nextImage()" tabindex="0">
+      @if (previewImageIndex() > 0) {
+        <button class="preview-nav preview-nav-prev" (click)="prevImage(); $event.stopPropagation()" aria-label="Предыдущее">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+      }
+
       <div class="image-preview-container" (click)="$event.stopPropagation()">
         <button class="preview-close" (click)="closeImagePreview()" aria-label="Закрыть">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -92,28 +100,20 @@
           </svg>
         </button>
 
-        @if (previewImageIndex() > 0) {
-          <button class="preview-nav preview-nav-prev" (click)="prevImage()" aria-label="Предыдущее">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-        }
-
         <img class="preview-image" [src]="imageUrl(previewImage() ?? '')" [alt]="previewImage()" />
-
-        @if (previewImageIndex() < (selectedObject()?.images?.length ?? 0) - 1) {
-          <button class="preview-nav preview-nav-next" (click)="nextImage()" aria-label="Следующее">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
-        }
 
         <div class="preview-counter">
           {{ previewImageIndex() + 1 }} / {{ selectedObject()?.images?.length ?? 0 }}
         </div>
       </div>
+
+      @if (previewImageIndex() < (selectedObject()?.images?.length ?? 0) - 1) {
+        <button class="preview-nav preview-nav-next" (click)="nextImage(); $event.stopPropagation()" aria-label="Следующее">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      }
     </div>
   }
 </div>

@@ -289,7 +289,7 @@
 }
 
 .preview-nav {
-  position: absolute;
+  position: fixed;
   top: 50%;
   transform: translateY(-50%);
   background: rgba(255, 255, 255, 0.15);
@@ -303,18 +303,18 @@
   align-items: center;
   justify-content: center;
   transition: background 0.15s;
-  z-index: 10;
+  z-index: 2010;
 
   &:hover {
     background: rgba(255, 255, 255, 0.3);
   }
 
   &.preview-nav-prev {
-    left: -64px;
+    left: 16px;
   }
 
   &.preview-nav-next {
-    right: -64px;
+    right: 16px;
   }
 }
 
