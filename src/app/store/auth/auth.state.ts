@@ -72,6 +72,15 @@ export class AuthState {
 
   @Action(LoadCurrentUser)
   loadCurrentUser(ctx: StateContext<AuthStateModel>) {
+    const token = ctx.getState().token;
+    if (!token) {
+      ctx.patchState({
+        currentUser: null,
+        isAdmin: false,
+      });
+      return;
+    }
+
     return this.http
       .get<
         KraevedResponse<UserOutDto>
@@ -86,10 +95,12 @@ export class AuthState {
         }),
         catchError(() => {
           ctx.patchState({
+            token: null,
+            isAuthenticated: false,
             currentUser: null,
             isAdmin: false,
           });
-          throw new Error("Failed to load user info");
+          return [];
         }),
       );
   }
