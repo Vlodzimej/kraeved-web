@@ -46,8 +46,9 @@ export class HomeComponent implements OnInit {
 
   private map: L.Map | null = null;
   private markersLayer: L.LayerGroup | null = null;
+  private highlightLayer: L.LayerGroup | null = null;
   private allMarkers: MarkerData[] = [];
-  private highlightedMarker: MarkerData | null = null;
+  private _highlightedMarkerId: number | null = null;
 
   ngOnInit(): void {
     this.geoObjectsService.getAll().subscribe({
@@ -82,11 +83,15 @@ export class HomeComponent implements OnInit {
     }).addTo(this.map);
 
     this.markersLayer = L.layerGroup().addTo(this.map);
+    this.highlightLayer = L.layerGroup().addTo(this.map);
     this.createMarkers();
     this.updateVisibleMarkers();
 
     this.map.on("zoomend moveend", () => {
-      setTimeout(() => this.updateVisibleMarkers(), 50);
+      setTimeout(() => {
+        this.updateVisibleMarkers();
+        this.reapplyHighlight();
+      }, 50);
     });
 
     setTimeout(() => {
@@ -140,6 +145,7 @@ export class HomeComponent implements OnInit {
     }
 
     this.resolveOverlaps();
+    this.reapplyHighlight();
   }
 
   private getCellSize(zoom: number): number {
@@ -252,8 +258,12 @@ export class HomeComponent implements OnInit {
 
   onSearchSelectObject(obj: GeoObjectBrief): void {
     if (obj.latitude == null || obj.longitude == null || !this.map) return;
+    this.clearHighlight();
+
+    this._highlightedMarkerId = obj.id ?? null;
+    this._pendingHighlightId = obj.id ?? null;
+
     this.map.setView([obj.latitude, obj.longitude], 16, { animate: true });
-    this.highlightMarker(obj);
   }
 
   onSearchOpenDetails(obj: GeoObjectBrief): void {
@@ -266,25 +276,62 @@ export class HomeComponent implements OnInit {
     this.clearHighlight();
   }
 
-  private highlightMarker(obj: GeoObjectBrief): void {
+  onSearchResultsChanged(): void {
     this.clearHighlight();
+  }
+
+  private _pendingHighlightId: number | null = null;
+
+  private applyPendingHighlight(): void {
+    if (this._pendingHighlightId !== null) {
+      const obj = this.geoObjects().find((o) => o.id === this._pendingHighlightId);
+      if (obj) {
+        this._applyHighlightToMarker(obj);
+      }
+    }
+  }
+
+  private _applyHighlightToMarker(obj: GeoObjectBrief): void {
+    this._pendingHighlightId = null;
     const md = this.allMarkers.find((m) => m.obj.id === obj.id);
     if (!md) return;
 
-    const el = (md.marker as any)._icon as HTMLElement | undefined;
-    if (el) {
-      el.classList.add("marker-highlight");
-    }
-    this.highlightedMarker = md;
+    this._highlightedMarkerId = obj.id ?? null;
+    this.highlightLayer?.clearLayers();
+    const circle = L.circleMarker([md.lat, md.lng], {
+      radius: 22,
+      color: "#2196f3",
+      fillColor: "transparent",
+      fillOpacity: 0,
+      weight: 3,
+      className: "highlight-ring",
+    });
+    this.highlightLayer!.addLayer(circle);
   }
 
   private clearHighlight(): void {
-    if (this.highlightedMarker) {
-      const el = (this.highlightedMarker.marker as any)._icon as HTMLElement | undefined;
-      if (el) {
-        el.classList.remove("marker-highlight");
+    this._pendingHighlightId = null;
+    this._highlightedMarkerId = null;
+    this.highlightLayer?.clearLayers();
+  }
+
+  private reapplyHighlight(): void {
+    if (this._highlightedMarkerId !== null) {
+      const obj = this.geoObjects().find((o) => o.id === this._highlightedMarkerId);
+      if (obj) {
+        this.highlightLayer?.clearLayers();
+        const md = this.allMarkers.find((m) => m.obj.id === obj.id);
+        if (md) {
+          const circle = L.circleMarker([md.lat, md.lng], {
+            radius: 22,
+            color: "#2196f3",
+            fillColor: "transparent",
+            fillOpacity: 0,
+            weight: 3,
+          });
+          this.highlightLayer!.addLayer(circle);
+        }
       }
-      this.highlightedMarker = null;
     }
   }
 }
