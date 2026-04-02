@@ -59,6 +59,9 @@ body {
   max-height: 34px;
 }
 
-.leaflet-bottom.leaflet-right > svg {
-  display: none !important;
+.leaflet-bottom.leaflet-right {
+  svg {
+    display: none !important;
+  }
 }
+

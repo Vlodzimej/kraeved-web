@@ -73,6 +73,12 @@ export class HomeComponent implements OnInit {
     this.map = L.map(container.nativeElement, {
       zoomControl: true,
       scrollWheelZoom: true,
+      minZoom: 8,
+      maxBounds: [
+        [53.0, 33.0],
+        [56.0, 38.0],
+      ],
+      maxBoundsViscosity: 0.8,
     }).setView([54.5293, 36.2754], 13);
 
     L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png", {
