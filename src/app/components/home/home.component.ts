@@ -97,8 +97,6 @@ export class HomeComponent implements OnInit {
     this.createMarkers();
     this.updateVisibleMarkers();
 
-    this.drawKalugaBorder();
-
     this.map.on("zoomend moveend", () => {
       setTimeout(() => {
         this.updateVisibleMarkers();
@@ -132,26 +130,6 @@ export class HomeComponent implements OnInit {
       fillOpacity: 0.5,
       weight: 0,
       interactive: false,
-    }).addTo(this.map!);
-  }
-
-  private drawKalugaBorder(): void {
-    const kalugaBounds: L.LatLngTuple[] = [
-      [53.0, 33.0],
-      [56.0, 33.0],
-      [56.0, 38.0],
-      [53.0, 38.0],
-    ];
-
-    this.map!.createPane("borderPane");
-    this.map!.getPane("borderPane")!.style.zIndex = "650";
-
-    L.polyline([...kalugaBounds, kalugaBounds[0]], {
-      color: "#2196f3",
-      weight: 3,
-      opacity: 0.8,
-      interactive: false,
-      pane: "borderPane",
     }).addTo(this.map!);
   }
 
