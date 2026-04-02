@@ -327,6 +327,22 @@
   font-size: 14px;
 }
 
+.persons-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.person-chip {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #e3f2fd;
+  color: #1565c0;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }

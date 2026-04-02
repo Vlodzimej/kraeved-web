@@ -28,13 +28,16 @@ import {
   GeoObject,
   GeoObjectBrief,
   GeoObjectType,
+  Person,
 } from "../../../models/admin/entities.model";
 import { AdminGeoObjectsService } from "../../../services/admin/admin-geo-objects.service";
+import { AdminPersonsService } from "../../../services/admin/admin-persons.service";
 import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dialog.component";
 import { AdminCardComponent } from "../shared/card/admin-card.component";
 import { PaginationComponent } from "../../shared/pagination/pagination.component";
 import { SortableHeaderComponent, SortDirection } from "../../shared/sortable-header/sortable-header.component";
 import { ImageUploaderComponent } from "../../shared/image-uploader/image-uploader.component";
+import { PersonSearchComponent } from "../persons/person-search/person-search.component";
 import { useAdminCrud } from "../shared/use-admin-crud";
 
 const DEFAULT_REGION_ID = 40;
@@ -51,6 +54,7 @@ const DEFAULT_REGION_ID = 40;
     PaginationComponent,
     SortableHeaderComponent,
     ImageUploaderComponent,
+    PersonSearchComponent,
   ],
   templateUrl: "./admin-geo-objects.component.html",
   styleUrl: "./admin-geo-objects.component.scss",
@@ -59,6 +63,7 @@ const DEFAULT_REGION_ID = 40;
 export class AdminGeoObjectsComponent implements OnInit {
   private store = inject(Store);
   private service = inject(AdminGeoObjectsService);
+  private personsService = inject(AdminPersonsService);
   private fb = inject(NonNullableFormBuilder);
 
   items = this.store.selectSignal(GeoObjectsState.items);
@@ -70,6 +75,7 @@ export class AdminGeoObjectsComponent implements OnInit {
   cardLoading = signal(false);
 
   images = signal<string[]>([]);
+  linkedPersons = signal<Person[]>([]);
 
   searchQuery = signal("");
   currentPage = signal(1);
@@ -184,6 +190,7 @@ export class AdminGeoObjectsComponent implements OnInit {
             regionId: data.regionId ?? null,
             typeId: data.typeId ?? null,
           });
+          this.loadLinkedPersons(data.id!);
         },
       });
   }
@@ -191,6 +198,7 @@ export class AdminGeoObjectsComponent implements OnInit {
   openCreate(): void {
     this.crud.openCreate();
     this.images.set([]);
+    this.linkedPersons.set([]);
     this.form.reset({
       name: "",
       description: "",
@@ -208,6 +216,7 @@ export class AdminGeoObjectsComponent implements OnInit {
   confirmClose(): void {
     this.crud.confirmClose();
     this.images.set([]);
+    this.linkedPersons.set([]);
     this.form.reset({
       name: "",
       description: "",
@@ -291,5 +300,40 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   onImagesChange(images: string[]): void {
     this.images.set(images);
+  }
+
+  onPersonSelected(person: Person): void {
+    const geoObjectId = this.crud.selectedItem()?.id;
+    if (!geoObjectId) return;
+    const alreadyLinked = this.linkedPersons().some((p) => p.id === person.id);
+    if (alreadyLinked) return;
+
+    this.personsService.link(person.id!, geoObjectId).subscribe({
+      next: () => {
+        this.linkedPersons.set([...this.linkedPersons(), person]);
+      },
+    });
+  }
+
+  removeLinkedPerson(personId: number): void {
+    const geoObjectId = this.crud.selectedItem()?.id;
+    if (!geoObjectId) return;
+
+    this.personsService.unlink(personId, geoObjectId).subscribe({
+      next: () => {
+        this.linkedPersons.set(this.linkedPersons().filter((p) => p.id !== personId));
+      },
+    });
+  }
+
+  private loadLinkedPersons(geoObjectId: number): void {
+    this.personsService.getPersonsByGeoObjectId(geoObjectId).subscribe({
+      next: (persons) => this.linkedPersons.set(persons),
+      error: () => this.linkedPersons.set([]),
+    });
+  }
+
+  getPersonFullName(person: Person): string {
+    return [person.surname, person.firstName, person.patronymic].filter(Boolean).join(" ");
   }
 }

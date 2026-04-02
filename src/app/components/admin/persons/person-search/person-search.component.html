@@ -1,0 +1,32 @@
+<div class="person-search">
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Поиск персоны (мин. 3 буквы)..."
+    [value]="searchText()"
+    (input)="onInput($any($event.target).value)"
+    (blur)="onBlur()"
+    (focus)="onFocus()"
+  />
+
+  @if (loading()) {
+    <span class="loading">Поиск...</span>
+  }
+
+  @if (showDropdown()) {
+    <div class="dropdown">
+      @for (person of filteredResults(); track person.id) {
+        <div class="dropdown-item" (mousedown)="onSelect(person)">
+          <span class="name">{{ getFullName(person) }}</span>
+          @if (person.birthDate) {
+            <span class="dates">{{ person.birthDate | date:'yyyy' }} — {{ person.deathDate ? (person.deathDate | date:'yyyy') : 'н.в.' }}</span>
+          }
+        </div>
+      } @empty {
+        @if (searchText().length >= 3) {
+          <div class="no-results">Ничего не найдено</div>
+        }
+      }
+    </div>
+  }
+</div>

@@ -39,4 +39,28 @@ export class AdminPersonsService {
       .delete<KraevedResponse<Person>>(`${this.apiUrl}/${id}`)
       .pipe(map((res) => res.data));
   }
+
+  search(query: string): Observable<Person[]> {
+    return this.http
+      .get<KraevedResponse<Person[]>>(`${this.apiUrl}/search?q=${encodeURIComponent(query)}`)
+      .pipe(map((res) => res.data));
+  }
+
+  link(personId: number, geoObjectId: number): Observable<boolean> {
+    return this.http
+      .post<KraevedResponse<boolean>>(`${this.apiUrl}/link`, { personId, geoObjectId })
+      .pipe(map((res) => res.data));
+  }
+
+  unlink(personId: number, geoObjectId: number): Observable<boolean> {
+    return this.http
+      .delete<KraevedResponse<boolean>>(`${this.apiUrl}/link`, { body: { personId, geoObjectId } })
+      .pipe(map((res) => res.data));
+  }
+
+  getPersonsByGeoObjectId(geoObjectId: number): Observable<Person[]> {
+    return this.http
+      .get<KraevedResponse<Person[]>>(`${this.apiUrl}/geo-object/${geoObjectId}`)
+      .pipe(map((res) => res.data));
+  }
 }

@@ -10,6 +10,7 @@ export interface GeoObject {
   regionId?: number | null;
   images?: string[] | null;
   thumbnail?: string | null;
+  personGeoObjects?: PersonGeoObjectBrief[] | null;
 }
 
 export interface GeoObjectBrief {
@@ -87,4 +88,6 @@ export interface PersonBrief {
 export interface PersonGeoObjectBrief {
   geoObjectId?: number | null;
   geoObject?: GeoObjectBrief | null;
+  personId?: number | null;
+  person?: PersonBrief | null;
 }
