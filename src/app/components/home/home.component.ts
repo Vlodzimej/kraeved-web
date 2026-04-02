@@ -12,7 +12,7 @@ import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
 import { GeoObjectsService } from "../../services/geo-objects.service";
-import { GeoObject, GeoObjectBrief } from "../../models/admin/entities.model";
+import { GeoObject, GeoObjectBrief, PersonBrief } from "../../models/admin/entities.model";
 import { createTypeIcon } from "../../utils/map-icons";
 import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
 import { environment } from "../../../environments/environment";
@@ -44,6 +44,7 @@ export class HomeComponent implements OnInit {
 
   geoObjects = signal<GeoObjectBrief[]>([]);
   selectedObject = signal<GeoObject | null>(null);
+  selectedObjectPersons = signal<PersonBrief[]>([]);
   previewImage = signal<string | null>(null);
   previewImageIndex = signal(0);
 
@@ -269,6 +270,11 @@ export class HomeComponent implements OnInit {
     this.geoObjectsService.getById(id).subscribe({
       next: (obj) => {
         this.selectedObject.set(obj);
+        this.selectedObjectPersons.set([]);
+        this.geoObjectsService.getPersonsByGeoObjectId(id).subscribe({
+          next: (persons) => this.selectedObjectPersons.set(persons),
+          error: () => this.selectedObjectPersons.set([]),
+        });
       },
     });
   }

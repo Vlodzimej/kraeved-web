@@ -55,16 +55,14 @@
             </div>
           }
 
-          @if (selectedObject()?.personGeoObjects && selectedObject()!.personGeoObjects!.length > 0) {
+          @if (selectedObjectPersons().length > 0) {
             <div class="detail-section">
               <label>Персоналии</label>
               <div class="persons-list">
-                @for (pgo of selectedObject()?.personGeoObjects; track pgo.personId) {
-                  @if (pgo.person) {
-                    <div class="person-chip">
-                      {{ pgo.person.surname }} {{ pgo.person.firstName }}
-                    </div>
-                  }
+                @for (person of selectedObjectPersons(); track person.id) {
+                  <div class="person-chip">
+                    {{ person.surname }} {{ person.firstName }}
+                  </div>
                 }
               </div>
             </div>
