@@ -34,6 +34,7 @@ import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dial
 import { AdminCardComponent } from "../shared/card/admin-card.component";
 import { PaginationComponent } from "../../shared/pagination/pagination.component";
 import { SortableHeaderComponent, SortDirection } from "../../shared/sortable-header/sortable-header.component";
+import { ImageUploaderComponent } from "../../shared/image-uploader/image-uploader.component";
 import { useAdminCrud } from "../shared/use-admin-crud";
 
 const DEFAULT_REGION_ID = 40;
@@ -49,6 +50,7 @@ const DEFAULT_REGION_ID = 40;
     AdminCardComponent,
     PaginationComponent,
     SortableHeaderComponent,
+    ImageUploaderComponent,
   ],
   templateUrl: "./admin-geo-objects.component.html",
   styleUrl: "./admin-geo-objects.component.scss",
@@ -66,6 +68,8 @@ export class AdminGeoObjectsComponent implements OnInit {
   types = this.store.selectSignal(GeoObjectTypesState.items);
 
   cardLoading = signal(false);
+
+  images = signal<string[]>([]);
 
   searchQuery = signal("");
   currentPage = signal(1);
@@ -169,6 +173,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       .subscribe({
         next: (data) => {
           this.crud.selectItem(data);
+          this.images.set(data.images ?? []);
           this.form.patchValue({
             name: data.name,
             description: data.description,
@@ -185,6 +190,7 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   openCreate(): void {
     this.crud.openCreate();
+    this.images.set([]);
     this.form.reset({
       name: "",
       description: "",
@@ -201,6 +207,7 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   confirmClose(): void {
     this.crud.confirmClose();
+    this.images.set([]);
     this.form.reset({
       name: "",
       description: "",
@@ -224,6 +231,7 @@ export class AdminGeoObjectsComponent implements OnInit {
     const item = this.crud.selectedItem();
     const formValue = this.form.getRawValue();
     const coords = formValue.coordinates.split(",").map((s) => s.trim());
+    const imgs = this.images();
     const geoObject: GeoObject = {
       id: item?.id,
       name: formValue.name,
@@ -233,6 +241,8 @@ export class AdminGeoObjectsComponent implements OnInit {
       longitude: coords[1] ? parseFloat(coords[1]) : null,
       regionId: formValue.regionId,
       typeId: formValue.typeId,
+      images: imgs.length > 0 ? imgs : null,
+      thumbnail: imgs.length > 0 ? imgs[0] : null,
     };
 
     if (this.crud.isNewItem()) {
@@ -277,5 +287,9 @@ export class AdminGeoObjectsComponent implements OnInit {
   onPageSizeChange(size: number): void {
     this.pageSize.set(size);
     this.currentPage.set(1);
+  }
+
+  onImagesChange(images: string[]): void {
+    this.images.set(images);
   }
 }

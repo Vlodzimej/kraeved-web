@@ -210,5 +210,13 @@
         </select>
       </div>
     </div>
+
+    <div class="field-group">
+      <label>Изображения</label>
+      <app-image-uploader
+        [images]="images()"
+        (imagesChange)="onImagesChange($event)"
+      ></app-image-uploader>
+    </div>
   </app-admin-card>
 </div>
