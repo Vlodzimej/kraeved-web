@@ -169,22 +169,47 @@ export class HomeComponent implements OnInit {
 
     const zoom = this.map.getZoom();
     const cellSize = this.getCellSize(zoom);
-    const grid = new Map<string, MarkerData>();
+    const grid = new Map<string, MarkerData[]>();
 
     for (const md of this.allMarkers) {
       const cellKey = this.getCellKey(md.lat, md.lng, cellSize);
       if (!grid.has(cellKey)) {
-        grid.set(cellKey, md);
+        grid.set(cellKey, []);
       }
+      grid.get(cellKey)!.push(md);
     }
 
-    for (const md of grid.values()) {
-      md.marker.setLatLng([md.lat, md.lng]);
-      this.markersLayer!.addLayer(md.marker);
+    for (const [key, markers] of grid.entries()) {
+      const center = markers[0];
+      if (markers.length === 1) {
+        center.marker.setLatLng([center.lat, center.lng]);
+        this.markersLayer!.addLayer(center.marker);
+      } else {
+        const avgLat = markers.reduce((s, m) => s + m.lat, 0) / markers.length;
+        const avgLng = markers.reduce((s, m) => s + m.lng, 0) / markers.length;
+        const clusterIcon = this.createClusterIcon(markers.length);
+        const clusterMarker = L.marker([avgLat, avgLng], {
+          icon: clusterIcon,
+          zIndexOffset: 1000,
+        });
+        clusterMarker.on("click", () => {
+          this.map?.setView([avgLat, avgLng], this.map.getZoom() + 2, { animate: true });
+        });
+        this.markersLayer!.addLayer(clusterMarker);
+      }
     }
 
     this.resolveOverlaps();
     this.reapplyHighlight();
+  }
+
+  private createClusterIcon(count: number): L.DivIcon {
+    return L.divIcon({
+      className: "cluster-marker",
+      html: `<span>${count}</span>`,
+      iconSize: [36, 36],
+      iconAnchor: [18, 18],
+    });
   }
 
   private getCellSize(zoom: number): number {
