@@ -15,8 +15,8 @@ export class ImagesService {
       formData.append("imageFiles", file, file.name);
     }
     return this.http
-      .post<KraevedResponse<{ filenames: string[] }>>(this.apiUrl, formData)
-      .pipe(map((res) => res.data.filenames));
+      .post<{ filenames: string[] }>(this.apiUrl, formData)
+      .pipe(map((res) => res.filenames));
   }
 
   imageUrl(name: string): string {

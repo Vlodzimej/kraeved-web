@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
+import { map, tap } from "rxjs/operators";
 import { LoginInDto } from "../models/login-in-dto";
 import { LoginOutDto } from "../models/login-out-dto";
 import { KraevedResponse } from "../models/kraeved-response";
@@ -22,6 +22,11 @@ export class AuthService {
             throw new Error("Токен не получен");
           }
           return response.data;
+        }),
+        tap((data) => {
+          if (data.token) {
+            localStorage.setItem(this.TOKEN_KEY, data.token);
+          }
         }),
       );
   }
