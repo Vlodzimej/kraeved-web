@@ -91,6 +91,8 @@ export class HomeComponent implements OnInit {
       maxZoom: 20,
     }).addTo(this.map);
 
+    this.drawKalugaMask();
+
     this.markersLayer = L.layerGroup().addTo(this.map);
     this.highlightLayer = L.layerGroup().addTo(this.map);
     this.createMarkers();
@@ -106,6 +108,30 @@ export class HomeComponent implements OnInit {
     setTimeout(() => {
       this.map?.invalidateSize();
     }, 200);
+  }
+
+  private drawKalugaMask(): void {
+    const kalugaBounds: L.LatLngTuple[] = [
+      [53.0, 33.0],
+      [56.0, 33.0],
+      [56.0, 38.0],
+      [53.0, 38.0],
+    ];
+
+    const outer: L.LatLngTuple[] = [
+      [90, -180],
+      [90, 180],
+      [-90, 180],
+      [-90, -180],
+    ];
+
+    L.polygon([outer, kalugaBounds], {
+      color: "rgba(0, 0, 0, 0.5)",
+      fillColor: "rgba(0, 0, 0, 0.5)",
+      fillOpacity: 0.5,
+      weight: 2,
+      interactive: false,
+    }).addTo(this.map!);
   }
 
   private createMarkers(): void {
