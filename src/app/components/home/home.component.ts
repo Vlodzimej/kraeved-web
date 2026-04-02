@@ -349,10 +349,6 @@ export class HomeComponent implements OnInit {
     this.clearHighlight();
   }
 
-  onSearchResultsChanged(): void {
-    this.clearHighlight();
-  }
-
   private _pendingHighlightId: number | null = null;
 
   private applyPendingHighlight(): void {

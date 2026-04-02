@@ -32,7 +32,6 @@ export class GeoObjectSearchComponent {
   selectObject = output<GeoObjectBrief>();
   openObjectDetails = output<GeoObjectBrief>();
   panelClosed = output<void>();
-  resultsChanged = output<void>();
 
   isOpen = signal(false);
   searchText = signal("");
@@ -67,7 +66,6 @@ export class GeoObjectSearchComponent {
       }
     }
 
-    this.resultsChanged.emit();
     return results.slice(0, 20);
   });
 
