@@ -83,6 +83,7 @@ export interface PersonBrief {
   patronymic?: string | null;
   birthDate?: string | null;
   deathDate?: string | null;
+  photos?: string[] | null;
 }
 
 export interface PersonGeoObjectBrief {

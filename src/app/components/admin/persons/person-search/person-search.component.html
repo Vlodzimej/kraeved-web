@@ -15,7 +15,7 @@
 
   @if (showDropdown()) {
     <div class="dropdown">
-      @for (person of filteredResults(); track person.id) {
+      @for (person of filteredResults(); track person.id ?? $index) {
         <div class="dropdown-item" (mousedown)="onSelect(person)">
           <span class="name">{{ getFullName(person) }}</span>
           @if (person.birthDate) {

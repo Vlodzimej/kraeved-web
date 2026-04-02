@@ -47,7 +47,7 @@ export class PersonSearchComponent {
       )
       .subscribe({
         next: (persons) => {
-          this.results.set(persons);
+          this.results.set(persons.filter((p) => p != null));
           this.showDropdown.set(persons.length > 0);
           this.loading.set(false);
         },
@@ -58,7 +58,7 @@ export class PersonSearchComponent {
       });
   }
 
-  filteredResults = computed(() => this.results());
+  filteredResults = computed(() => this.results().filter((p) => p != null));
 
   onInput(value: string): void {
     const filtered = value.replace(/[^a-zA-Zа-яА-ЯёЁ\s-]/g, "");

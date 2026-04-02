@@ -327,20 +327,56 @@
   font-size: 14px;
 }
 
-.persons-list {
+.persons-carousel {
   display: flex;
-  flex-wrap: wrap;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+
+  &::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #ccc;
+    border-radius: 2px;
+  }
+}
+
+.person-card {
+  flex-shrink: 0;
+  width: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 6px;
 }
 
-.person-chip {
-  display: inline-block;
-  padding: 4px 12px;
-  background: #e3f2fd;
-  color: #1565c0;
-  border-radius: 16px;
-  font-size: 13px;
-  font-weight: 500;
+.person-card img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+}
+
+.person-placeholder {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: #e8e8e8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+.person-name {
+  font-size: 11px;
+  color: #555;
+  text-align: center;
+  line-height: 1.3;
+  word-break: break-word;
 }
 
 @keyframes fadeIn {

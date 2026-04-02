@@ -227,7 +227,8 @@
 
       @if (linkedPersons().length > 0) {
         <div class="linked-persons">
-          @for (person of linkedPersons(); track person.id) {
+          @for (person of linkedPersons(); track person?.id ?? $index) {
+            @if (person) {
             <div class="linked-person-item">
               <span>{{ getPersonFullName(person) }}</span>
               <button class="remove-person" (click)="removeLinkedPerson(person.id!)" title="Удалить">
@@ -237,6 +238,7 @@
                 </svg>
               </button>
             </div>
+            }
           }
         </div>
       }
