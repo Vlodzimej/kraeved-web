@@ -126,10 +126,17 @@ export class HomeComponent implements OnInit {
     ];
 
     L.polygon([outer, kalugaBounds], {
-      color: "rgba(0, 0, 0, 0.5)",
-      fillColor: "rgba(0, 0, 0, 0.5)",
+      color: "transparent",
+      fillColor: "rgba(0, 0, 0, 0.45)",
       fillOpacity: 0.5,
-      weight: 2,
+      weight: 0,
+      interactive: false,
+    }).addTo(this.map!);
+
+    L.polyline([...kalugaBounds, kalugaBounds[0]], {
+      color: "#2196f3",
+      weight: 3,
+      opacity: 0.8,
       interactive: false,
     }).addTo(this.map!);
   }
