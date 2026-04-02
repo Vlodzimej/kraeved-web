@@ -15,6 +15,7 @@ import { GeoObjectsService } from "../../services/geo-objects.service";
 import { GeoObject, GeoObjectBrief } from "../../models/admin/entities.model";
 import { createTypeIcon } from "../../utils/map-icons";
 import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
+import { environment } from "../../../environments/environment";
 import * as L from "leaflet";
 
 interface MarkerData {
@@ -43,6 +44,8 @@ export class HomeComponent implements OnInit {
 
   geoObjects = signal<GeoObjectBrief[]>([]);
   selectedObject = signal<GeoObject | null>(null);
+  previewImage = signal<string | null>(null);
+  previewImageIndex = signal(0);
 
   private map: L.Map | null = null;
   private markersLayer: L.LayerGroup | null = null;
@@ -241,6 +244,39 @@ export class HomeComponent implements OnInit {
 
   closeObjectModal(): void {
     this.selectedObject.set(null);
+  }
+
+  imageUrl = (name: string): string =>
+    `${environment.apiUrl}/Images/filename/${name}`;
+
+  openImagePreview(filename: string): void {
+    const images = this.selectedObject()?.images ?? [];
+    const index = images.indexOf(filename);
+    this.previewImage.set(filename);
+    this.previewImageIndex.set(index >= 0 ? index : 0);
+  }
+
+  closeImagePreview(): void {
+    this.previewImage.set(null);
+    this.previewImageIndex.set(0);
+  }
+
+  prevImage(): void {
+    const images = this.selectedObject()?.images ?? [];
+    if (this.previewImageIndex() > 0) {
+      const newIndex = this.previewImageIndex() - 1;
+      this.previewImageIndex.set(newIndex);
+      this.previewImage.set(images[newIndex]);
+    }
+  }
+
+  nextImage(): void {
+    const images = this.selectedObject()?.images ?? [];
+    if (this.previewImageIndex() < images.length - 1) {
+      const newIndex = this.previewImageIndex() + 1;
+      this.previewImageIndex.set(newIndex);
+      this.previewImage.set(images[newIndex]);
+    }
   }
 
   onLogout(): void {
