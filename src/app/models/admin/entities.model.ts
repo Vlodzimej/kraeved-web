@@ -62,3 +62,29 @@ export interface HistoricalEventBrief {
   date: string | null;
   regionId: number | null;
 }
+
+export interface Person {
+  id?: number | null;
+  surname: string;
+  firstName: string;
+  patronymic?: string | null;
+  biography?: string | null;
+  birthDate?: string | null;
+  deathDate?: string | null;
+  photos?: string[] | null;
+  personGeoObjects?: PersonGeoObjectBrief[] | null;
+}
+
+export interface PersonBrief {
+  id?: number | null;
+  surname: string;
+  firstName: string;
+  patronymic?: string | null;
+  birthDate?: string | null;
+  deathDate?: string | null;
+}
+
+export interface PersonGeoObjectBrief {
+  geoObjectId?: number | null;
+  geoObject?: GeoObjectBrief | null;
+}

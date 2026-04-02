@@ -15,6 +15,7 @@ import { GeoObjectsState } from "./store/geo-objects/geo-objects.state";
 import { GeoObjectTypesState } from "./store/geo-object-types/geo-object-types.state";
 import { GeoObjectCategoriesState } from "./store/geo-object-categories/geo-object-categories.state";
 import { HistoricalEventsState } from "./store/historical-events/historical-events.state";
+import { PersonsState } from "./store/persons/persons.state";
 import { withNgxsReduxDevtoolsPlugin } from "@ngxs/devtools-plugin";
 
 export const appConfig: ApplicationConfig = {
@@ -30,6 +31,7 @@ export const appConfig: ApplicationConfig = {
         GeoObjectTypesState,
         GeoObjectCategoriesState,
         HistoricalEventsState,
+        PersonsState,
       ],
       withNgxsReduxDevtoolsPlugin(),
     ),

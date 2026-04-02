@@ -59,6 +59,13 @@ export const routes: Routes = [
             (m) => m.AdminHistoricalEventsComponent,
           ),
       },
+      {
+        path: "persons",
+        loadComponent: () =>
+          import("./components/admin/persons/admin-persons.component").then(
+            (m) => m.AdminPersonsComponent,
+          ),
+      },
     ],
   },
   { path: "", canActivate: [redirectGuard], component: EmptyComponent },
