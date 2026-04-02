@@ -1,6 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, map } from "rxjs";
+import { KraevedResponse } from "../models/kraeved-response";
 import { environment } from "../../environments/environment";
 
 @Injectable({ providedIn: "root" })
@@ -14,7 +15,7 @@ export class ImagesService {
       formData.append("imageFiles", file, file.name);
     }
     return this.http
-      .post<{ filenames: string[] }>(this.apiUrl, formData)
-      .pipe(map((res) => res.filenames));
+      .post<KraevedResponse<{ filenames: string[] }>>(this.apiUrl, formData)
+      .pipe(map((res) => res.data.filenames));
   }
 }
