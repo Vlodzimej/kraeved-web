@@ -48,12 +48,6 @@
           </button>
         </div>
         <div class="modal-body">
-          @if (selectedObject()?.type?.title) {
-            <div class="detail-section">
-              <label>Тип</label>
-              <span>{{ selectedObject()?.type?.title }}</span>
-            </div>
-          }
 
           @if (selectedObject()?.description) {
             <div class="detail-section">
