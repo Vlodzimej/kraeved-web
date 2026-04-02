@@ -18,4 +18,16 @@ export class ImagesService {
       .post<KraevedResponse<{ filenames: string[] }>>(this.apiUrl, formData)
       .pipe(map((res) => res.data.filenames));
   }
+
+  imageUrl(name: string): string {
+    return `${environment.apiUrl}/Images/filename/${name}`;
+  }
+
+  thumbnailUrl(name: string): string {
+    return `${environment.apiUrl}/Images/thumbnail/${name}`;
+  }
+
+  previewUrl(name: string): string {
+    return `${environment.apiUrl}/Images/preview/${name}`;
+  }
 }

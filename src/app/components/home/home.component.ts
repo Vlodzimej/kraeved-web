@@ -249,6 +249,12 @@ export class HomeComponent implements OnInit {
   imageUrl = (name: string): string =>
     `${environment.apiUrl}/Images/filename/${name}`;
 
+  thumbnailUrl = (name: string): string =>
+    `${environment.apiUrl}/Images/thumbnail/${name}`;
+
+  previewUrl = (name: string): string =>
+    `${environment.apiUrl}/Images/preview/${name}`;
+
   openImagePreview(filename: string): void {
     const images = this.selectedObject()?.images ?? [];
     const index = images.indexOf(filename);

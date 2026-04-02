@@ -35,7 +35,7 @@
           @if (selectedObject()?.thumbnail) {
             <img
               class="modal-thumbnail"
-              [src]="imageUrl(selectedObject()?.thumbnail ?? '')"
+              [src]="thumbnailUrl(selectedObject()?.thumbnail ?? '')"
               [alt]="selectedObject()?.name"
             />
           }
@@ -71,7 +71,7 @@
                     class="carousel-item"
                     (click)="openImagePreview(img)"
                   >
-                    <img [src]="imageUrl(img)" [alt]="img" />
+                    <img [src]="thumbnailUrl(img)" [alt]="img" />
                   </div>
                 }
               </div>
@@ -100,7 +100,7 @@
           </svg>
         </button>
 
-        <img class="preview-image" [src]="imageUrl(previewImage() ?? '')" [alt]="previewImage()" />
+        <img class="preview-image" [src]="previewUrl(previewImage() ?? '')" [alt]="previewImage()" />
 
         <div class="preview-counter">
           {{ previewImageIndex() + 1 }} / {{ selectedObject()?.images?.length ?? 0 }}

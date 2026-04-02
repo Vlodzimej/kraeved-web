@@ -27,7 +27,7 @@ export class ImageUploaderComponent {
   private imagesService = inject(ImagesService);
 
   imageUrl = (name: string): string =>
-    `${environment.apiUrl}/Images/filename/${name}`;
+    `${environment.apiUrl}/Images/thumbnail/${name}`;
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
