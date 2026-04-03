@@ -12,14 +12,12 @@ import { Router } from "@angular/router";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
-import { AppSettingsState, LoadAppSettings } from "../../store/app-settings/app-settings.state";
-import { GeoObjectsState } from "../../store/geo-objects/geo-objects.state";
-import { LoadGeoObjects } from "../../store/geo-objects/geo-objects.actions";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { AdminPersonsService } from "../../services/admin/admin-persons.service";
 import { GeoObject, GeoObjectBrief, Person, PersonBrief } from "../../models/admin/entities.model";
 import { createTypeIcon } from "../../utils/map-icons";
 import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
+import { AppSettingsState, LoadAppSettings } from "../../store/app-settings/app-settings.state";
 import { environment } from "../../../environments/environment";
 import * as L from "leaflet";
 
@@ -49,7 +47,7 @@ export class HomeComponent implements OnInit {
   isAuthenticated = this.store.selectSignal(AuthState.isAuthenticated);
   mapContainer = viewChild<ElementRef<HTMLDivElement>>("mapContainer");
 
-  geoObjects = this.store.selectSignal(GeoObjectsState.items);
+  geoObjects = signal<GeoObjectBrief[]>([]);
   selectedObject = signal<GeoObject | null>(null);
   selectedObjectPersons = signal<PersonBrief[]>([]);
   selectedPerson = signal<Person | null>(null);
@@ -65,17 +63,11 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(new LoadAppSettings());
-    this.store.dispatch(new LoadGeoObjects());
-    this.initMap();
-  }
-
-  ngAfterViewInit(): void {
-    effect(() => {
-      const objects = this.geoObjects();
-      if (objects.length > 0 && this.map) {
-        this.createMarkers();
-        this.updateVisibleMarkers();
-      }
+    this.geoObjectsService.getAll().subscribe({
+      next: (objects) => {
+        this.geoObjects.set(objects);
+        setTimeout(() => this.initMap(), 0);
+      },
     });
   }
 
