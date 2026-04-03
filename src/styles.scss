@@ -59,6 +59,17 @@ body {
   max-height: 34px;
 }
 
+.cluster-count {
+  display: block;
+  width: 34px;
+  height: 34px;
+  line-height: 34px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #2196f3;
+}
+
 .leaflet-bottom.leaflet-right {
   svg {
     display: none !important;

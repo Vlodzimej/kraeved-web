@@ -205,10 +205,10 @@ export class HomeComponent implements OnInit {
 
   private createClusterIcon(count: number): L.DivIcon {
     return L.divIcon({
-      className: "cluster-marker",
-      html: `<span>${count}</span>`,
-      iconSize: [36, 36],
-      iconAnchor: [18, 18],
+      html: `<div class="marker-bg"><span class="cluster-count">${count}</span></div>`,
+      className: "custom-marker-wrapper",
+      iconSize: [48, 48],
+      iconAnchor: [24, 48],
     });
   }
 
@@ -234,12 +234,16 @@ export class HomeComponent implements OnInit {
 
     const minPx = 52;
     const map = this.map;
-    const visible = this.allMarkers.filter((md) =>
-      this.markersLayer!.hasLayer(md.marker),
-    );
+    const layers: L.Marker[] = [];
+    this.markersLayer!.eachLayer((layer) => {
+      if (layer instanceof L.Marker) {
+        layers.push(layer);
+      }
+    });
 
-    for (const md of visible) {
-      md.marker.setLatLng([md.lat, md.lng]);
+    for (const marker of layers) {
+      const latlng = marker.getLatLng();
+      marker.setLatLng(latlng);
     }
 
     let changed = true;
@@ -250,13 +254,13 @@ export class HomeComponent implements OnInit {
       changed = false;
       iterations++;
 
-      for (let i = 0; i < visible.length; i++) {
-        const a = visible[i];
-        const pA = map.latLngToContainerPoint(a.marker.getLatLng());
+      for (let i = 0; i < layers.length; i++) {
+        const a = layers[i];
+        const pA = map.latLngToContainerPoint(a.getLatLng());
 
-        for (let j = i + 1; j < visible.length; j++) {
-          const b = visible[j];
-          const pB = map.latLngToContainerPoint(b.marker.getLatLng());
+        for (let j = i + 1; j < layers.length; j++) {
+          const b = layers[j];
+          const pB = map.latLngToContainerPoint(b.getLatLng());
 
           const dx = pB.x - pA.x;
           const dy = pB.y - pA.y;
@@ -275,8 +279,8 @@ export class HomeComponent implements OnInit {
               L.point(pB.x + nx * push, pB.y + ny * push),
             );
 
-            a.marker.setLatLng(newA);
-            b.marker.setLatLng(newB);
+            a.setLatLng(newA);
+            b.setLatLng(newB);
           } else if (dist === 0) {
             changed = true;
             const angle = (i * 137.5 * Math.PI) / 180;
@@ -287,8 +291,8 @@ export class HomeComponent implements OnInit {
             const newB = map.containerPointToLatLng(
               L.point(pB.x - Math.cos(angle) * r, pB.y - Math.sin(angle) * r),
             );
-            a.marker.setLatLng(newA);
-            b.marker.setLatLng(newB);
+            a.setLatLng(newA);
+            b.setLatLng(newB);
           }
         }
       }
