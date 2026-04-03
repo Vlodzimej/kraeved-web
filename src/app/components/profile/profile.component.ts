@@ -135,6 +135,6 @@ export class ProfileComponent implements OnInit {
   avatarUrl(): string | null {
     const avatar = this.user()?.avatar;
     if (!avatar) return null;
-    return `${environment.apiUrl}/Images/filename/${avatar}`;
+    return `${environment.apiUrl}/Images/avatar/${avatar}`;
   }
 }

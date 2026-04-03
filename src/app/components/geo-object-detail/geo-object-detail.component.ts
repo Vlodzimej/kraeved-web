@@ -130,7 +130,7 @@ export class GeoObjectDetailComponent implements OnInit {
   commentUserAvatar(comment: CommentDto): string {
     const avatar = comment.user?.avatar;
     if (!avatar) return "";
-    return `${environment.apiUrl}/Images/filename/${avatar}`;
+    return `${environment.apiUrl}/Images/avatar/${avatar}`;
   }
 
   goBack(): void {
