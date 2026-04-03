@@ -212,6 +212,7 @@
       <label>Родственные связи</label>
       <div class="relation-add">
         <app-person-search
+          #relationSearch
           (personSelected)="onRelationPersonSelected($event)"
           (personCleared)="onRelationPersonCleared()"
         ></app-person-search>

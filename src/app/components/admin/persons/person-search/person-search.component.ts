@@ -81,6 +81,13 @@ export class PersonSearchComponent {
     this.personCleared.emit();
   }
 
+  reset(): void {
+    this.selectedPerson.set(null);
+    this.searchText.set("");
+    this.results.set([]);
+    this.showDropdown.set(false);
+  }
+
   onBlur(): void {
     setTimeout(() => this.showDropdown.set(false), 200);
   }

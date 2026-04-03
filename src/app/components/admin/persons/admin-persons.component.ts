@@ -31,6 +31,7 @@ import { SortableHeaderComponent, SortDirection } from "../../shared/sortable-he
 import { useAdminCrud } from "../shared/use-admin-crud";
 import { ImageUploaderComponent } from "../../shared/image-uploader/image-uploader.component";
 import { PersonSearchComponent } from "./person-search/person-search.component";
+import { viewChild } from "@angular/core";
 
 @Component({
   selector: "app-admin-persons",
@@ -69,6 +70,7 @@ export class AdminPersonsComponent implements OnInit {
 
   photos = signal<string[]>([]);
   relations = signal<PersonRelationDto[]>([]);
+  relationSearch = viewChild.required<PersonSearchComponent>("relationSearch");
   relationTypes = signal<PersonRelationType[]>([]);
   selectedRelationPerson = signal<Person | null>(null);
   selectedRelationTypeId = signal<number | null>(null);
@@ -308,6 +310,7 @@ export class AdminPersonsComponent implements OnInit {
         this.loadRelations(personId);
         this.selectedRelationPerson.set(null);
         this.selectedRelationTypeId.set(null);
+        this.relationSearch().reset();
       },
     });
   }
