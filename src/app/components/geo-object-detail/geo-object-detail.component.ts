@@ -44,6 +44,10 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
   isAuthenticated = this.store.selectSignal(AuthState.isAuthenticated);
   currentUserId = signal<number | null>(null);
 
+  previewImage = signal<string | null>(null);
+  previewImageIndex = signal(0);
+  previewImages = signal<string[]>([]);
+
   commentForm = this.fb.group({
     text: ["", Validators.required],
   });
@@ -154,5 +158,36 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
 
   goBack(): void {
     this.router.navigate(["/home"]);
+  }
+
+  openImagePreview(filename: string, images: string[]): void {
+    const index = images.indexOf(filename);
+    this.previewImage.set(filename);
+    this.previewImageIndex.set(index >= 0 ? index : 0);
+    this.previewImages.set(images);
+  }
+
+  closeImagePreview(): void {
+    this.previewImage.set(null);
+    this.previewImageIndex.set(0);
+    this.previewImages.set([]);
+  }
+
+  prevImage(): void {
+    const images = this.previewImages();
+    if (this.previewImageIndex() > 0) {
+      const newIndex = this.previewImageIndex() - 1;
+      this.previewImageIndex.set(newIndex);
+      this.previewImage.set(images[newIndex]);
+    }
+  }
+
+  nextImage(): void {
+    const images = this.previewImages();
+    if (this.previewImageIndex() < images.length - 1) {
+      const newIndex = this.previewImageIndex() + 1;
+      this.previewImageIndex.set(newIndex);
+      this.previewImage.set(images[newIndex]);
+    }
   }
 }
