@@ -95,7 +95,7 @@
           }
 
           @if (selectedObjectLatestComment()) {
-            <div class="detail-section latest-comment">
+            <div class="detail-section latest-comment" (click)="goToGeoObjectDetail(selectedObject()?.id ?? 0)">
               <label>Последний комментарий</label>
               <div class="mini-comment">
                 <div class="mini-comment-avatar">

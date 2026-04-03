@@ -4,6 +4,9 @@ import {
   inject,
   OnInit,
   signal,
+  viewChild,
+  ElementRef,
+  AfterViewInit,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -24,13 +27,15 @@ import { AuthState } from "../../store/auth/auth.state";
   styleUrl: "./geo-object-detail.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GeoObjectDetailComponent implements OnInit {
+export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private geoObjectsService = inject(GeoObjectsService);
   private commentsService = inject(CommentsService);
   private fb = inject(FormBuilder);
   private store = inject(Store);
+
+  commentsSection = viewChild<ElementRef<HTMLDivElement>>("commentsSection");
 
   geoObject = signal<GeoObject | null>(null);
   persons = signal<PersonBrief[]>([]);
@@ -48,6 +53,16 @@ export class GeoObjectDetailComponent implements OnInit {
     if (id) {
       this.loadGeoObject(+id);
     }
+  }
+
+  ngAfterViewInit(): void {
+    this.route.fragment.subscribe((fragment) => {
+      if (fragment === "comments") {
+        setTimeout(() => {
+          this.commentsSection()?.nativeElement.scrollIntoView({ behavior: "smooth" });
+        }, 300);
+      }
+    });
   }
 
   loadGeoObject(id: number): void {

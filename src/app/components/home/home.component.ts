@@ -436,6 +436,11 @@ export class HomeComponent implements OnInit {
     this.router.navigate(["/geo-object", id]);
   }
 
+  goToGeoObjectDetail(id: number): void {
+    this.closeObjectModal();
+    this.router.navigate(["/geo-object", id], { fragment: "comments" });
+  }
+
   goToLogin(): void {
     this.router.navigate(["/login"]);
   }
