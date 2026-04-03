@@ -13,12 +13,13 @@ import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
 import { AppSettingsState, LoadAppSettings } from "../../store/app-settings/app-settings.state";
+import { GeoObjectsState } from "../../store/geo-objects/geo-objects.state";
+import { LoadGeoObjects } from "../../store/geo-objects/geo-objects.actions";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { AdminPersonsService } from "../../services/admin/admin-persons.service";
 import { GeoObject, GeoObjectBrief, Person, PersonBrief } from "../../models/admin/entities.model";
 import { createTypeIcon } from "../../utils/map-icons";
 import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
-import { LoadGeoObjects } from "../../store/geo-objects/geo-objects.actions";
 import { environment } from "../../../environments/environment";
 import * as L from "leaflet";
 
@@ -48,7 +49,7 @@ export class HomeComponent implements OnInit {
   isAuthenticated = this.store.selectSignal(AuthState.isAuthenticated);
   mapContainer = viewChild<ElementRef<HTMLDivElement>>("mapContainer");
 
-  geoObjects = signal<GeoObjectBrief[]>([]);
+  geoObjects = this.store.selectSignal(GeoObjectsState.items);
   selectedObject = signal<GeoObject | null>(null);
   selectedObjectPersons = signal<PersonBrief[]>([]);
   selectedPerson = signal<Person | null>(null);
