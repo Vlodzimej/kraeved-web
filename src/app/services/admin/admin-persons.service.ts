@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, map } from "rxjs";
-import { Person, PersonRelationType, PersonRelationDto } from "../../models/admin/entities.model";
+import { Person, PersonRelationType, PersonRelationDto, PersonTreeNode } from "../../models/admin/entities.model";
 import { KraevedResponse } from "../../models/kraeved-response";
 import { environment } from "../../../environments/environment";
 
@@ -91,6 +91,12 @@ export class AdminPersonsService {
   removeRelation(personId1: number, personId2: number, relationTypeId: number): Observable<boolean> {
     return this.http
       .delete<KraevedResponse<boolean>>(`${this.apiUrl}/relation`, { body: { personId1, personId2, relationTypeId } })
+      .pipe(map((res) => res.data));
+  }
+
+  getFamilyTree(personId: number): Observable<PersonTreeNode> {
+    return this.http
+      .get<KraevedResponse<PersonTreeNode>>(`${this.apiUrl}/${personId}/tree`)
       .pipe(map((res) => res.data));
   }
 }

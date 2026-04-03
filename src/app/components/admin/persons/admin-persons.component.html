@@ -210,6 +210,17 @@
 
     <div class="field-group">
       <label>Родственные связи</label>
+      <div class="relations-header">
+        <button class="btn btn-info btn-sm" (click)="openTree()" [disabled]="!crud.selectedItem()?.id">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Генеалогическое древо
+        </button>
+      </div>
       <div class="relation-add">
         <app-person-search
           #relationSearch
@@ -254,4 +265,23 @@
       }
     </div>
   </app-admin-card>
+
+  @if (showTree() && crud.selectedItem()?.id) {
+    <div class="tree-backdrop" (click)="closeTree()">
+      <div class="tree-modal" (click)="$event.stopPropagation()">
+        <div class="tree-modal-header">
+          <h3>Генеалогическое древо</h3>
+          <button class="modal-close" (click)="closeTree()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+        <div class="tree-modal-body">
+          <app-genealogy-tree [personId]="crud.selectedItem()!.id!" />
+        </div>
+      </div>
+    </div>
+  }
 </div>

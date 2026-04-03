@@ -28,6 +28,7 @@ import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dial
 import { AdminCardComponent } from "../shared/card/admin-card.component";
 import { PaginationComponent } from "../../shared/pagination/pagination.component";
 import { SortableHeaderComponent, SortDirection } from "../../shared/sortable-header/sortable-header.component";
+import { GenealogyTreeComponent } from "./genealogy-tree/genealogy-tree.component";
 import { useAdminCrud } from "../shared/use-admin-crud";
 import { ImageUploaderComponent } from "../../shared/image-uploader/image-uploader.component";
 import { PersonSearchComponent } from "./person-search/person-search.component";
@@ -46,6 +47,7 @@ import { viewChild } from "@angular/core";
     SortableHeaderComponent,
     ImageUploaderComponent,
     PersonSearchComponent,
+    GenealogyTreeComponent,
   ],
   templateUrl: "./admin-persons.component.html",
   styleUrl: "./admin-persons.component.scss",
@@ -83,6 +85,8 @@ export class AdminPersonsComponent implements OnInit {
     birthDate: [""],
     deathDate: [""],
   });
+
+  showTree = signal(false);
 
   crud = useAdminCrud<Person>(
     () => ({
@@ -332,6 +336,14 @@ export class AdminPersonsComponent implements OnInit {
       next: (rels) => this.relations.set(rels),
       error: () => this.relations.set([]),
     });
+  }
+
+  openTree(): void {
+    this.showTree.set(true);
+  }
+
+  closeTree(): void {
+    this.showTree.set(false);
   }
 
   formatDate(date: string | null | undefined): string {

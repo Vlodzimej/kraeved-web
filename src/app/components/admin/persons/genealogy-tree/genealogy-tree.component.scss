@@ -1,0 +1,125 @@
+.tree-container {
+  padding: 24px;
+  min-height: 300px;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+}
+
+.tree {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.generation {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.connector.vertical {
+  width: 2px;
+  height: 24px;
+  background: #ccc;
+  margin: 0 auto;
+}
+
+.person-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  min-width: 120px;
+  max-width: 160px;
+  position: relative;
+}
+
+.center-person {
+  background: #e3f2fd;
+  border: 2px solid #2196f3;
+  min-width: 140px;
+  max-width: 180px;
+}
+
+.parent {
+  border-top: 3px solid #4caf50;
+}
+
+.spouse {
+  border-top: 3px solid #e91e63;
+}
+
+.child {
+  border-top: 3px solid #ff9800;
+}
+
+.sibling {
+  border-top: 3px solid #9c27b0;
+}
+
+.photo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .placeholder {
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.years {
+  font-size: 11px;
+  color: #999;
+}
+
+.role-label {
+  position: absolute;
+  top: -10px;
+  right: -8px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-size: 10px;
+  color: #666;
+  white-space: nowrap;
+}
