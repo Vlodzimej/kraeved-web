@@ -32,6 +32,21 @@
         />
       </div>
 
+      @if (isRegisterMode()) {
+        <div class="form-group">
+          <label for="regPassword">Повторите пароль</label>
+          <input
+            id="regPassword"
+            type="password"
+            [ngModel]="regPasswordConfirm()"
+            (ngModelChange)="regPasswordConfirm.set($event)"
+            name="regPasswordConfirm"
+            placeholder="Повторите пароль"
+            required
+          />
+        </div>
+      }
+
       @if (errorMessage()) {
         <div class="error-message">
           {{ errorMessage() }}
@@ -40,11 +55,27 @@
 
       <button type="submit" class="login-button" [disabled]="isLoading()">
         @if (isLoading()) {
-          <span>Вход...</span>
+          @if (isRegisterMode()) {
+            <span>Регистрация...</span>
+          } @else {
+            <span>Вход...</span>
+          }
         } @else {
-          <span>Войти</span>
+          @if (isRegisterMode()) {
+            <span>Зарегистрироваться</span>
+          } @else {
+            <span>Войти</span>
+          }
         }
       </button>
     </form>
+
+    <div class="toggle-mode">
+      @if (isRegisterMode()) {
+        <p>Уже есть аккаунт? <a (click)="toggleMode()">Войти</a></p>
+      } @else {
+        <p>Нет аккаунта? <a (click)="toggleMode()">Зарегистрироваться</a></p>
+      }
+    </div>
   </div>
 </div>

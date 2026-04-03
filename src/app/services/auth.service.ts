@@ -32,4 +32,9 @@ export class AuthService {
   getToken(): string | null {
     return null;
   }
+
+  register(email: string, password: string): Observable<void> {
+    return this.http
+      .post<void>(`${this.apiUrl}/registration`, { email, password });
+  }
 }
