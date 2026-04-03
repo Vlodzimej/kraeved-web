@@ -213,21 +213,29 @@
 
 .relation-add {
   display: flex;
+  flex-direction: column;
   gap: 8px;
-  align-items: flex-start;
   margin-bottom: 8px;
 
   app-person-search {
-    flex: 1;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .relation-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
   }
 
   .relation-type-select {
+    flex: 1;
+    min-width: 0;
     padding: 0.5rem 0.75rem;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 0.875rem;
     background: #fff;
-    min-width: 160px;
   }
 
   .btn-sm {

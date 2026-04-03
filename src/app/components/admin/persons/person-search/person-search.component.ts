@@ -23,8 +23,10 @@ export class PersonSearchComponent {
   private service = inject(AdminPersonsService);
 
   personSelected = output<Person>();
+  personCleared = output<void>();
 
   searchText = signal("");
+  selectedPerson = signal<Person | null>(null);
   results = signal<Person[]>([]);
   showDropdown = signal(false);
   loading = signal(false);
@@ -67,10 +69,16 @@ export class PersonSearchComponent {
   }
 
   onSelect(person: Person): void {
+    this.selectedPerson.set(person);
     this.personSelected.emit(person);
     this.searchText.set("");
     this.results.set([]);
     this.showDropdown.set(false);
+  }
+
+  clearSelected(): void {
+    this.selectedPerson.set(null);
+    this.personCleared.emit();
   }
 
   onBlur(): void {

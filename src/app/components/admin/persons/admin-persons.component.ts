@@ -293,6 +293,10 @@ export class AdminPersonsComponent implements OnInit {
     this.selectedRelationTypeId.set(value ? +value : null);
   }
 
+  onRelationPersonCleared(): void {
+    this.selectedRelationPerson.set(null);
+  }
+
   addRelation(): void {
     const personId = this.crud.selectedItem()?.id;
     const relatedId = this.selectedRelationPerson()?.id;

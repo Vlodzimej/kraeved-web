@@ -213,24 +213,27 @@
       <div class="relation-add">
         <app-person-search
           (personSelected)="onRelationPersonSelected($event)"
+          (personCleared)="onRelationPersonCleared()"
         ></app-person-search>
-        <select
-          class="relation-type-select"
-          [value]="selectedRelationTypeId() ?? ''"
-          (change)="onRelationTypeSelect($any($event.target).value)"
-        >
-          <option value="">Выберите тип связи</option>
-          @for (type of relationTypes(); track type.id) {
-            <option [value]="type.id">{{ type.title }}</option>
-          }
-        </select>
-        <button
-          class="btn btn-info btn-sm"
-          (click)="addRelation()"
-          [disabled]="!selectedRelationPerson() || !selectedRelationTypeId()"
-        >
-          Добавить
-        </button>
+        <div class="relation-row">
+          <select
+            class="relation-type-select"
+            [value]="selectedRelationTypeId() ?? ''"
+            (change)="onRelationTypeSelect($any($event.target).value)"
+          >
+            <option value="">Выберите тип связи</option>
+            @for (type of relationTypes(); track type.id) {
+              <option [value]="type.id">{{ type.title }}</option>
+            }
+          </select>
+          <button
+            class="btn btn-info btn-sm"
+            (click)="addRelation()"
+            [disabled]="!selectedRelationPerson() || !selectedRelationTypeId()"
+          >
+            Добавить
+          </button>
+        </div>
       </div>
 
       @if (relations().length > 0) {

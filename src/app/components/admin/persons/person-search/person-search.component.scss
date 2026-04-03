@@ -17,10 +17,37 @@
   }
 }
 
-.loading {
-  font-size: 0.75rem;
-  color: #999;
-  margin-left: 0.5rem;
+.selected-person {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #e3f2fd;
+  border-radius: 6px;
+  border: 1px solid #bbdefb;
+
+  .name {
+    font-size: 0.875rem;
+    color: #1565c0;
+    font-weight: 500;
+  }
+
+  .clear-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #1565c0;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    transition: color 0.15s;
+
+    &:hover {
+      color: #c62828;
+    }
+  }
 }
 
 .dropdown {
