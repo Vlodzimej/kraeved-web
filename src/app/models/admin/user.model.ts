@@ -6,4 +6,5 @@ export interface UserOutDto {
   surname: string;
   startDate: string;
   role: string;
+  avatar?: string | null;
 }

@@ -15,6 +15,7 @@ export interface CommentDto {
     email: string;
     name: string;
     surname: string;
+    avatar?: string | null;
   };
 }
 

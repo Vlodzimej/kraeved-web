@@ -74,13 +74,24 @@
         <div class="comments-list">
           @for (comment of comments(); track comment.id) {
             <div class="comment-item">
-              <div class="comment-header">
-                <span class="comment-author">
-                  {{ getCommentAuthor(comment) }}
-                </span>
-                <span class="comment-date">{{ formatDate(comment.createdAt) }}</span>
+              <div class="comment-avatar">
+                @if (comment.user?.avatar) {
+                  <img [src]="commentUserAvatar(comment)" [alt]="getCommentAuthor(comment)" />
+                } @else {
+                  <div class="comment-avatar-placeholder">
+                    {{ getCommentInitials(comment) }}
+                  </div>
+                }
               </div>
-              <p class="comment-text">{{ comment.text }}</p>
+              <div class="comment-content">
+                <div class="comment-header">
+                  <span class="comment-author">
+                    {{ getCommentAuthor(comment) }}
+                  </span>
+                  <span class="comment-date">{{ formatDate(comment.createdAt) }}</span>
+                </div>
+                <p class="comment-text">{{ comment.text }}</p>
+              </div>
             </div>
           } @empty {
             <p class="no-comments">Комментариев пока нет</p>

@@ -41,11 +41,64 @@
   align-items: center;
   margin-bottom: 32px;
 
-  h1 {
-    margin: 0;
-    font-size: 28px;
-    color: #1a1a2e;
-    font-weight: 700;
+  .profile-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #1a1a2e;
+      font-weight: 700;
+    }
+  }
+
+  .avatar-section {
+    position: relative;
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .avatar-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #e0e0e0;
+  }
+
+  .avatar-placeholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    border: 2px solid #e0e0e0;
+  }
+
+  .avatar-upload-btn {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 24px;
+    height: 24px;
+    background: #2196f3;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    cursor: pointer;
+    border: 2px solid #fff;
+    transition: background 0.2s;
+
+    &:hover {
+      background: #1976d2;
+    }
   }
 }
 

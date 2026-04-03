@@ -50,4 +50,12 @@ export class AuthService {
       .patch<KraevedResponse<UserOutDto>>(`${environment.apiUrl}/users/current`, user)
       .pipe(map((res) => res.data));
   }
+
+  uploadAvatar(file: File): Observable<UserOutDto> {
+    const formData = new FormData();
+    formData.append("avatar", file, file.name);
+    return this.http
+      .post<KraevedResponse<UserOutDto>>(`${environment.apiUrl}/users/current/avatar`, formData)
+      .pipe(map((res) => res.data));
+  }
 }

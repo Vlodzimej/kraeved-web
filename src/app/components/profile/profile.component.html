@@ -5,13 +5,28 @@
     </svg>
     На главную
   </a>
-  <div class="profile-card">
-    <div class="profile-header">
-      <h1>Профиль</h1>
-      @if (!isEditing()) {
-        <button class="btn btn-info" (click)="startEditing()">Редактировать</button>
-      }
-    </div>
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="profile-header-left">
+          <div class="avatar-section">
+            @if (avatarUrl()) {
+              <img class="avatar-img" [src]="avatarUrl()" alt="Аватар" />
+            } @else {
+              <div class="avatar-placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+            }
+            <label class="avatar-upload-btn">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <input type="file" accept="image/*" (change)="onAvatarSelected($event)" hidden />
+            </label>
+          </div>
+          <h1>Профиль</h1>
+        </div>
+        @if (!isEditing()) {
+          <button class="btn btn-info" (click)="startEditing()">Редактировать</button>
+        }
+      </div>
 
     @if (loading()) {
       <div class="loading">Загрузка...</div>

@@ -14,6 +14,7 @@ import { Store } from "@ngxs/store";
 import { AuthService } from "../../services/auth.service";
 import { UserOutDto } from "../../models/admin/user.model";
 import { Logout } from "../../store/auth/auth.actions";
+import { environment } from "../../../environments/environment";
 
 @Component({
   selector: "app-profile",
@@ -113,5 +114,27 @@ export class ProfileComponent implements OnInit {
         this.router.navigate(["/home"]);
       },
     });
+  }
+
+  onAvatarSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.authService.uploadAvatar(file).subscribe({
+      next: (u) => {
+        this.user.set(u);
+        this.successMessage.set("Аватар успешно обновлён");
+      },
+      error: () => {
+        this.errorMessage.set("Ошибка при загрузке аватара");
+      },
+    });
+  }
+
+  avatarUrl(): string | null {
+    const avatar = this.user()?.avatar;
+    if (!avatar) return null;
+    return `${environment.apiUrl}/Images/filename/${avatar}`;
   }
 }

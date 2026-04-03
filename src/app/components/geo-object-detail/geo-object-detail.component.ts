@@ -118,6 +118,21 @@ export class GeoObjectDetailComponent implements OnInit {
     return comment.user?.email ?? "Аноним";
   }
 
+  getCommentInitials(comment: CommentDto): string {
+    const name = comment.user?.name?.trim();
+    const surname = comment.user?.surname?.trim();
+    if (name || surname) {
+      return `${name?.[0] ?? ""}${surname?.[0] ?? ""}`.toUpperCase();
+    }
+    return (comment.user?.email?.[0] ?? "?").toUpperCase();
+  }
+
+  commentUserAvatar(comment: CommentDto): string {
+    const avatar = comment.user?.avatar;
+    if (!avatar) return "";
+    return `${environment.apiUrl}/Images/filename/${avatar}`;
+  }
+
   goBack(): void {
     this.router.navigate(["/home"]);
   }
