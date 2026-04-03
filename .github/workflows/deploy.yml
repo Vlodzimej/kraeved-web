@@ -21,7 +21,7 @@ jobs:
       - name: Build Angular
         run: |
           cd kraeved-web
-          npm ci
+          npm install
           npm run build -- --configuration=production
 
       - name: Upload built frontend
