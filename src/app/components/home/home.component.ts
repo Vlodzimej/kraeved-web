@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  effect,
   inject,
   OnInit,
   signal,
@@ -65,6 +66,16 @@ export class HomeComponent implements OnInit {
     this.store.dispatch(new LoadAppSettings());
     this.store.dispatch(new LoadGeoObjects());
     this.initMap();
+  }
+
+  ngAfterViewInit(): void {
+    effect(() => {
+      const objects = this.geoObjects();
+      if (objects.length > 0 && this.map) {
+        this.createMarkers();
+        this.updateVisibleMarkers();
+      }
+    });
   }
 
   private initMap(): void {

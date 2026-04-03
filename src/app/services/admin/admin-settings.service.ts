@@ -30,7 +30,7 @@ export class AppSettingsService {
 
   upsert(key: string, value: string, description?: string): Observable<AppSetting> {
     return this.http
-      .post<KraevedResponse<AppSetting>>(this.apiUrl, { key, value, description })
+      .put<KraevedResponse<AppSetting>>(this.apiUrl, { key, value, description })
       .pipe(map((res) => res.data));
   }
 }
