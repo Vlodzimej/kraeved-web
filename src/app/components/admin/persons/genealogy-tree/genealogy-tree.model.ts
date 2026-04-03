@@ -6,8 +6,7 @@ export interface PersonTreeNode {
   birthDate?: string | null;
   deathDate?: string | null;
   photos?: string[] | null;
-  father?: PersonTreeNode | null;
-  mother?: PersonTreeNode | null;
+  parents?: PersonTreeNode[] | null;
   spouses?: PersonRelationDto[] | null;
   children?: PersonRelationDto[] | null;
   siblings?: PersonRelationDto[] | null;

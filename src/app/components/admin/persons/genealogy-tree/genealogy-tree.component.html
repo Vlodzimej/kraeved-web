@@ -5,13 +5,13 @@
 
   @if (tree()) {
     <div class="tree">
-      @if (tree()!.father || tree()!.mother) {
+      @if (tree()!.parents && tree()!.parents!.length > 0) {
         <div class="generation parents">
-          @if (tree()!.father) {
+          @for (parent of tree()!.parents; track parent.id) {
             <div class="person-card parent">
               <div class="photo">
-                @if (tree()!.father!.photos && tree()!.father!.photos!.length > 0) {
-                  <img [src]="imageUrl(tree()!.father!.photos![0])" [alt]="fullName(tree()!.father!)" />
+                @if (parent.photos && parent.photos.length > 0) {
+                  <img [src]="imageUrl(parent.photos[0])" [alt]="fullName(parent)" />
                 } @else {
                   <div class="placeholder">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -19,38 +19,18 @@
                 }
               </div>
               <div class="info">
-                <span class="name">{{ fullName(tree()!.father!) }}</span>
-                @if (yearRange(tree()!.father!)) {
-                  <span class="years">{{ yearRange(tree()!.father!) }}</span>
+                <span class="name">{{ fullName(parent) }}</span>
+                @if (yearRange(parent)) {
+                  <span class="years">{{ yearRange(parent) }}</span>
                 }
               </div>
-              <span class="role-label">Отец</span>
-            </div>
-          }
-          @if (tree()!.mother) {
-            <div class="person-card parent">
-              <div class="photo">
-                @if (tree()!.mother!.photos && tree()!.mother!.photos!.length > 0) {
-                  <img [src]="imageUrl(tree()!.mother!.photos![0])" [alt]="fullName(tree()!.mother!)" />
-                } @else {
-                  <div class="placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  </div>
-                }
-              </div>
-              <div class="info">
-                <span class="name">{{ fullName(tree()!.mother!) }}</span>
-                @if (yearRange(tree()!.mother!)) {
-                  <span class="years">{{ yearRange(tree()!.mother!) }}</span>
-                }
-              </div>
-              <span class="role-label">Мать</span>
+              <span class="role-label">Родитель</span>
             </div>
           }
         </div>
       }
 
-      @if (tree()!.father || tree()!.mother) {
+      @if (tree()!.parents && tree()!.parents!.length > 0) {
         <div class="connector vertical"></div>
       }
 
