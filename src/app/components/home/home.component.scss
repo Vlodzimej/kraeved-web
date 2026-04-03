@@ -44,11 +44,12 @@
 }
 
 .profile-link {
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: #fff;
+  color: #2196f3;
+  font-weight: 500;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.3);
+    background: #f0f0f0;
   }
 }
 

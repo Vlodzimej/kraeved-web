@@ -8,7 +8,7 @@ import {
 import { CommonModule } from "@angular/common";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { FormBuilder, Validators } from "@angular/forms";
-import { Router } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { finalize } from "rxjs";
 import { AuthService } from "../../services/auth.service";
 import { UserOutDto } from "../../models/admin/user.model";
@@ -16,7 +16,7 @@ import { UserOutDto } from "../../models/admin/user.model";
 @Component({
   selector: "app-profile",
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink],
   templateUrl: "./profile.component.html",
   styleUrl: "./profile.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
