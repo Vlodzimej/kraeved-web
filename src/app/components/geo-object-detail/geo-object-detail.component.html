@@ -128,7 +128,7 @@
           </button>
         }
 
-        <img class="preview-image" [src]="imageUrl(previewImage() ?? '')" [alt]="previewImage()" />
+        <img class="preview-image" [src]="previewImageUrl(previewImage() ?? '')" [alt]="previewImage()" />
 
         <div class="preview-counter">
           {{ previewImageIndex() + 1 }} / {{ previewImages().length }}
