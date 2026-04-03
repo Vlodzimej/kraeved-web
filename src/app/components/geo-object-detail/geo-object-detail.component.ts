@@ -109,6 +109,15 @@ export class GeoObjectDetailComponent implements OnInit {
     });
   }
 
+  getCommentAuthor(comment: CommentDto): string {
+    const name = comment.user?.name?.trim();
+    const surname = comment.user?.surname?.trim();
+    if (name || surname) {
+      return `${name || ""} ${surname || ""}`.trim();
+    }
+    return comment.user?.email ?? "Аноним";
+  }
+
   goBack(): void {
     this.router.navigate(["/home"]);
   }

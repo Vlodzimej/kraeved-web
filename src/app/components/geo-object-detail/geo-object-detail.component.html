@@ -76,7 +76,7 @@
             <div class="comment-item">
               <div class="comment-header">
                 <span class="comment-author">
-                  {{ comment.user?.name }} {{ comment.user?.surname }}
+                  {{ getCommentAuthor(comment) }}
                 </span>
                 <span class="comment-date">{{ formatDate(comment.createdAt) }}</span>
               </div>
