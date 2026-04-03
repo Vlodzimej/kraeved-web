@@ -22,6 +22,24 @@
         </div>
       </div>
 
+      @if (geoObject()?.description) {
+        <div class="detail-section">
+          <h2>Описание</h2>
+          <p>{{ geoObject()?.description }}</p>
+        </div>
+      }
+
+      @if (geoObject()?.images && geoObject()!.images!.length > 0) {
+        <div class="detail-section">
+          <h2>Изображения</h2>
+          <div class="images-grid">
+            @for (img of geoObject()?.images; track img) {
+              <img class="detail-image" [src]="imageUrl(img)" [alt]="img" (click)="openImagePreview(img, geoObject()?.images ?? [])" />
+            }
+          </div>
+        </div>
+      }
+
       @if (persons().length > 0) {
         <div class="detail-section">
           <h2>Персоналии</h2>
@@ -37,24 +55,6 @@
                 }
                 <span class="person-name">{{ fullName(person) }}</span>
               </div>
-            }
-          </div>
-        </div>
-      }
-
-      @if (geoObject()?.description) {
-        <div class="detail-section">
-          <h2>Описание</h2>
-          <p>{{ geoObject()?.description }}</p>
-        </div>
-      }
-
-      @if (geoObject()?.images && geoObject()!.images!.length > 0) {
-        <div class="detail-section">
-          <h2>Изображения</h2>
-          <div class="images-grid">
-            @for (img of geoObject()?.images; track img) {
-              <img class="detail-image" [src]="imageUrl(img)" [alt]="img" (click)="openImagePreview(img, geoObject()?.images ?? [])" />
             }
           </div>
         </div>
