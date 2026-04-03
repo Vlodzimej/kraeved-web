@@ -51,10 +51,26 @@
         </div>
         <div class="modal-body">
 
-          @if (selectedObject()?.description) {
+          @if (selectedObject()?.shortDescription) {
             <div class="detail-section">
               <label>Описание</label>
-              <p>{{ selectedObject()?.description }}</p>
+              <p>{{ selectedObject()?.shortDescription }}</p>
+            </div>
+          }
+
+          @if (selectedObject()?.images && selectedObject()!.images!.length > 0) {
+            <div class="detail-section">
+              <label>Изображения</label>
+              <div class="carousel">
+                @for (img of selectedObject()?.images; track img) {
+                  <div
+                    class="carousel-item"
+                    (click)="openImagePreview(img, selectedObject()?.images ?? [])"
+                  >
+                    <img [src]="thumbnailUrl(img)" [alt]="img" />
+                  </div>
+                }
+              </div>
             </div>
           }
 
