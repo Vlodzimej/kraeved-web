@@ -53,6 +53,12 @@
         </div>
       }
 
+      @if (successMessage()) {
+        <div class="success-message">
+          {{ successMessage() }}
+        </div>
+      }
+
       <button type="submit" class="login-button" [disabled]="isLoading()">
         @if (isLoading()) {
           @if (isRegisterMode()) {

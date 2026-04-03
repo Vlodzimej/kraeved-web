@@ -22,6 +22,7 @@ export class LoginComponent {
   protected email = signal("");
   protected password = signal("");
   protected errorMessage = signal("");
+  protected successMessage = signal("");
   protected isLoading = signal(false);
 
   protected isRegisterMode = signal(false);
@@ -31,9 +32,9 @@ export class LoginComponent {
   toggleMode(): void {
     this.isRegisterMode.set(!this.isRegisterMode());
     this.errorMessage.set("");
+    this.successMessage.set("");
     this.email.set("");
     this.password.set("");
-    this.regPassword.set("");
     this.regPasswordConfirm.set("");
   }
 
@@ -64,9 +65,11 @@ export class LoginComponent {
       )
       .subscribe({
         next: () => {
+          this.successMessage.set("");
           this.router.navigate(["/home"]);
         },
         error: (err: HttpErrorResponse) => {
+          this.successMessage.set("");
           if (err.status === 401) {
             this.errorMessage.set("Введены неверные данные для входа");
           } else if (err.status === 0) {
@@ -90,17 +93,17 @@ export class LoginComponent {
   }
 
   private onRegister(): void {
-    if (!this.email() || !this.regPassword() || !this.regPasswordConfirm()) {
+    if (!this.email() || !this.password() || !this.regPasswordConfirm()) {
       this.errorMessage.set("Заполните все поля");
       return;
     }
 
-    if (this.regPassword() !== this.regPasswordConfirm()) {
+    if (this.password() !== this.regPasswordConfirm()) {
       this.errorMessage.set("Пароли не совпадают");
       return;
     }
 
-    if (this.regPassword().length < 6) {
+    if (this.password().length < 6) {
       this.errorMessage.set("Пароль должен быть не менее 6 символов");
       return;
     }
@@ -108,17 +111,18 @@ export class LoginComponent {
     this.isLoading.set(true);
     this.errorMessage.set("");
 
-    this.authService.register(this.email(), this.regPassword()).subscribe({
+    this.authService.register(this.email(), this.password()).subscribe({
       next: () => {
         this.isRegisterMode.set(false);
-        this.errorMessage.set("Регистрация успешна. Войдите в систему.");
+        this.successMessage.set("Регистрация успешна. Войдите в систему.");
         this.email.set("");
-        this.regPassword.set("");
+        this.password.set("");
         this.regPasswordConfirm.set("");
         this.isLoading.set(false);
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
+        this.successMessage.set("");
         if (err.status === 0) {
           this.errorMessage.set("Не удалось подключиться к серверу");
         } else if (err.error?.message) {
