@@ -92,3 +92,21 @@ export interface PersonGeoObjectBrief {
   personId?: number | null;
   person?: PersonBrief | null;
 }
+
+export interface PersonRelationType {
+  id: number;
+  title: string;
+  name: string;
+  pairedTypeId?: number | null;
+}
+
+export interface PersonRelationDto {
+  personId: number;
+  surname?: string | null;
+  firstName?: string | null;
+  patronymic?: string | null;
+  birthDate?: string | null;
+  deathDate?: string | null;
+  photos?: string[] | null;
+  relationTitle?: string | null;
+}

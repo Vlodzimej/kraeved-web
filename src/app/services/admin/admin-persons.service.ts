@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, map } from "rxjs";
-import { Person } from "../../models/admin/entities.model";
+import { Person, PersonRelationType, PersonRelationDto } from "../../models/admin/entities.model";
 import { KraevedResponse } from "../../models/kraeved-response";
 import { environment } from "../../../environments/environment";
 
@@ -67,6 +67,30 @@ export class AdminPersonsService {
   getPersonById(id: number): Observable<Person> {
     return this.http
       .get<KraevedResponse<Person>>(`${this.apiUrl}/${id}`)
+      .pipe(map((res) => res.data));
+  }
+
+  getRelationTypes(): Observable<PersonRelationType[]> {
+    return this.http
+      .get<KraevedResponse<PersonRelationType[]>>(`${this.apiUrl}/relation-types`)
+      .pipe(map((res) => res.data));
+  }
+
+  getRelations(personId: number): Observable<PersonRelationDto[]> {
+    return this.http
+      .get<KraevedResponse<PersonRelationDto[]>>(`${this.apiUrl}/${personId}/relations`)
+      .pipe(map((res) => res.data));
+  }
+
+  addRelation(personId1: number, personId2: number, relationTypeId: number): Observable<boolean> {
+    return this.http
+      .post<KraevedResponse<boolean>>(`${this.apiUrl}/relation`, { personId1, personId2, relationTypeId })
+      .pipe(map((res) => res.data));
+  }
+
+  removeRelation(personId1: number, personId2: number, relationTypeId: number): Observable<boolean> {
+    return this.http
+      .delete<KraevedResponse<boolean>>(`${this.apiUrl}/relation`, { body: { personId1, personId2, relationTypeId } })
       .pipe(map((res) => res.data));
   }
 }

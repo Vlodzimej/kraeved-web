@@ -207,5 +207,47 @@
         (imagesChange)="onPhotosChange($event)"
       ></app-image-uploader>
     </div>
+
+    <div class="field-group">
+      <label>Родственные связи</label>
+      <div class="relation-add">
+        <app-person-search
+          (personSelected)="onRelationPersonSelected($event)"
+        ></app-person-search>
+        <select
+          class="relation-type-select"
+          [value]="selectedRelationTypeId() ?? ''"
+          (change)="onRelationTypeSelect($any($event.target).value)"
+        >
+          <option value="">Выберите тип связи</option>
+          @for (type of relationTypes(); track type.id) {
+            <option [value]="type.id">{{ type.title }}</option>
+          }
+        </select>
+        <button
+          class="btn btn-info btn-sm"
+          (click)="addRelation()"
+          [disabled]="!selectedRelationPerson() || !selectedRelationTypeId()"
+        >
+          Добавить
+        </button>
+      </div>
+
+      @if (relations().length > 0) {
+        <div class="relations-list">
+          @for (rel of relations(); track rel.personId) {
+            <div class="relation-item">
+              <span class="relation-name">{{ rel.relationTitle }}: {{ rel.surname }} {{ rel.firstName }}</span>
+              <button class="remove-relation" (click)="removeRelation(rel)" title="Удалить">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
   </app-admin-card>
 </div>

@@ -22,7 +22,7 @@ import {
   UpdatePerson,
   DeletePerson,
 } from "../../../store/persons/persons.actions";
-import { Person } from "../../../models/admin/entities.model";
+import { Person, PersonRelationType, PersonRelationDto } from "../../../models/admin/entities.model";
 import { AdminPersonsService } from "../../../services/admin/admin-persons.service";
 import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dialog.component";
 import { AdminCardComponent } from "../shared/card/admin-card.component";
@@ -30,6 +30,7 @@ import { PaginationComponent } from "../../shared/pagination/pagination.componen
 import { SortableHeaderComponent, SortDirection } from "../../shared/sortable-header/sortable-header.component";
 import { useAdminCrud } from "../shared/use-admin-crud";
 import { ImageUploaderComponent } from "../../shared/image-uploader/image-uploader.component";
+import { PersonSearchComponent } from "./person-search/person-search.component";
 
 @Component({
   selector: "app-admin-persons",
@@ -43,6 +44,7 @@ import { ImageUploaderComponent } from "../../shared/image-uploader/image-upload
     PaginationComponent,
     SortableHeaderComponent,
     ImageUploaderComponent,
+    PersonSearchComponent,
   ],
   templateUrl: "./admin-persons.component.html",
   styleUrl: "./admin-persons.component.scss",
@@ -66,6 +68,10 @@ export class AdminPersonsComponent implements OnInit {
   sortDirection = signal<SortDirection>("asc");
 
   photos = signal<string[]>([]);
+  relations = signal<PersonRelationDto[]>([]);
+  relationTypes = signal<PersonRelationType[]>([]);
+  selectedRelationPerson = signal<Person | null>(null);
+  selectedRelationTypeId = signal<number | null>(null);
 
   form = this.fb.group({
     surname: ["", Validators.required],
@@ -147,6 +153,9 @@ export class AdminPersonsComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(new LoadPersons());
+    this.service.getRelationTypes().subscribe({
+      next: (types) => this.relationTypes.set(types),
+    });
   }
 
   selectItem(item: Person): void {
@@ -167,6 +176,7 @@ export class AdminPersonsComponent implements OnInit {
             birthDate: data.birthDate ?? "",
             deathDate: data.deathDate ?? "",
           });
+          this.loadRelations(data.id!);
         },
       });
   }
@@ -174,6 +184,9 @@ export class AdminPersonsComponent implements OnInit {
   openCreate(): void {
     this.crud.openCreate();
     this.photos.set([]);
+    this.relations.set([]);
+    this.selectedRelationPerson.set(null);
+    this.selectedRelationTypeId.set(null);
     this.form.reset({
       surname: "",
       firstName: "",
@@ -191,6 +204,9 @@ export class AdminPersonsComponent implements OnInit {
   confirmClose(): void {
     this.crud.confirmClose();
     this.photos.set([]);
+    this.relations.set([]);
+    this.selectedRelationPerson.set(null);
+    this.selectedRelationTypeId.set(null);
     this.form.reset({
       surname: "",
       firstName: "",
@@ -267,6 +283,48 @@ export class AdminPersonsComponent implements OnInit {
 
   onPhotosChange(photos: string[]): void {
     this.photos.set(photos);
+  }
+
+  onRelationPersonSelected(person: any): void {
+    this.selectedRelationPerson.set(person);
+  }
+
+  onRelationTypeSelect(value: string): void {
+    this.selectedRelationTypeId.set(value ? +value : null);
+  }
+
+  addRelation(): void {
+    const personId = this.crud.selectedItem()?.id;
+    const relatedId = this.selectedRelationPerson()?.id;
+    const typeId = this.selectedRelationTypeId();
+    if (!personId || !relatedId || !typeId) return;
+
+    this.service.addRelation(personId, relatedId, typeId).subscribe({
+      next: () => {
+        this.loadRelations(personId);
+        this.selectedRelationPerson.set(null);
+        this.selectedRelationTypeId.set(null);
+      },
+    });
+  }
+
+  removeRelation(relation: PersonRelationDto): void {
+    const personId = this.crud.selectedItem()?.id;
+    if (!personId) return;
+
+    const type = this.relationTypes().find((t) => t.title === relation.relationTitle);
+    if (!type) return;
+
+    this.service.removeRelation(personId, relation.personId, type.id).subscribe({
+      next: () => this.loadRelations(personId),
+    });
+  }
+
+  private loadRelations(personId: number): void {
+    this.service.getRelations(personId).subscribe({
+      next: (rels) => this.relations.set(rels),
+      error: () => this.relations.set([]),
+    });
   }
 
   formatDate(date: string | null | undefined): string {
