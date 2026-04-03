@@ -111,7 +111,7 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
   }
 
   fullName(person: PersonBrief): string {
-    return [person.surname, person.firstName].filter(Boolean).join(" ");
+    return [person.firstName, person.surname].filter(Boolean).join(" ");
   }
 
   personImageUrl(photo: string): string {
