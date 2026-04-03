@@ -30,6 +30,12 @@ export class CommentsService {
       .pipe(map((res) => res.data));
   }
 
+  getLatestByGeoObjectId(geoObjectId: number): Observable<CommentDto | null> {
+    return this.http
+      .get<KraevedResponse<CommentDto | null>>(`${this.apiUrl}/geo-object/${geoObjectId}/latest`)
+      .pipe(map((res) => res.data));
+  }
+
   add(geoObjectId: number, text: string): Observable<CommentDto> {
     return this.http
       .post<KraevedResponse<CommentDto>>(this.apiUrl, { geoObjectId, text })

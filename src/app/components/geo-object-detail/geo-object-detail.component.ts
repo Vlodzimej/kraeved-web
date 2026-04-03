@@ -35,6 +35,7 @@ export class GeoObjectDetailComponent implements OnInit {
   geoObject = signal<GeoObject | null>(null);
   persons = signal<PersonBrief[]>([]);
   comments = signal<CommentDto[]>([]);
+  latestComment = signal<CommentDto | null>(null);
   loading = signal(false);
   isAuthenticated = this.store.selectSignal(AuthState.isAuthenticated);
   currentUserId = signal<number | null>(null);
@@ -57,6 +58,9 @@ export class GeoObjectDetailComponent implements OnInit {
         this.geoObject.set(obj);
         this.geoObjectsService.getPersonsByGeoObjectId(id).subscribe({
           next: (p) => this.persons.set(p),
+        });
+        this.commentsService.getLatestByGeoObjectId(id).subscribe({
+          next: (c) => this.latestComment.set(c),
         });
         this.commentsService.getByGeoObjectId(id).subscribe({
           next: (c) => this.comments.set(c),
