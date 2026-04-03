@@ -394,6 +394,10 @@ export class HomeComponent implements OnInit {
     this.router.navigate(["/login"]);
   }
 
+  goToProfile(): void {
+    this.router.navigate(["/profile"]);
+  }
+
   onSearchSelectObject(obj: GeoObjectBrief): void {
     if (obj.latitude == null || obj.longitude == null || !this.map) return;
     this.clearHighlight();

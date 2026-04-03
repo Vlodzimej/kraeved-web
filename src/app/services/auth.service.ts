@@ -4,6 +4,7 @@ import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { LoginInDto } from "../models/login-in-dto";
 import { LoginOutDto } from "../models/login-out-dto";
+import { UserOutDto } from "../models/admin/user.model";
 import { KraevedResponse } from "../models/kraeved-response";
 import { environment } from "../../environments/environment";
 
@@ -36,5 +37,17 @@ export class AuthService {
   register(email: string, password: string): Observable<void> {
     return this.http
       .post<void>(`${this.apiUrl}/registration`, { email, password });
+  }
+
+  getCurrentUser(): Observable<UserOutDto> {
+    return this.http
+      .get<KraevedResponse<UserOutDto>>(`${environment.apiUrl}/users/current`)
+      .pipe(map((res) => res.data));
+  }
+
+  updateCurrentUser(user: Partial<UserOutDto>): Observable<UserOutDto> {
+    return this.http
+      .patch<KraevedResponse<UserOutDto>>(`${environment.apiUrl}/users/current`, user)
+      .pipe(map((res) => res.data));
   }
 }

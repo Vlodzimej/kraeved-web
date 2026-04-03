@@ -19,6 +19,14 @@ export const routes: Routes = [
       import("./components/home/home.component").then((m) => m.HomeComponent),
   },
   {
+    path: "profile",
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import("./components/profile/profile.component").then(
+        (m) => m.ProfileComponent,
+      ),
+  },
+  {
     path: "admin",
     component: AdminLayoutComponent,
     canActivate: [adminGuard],
