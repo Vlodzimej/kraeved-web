@@ -14,7 +14,9 @@ import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { AdminPersonsService } from "../../services/admin/admin-persons.service";
+import { CommentsService } from "../../services/comments.service";
 import { GeoObject, GeoObjectBrief, Person, PersonBrief } from "../../models/admin/entities.model";
+import { CommentDto } from "../../services/comments.service";
 import { createTypeIcon } from "../../utils/map-icons";
 import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
 import { AppSettingsState, LoadAppSettings } from "../../store/app-settings/app-settings.state";
@@ -41,6 +43,7 @@ export class HomeComponent implements OnInit {
   private router = inject(Router);
   private geoObjectsService = inject(GeoObjectsService);
   private personsService = inject(AdminPersonsService);
+  private commentsService = inject(CommentsService);
 
   isAdmin = this.store.selectSignal(AuthState.isAdmin);
   copyright = this.store.selectSignal(AppSettingsState.copyright);
@@ -50,6 +53,7 @@ export class HomeComponent implements OnInit {
   geoObjects = signal<GeoObjectBrief[]>([]);
   selectedObject = signal<GeoObject | null>(null);
   selectedObjectPersons = signal<PersonBrief[]>([]);
+  selectedObjectLatestComment = signal<CommentDto | null>(null);
   selectedPerson = signal<Person | null>(null);
   previewImage = signal<string | null>(null);
   previewImageIndex = signal(0);
@@ -308,9 +312,14 @@ export class HomeComponent implements OnInit {
       next: (obj) => {
         this.selectedObject.set(obj);
         this.selectedObjectPersons.set([]);
+        this.selectedObjectLatestComment.set(null);
         this.geoObjectsService.getPersonsByGeoObjectId(id).subscribe({
           next: (persons) => this.selectedObjectPersons.set(persons),
           error: () => this.selectedObjectPersons.set([]),
+        });
+        this.commentsService.getLatestByGeoObjectId(id).subscribe({
+          next: (comment) => this.selectedObjectLatestComment.set(comment),
+          error: () => this.selectedObjectLatestComment.set(null),
         });
       },
     });
@@ -338,6 +347,38 @@ export class HomeComponent implements OnInit {
   formatDate(date: string | null | undefined): string {
     if (!date) return "—";
     return new Date(date).toLocaleDateString("ru-RU", { year: "numeric" });
+  }
+
+  commentAuthor(comment: CommentDto): string {
+    const name = comment.user?.name?.trim();
+    const surname = comment.user?.surname?.trim();
+    if (name || surname) {
+      return `${name || ""} ${surname || ""}`.trim();
+    }
+    return comment.user?.email ?? "Аноним";
+  }
+
+  commentInitials(comment: CommentDto): string {
+    const name = comment.user?.name?.trim();
+    const surname = comment.user?.surname?.trim();
+    if (name || surname) {
+      return `${name?.[0] ?? ""}${surname?.[0] ?? ""}`.toUpperCase();
+    }
+    return (comment.user?.email?.[0] ?? "?").toUpperCase();
+  }
+
+  commentAvatarUrl(avatar: string): string {
+    return `${environment.apiUrl}/Images/avatar/${avatar}`;
+  }
+
+  commentDate(date: string): string {
+    return new Date(date).toLocaleString("ru-RU", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   imageUrl = (name: string): string =>

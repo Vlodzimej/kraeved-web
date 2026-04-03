@@ -68,15 +68,34 @@
                       <img [src]="thumbnailUrl(person.photos[0])" [alt]="person.surname" />
                     } @else {
                       <div class="person-placeholder">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                          <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                       </div>
                     }
                     <span class="person-name">{{ person.firstName }} {{ person.surname }}</span>
                   </div>
                 }
+              </div>
+            </div>
+          }
+
+          @if (selectedObjectLatestComment()) {
+            <div class="detail-section latest-comment">
+              <label>Последний комментарий</label>
+              <div class="mini-comment">
+                <div class="mini-comment-avatar">
+                  @if (selectedObjectLatestComment()!.user?.avatar) {
+                    <img [src]="commentAvatarUrl(selectedObjectLatestComment()!.user!.avatar!)" [alt]="commentAuthor(selectedObjectLatestComment()!)" />
+                  } @else {
+                    <span>{{ commentInitials(selectedObjectLatestComment()!) }}</span>
+                  }
+                </div>
+                <div class="mini-comment-content">
+                  <div class="mini-comment-header">
+                    <span class="mini-comment-author">{{ commentAuthor(selectedObjectLatestComment()!) }}</span>
+                    <span class="mini-comment-date">{{ commentDate(selectedObjectLatestComment()!.createdAt) }}</span>
+                  </div>
+                  <p class="mini-comment-text">{{ selectedObjectLatestComment()!.text }}</p>
+                </div>
               </div>
             </div>
           }
