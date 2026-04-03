@@ -511,19 +511,14 @@
 
 .latest-comment {
   cursor: pointer;
-  transition: background 0.2s;
-
-  &:hover {
-    background: #f0f0f0;
-
-    label {
-      text-decoration: underline;
-    }
-  }
 
   label {
     margin-bottom: 8px;
     transition: text-decoration 0.2s;
+  }
+
+  &:hover label {
+    text-decoration: underline;
   }
 }
 

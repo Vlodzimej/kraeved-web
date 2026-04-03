@@ -32,9 +32,18 @@
       @if (persons().length > 0) {
         <div class="detail-section">
           <h2>Персоналии</h2>
-          <div class="persons-list">
+          <div class="persons-carousel">
             @for (person of persons(); track person.id) {
-              <div class="person-chip">{{ fullName(person) }}</div>
+              <div class="person-card">
+                @if (person.photos && person.photos.length > 0) {
+                  <img [src]="personImageUrl(person.photos[0])" [alt]="person.surname" />
+                } @else {
+                  <div class="person-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  </div>
+                }
+                <span class="person-name">{{ fullName(person) }}</span>
+              </div>
             }
           </div>
         </div>

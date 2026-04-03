@@ -114,6 +114,10 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
     return [person.surname, person.firstName].filter(Boolean).join(" ");
   }
 
+  personImageUrl(photo: string): string {
+    return `${environment.apiUrl}/Images/thumbnail/${photo}`;
+  }
+
   formatDate(date: string): string {
     return new Date(date).toLocaleString("ru-RU", {
       day: "2-digit",
