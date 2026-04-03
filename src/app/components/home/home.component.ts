@@ -11,11 +11,13 @@ import { Router } from "@angular/router";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
+import { AppSettingsState, LoadAppSettings } from "../../store/app-settings/app-settings.state";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { AdminPersonsService } from "../../services/admin/admin-persons.service";
 import { GeoObject, GeoObjectBrief, Person, PersonBrief } from "../../models/admin/entities.model";
 import { createTypeIcon } from "../../utils/map-icons";
 import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
+import { LoadGeoObjects } from "../../store/geo-objects/geo-objects.actions";
 import { environment } from "../../../environments/environment";
 import * as L from "leaflet";
 
@@ -41,6 +43,7 @@ export class HomeComponent implements OnInit {
   private personsService = inject(AdminPersonsService);
 
   isAdmin = this.store.selectSignal(AuthState.isAdmin);
+  copyright = this.store.selectSignal(AppSettingsState.copyright);
   isAuthenticated = this.store.selectSignal(AuthState.isAuthenticated);
   mapContainer = viewChild<ElementRef<HTMLDivElement>>("mapContainer");
 
@@ -59,12 +62,9 @@ export class HomeComponent implements OnInit {
   private _highlightedMarkerId: number | null = null;
 
   ngOnInit(): void {
-    this.geoObjectsService.getAll().subscribe({
-      next: (objects) => {
-        this.geoObjects.set(objects);
-        setTimeout(() => this.initMap(), 0);
-      },
-    });
+    this.store.dispatch(new LoadAppSettings());
+    this.store.dispatch(new LoadGeoObjects());
+    this.initMap();
   }
 
   private initMap(): void {

@@ -1,0 +1,25 @@
+<div class="admin-page">
+  <div class="page-header">
+    <h1>Настройки</h1>
+  </div>
+
+  @if (loading()) {
+    <div class="loading">Загрузка...</div>
+  }
+
+  <div class="settings-card">
+    <h2>Copyright</h2>
+    <p class="setting-desc">Текст, отображаемый в нижней части страницы</p>
+    <form [formGroup]="copyrightForm" (ngSubmit)="onSaveCopyright()" class="setting-form">
+      <input
+        type="text"
+        formControlName="value"
+        placeholder="© 2024 Краевед"
+        class="setting-input"
+      />
+      <button type="submit" class="btn btn-info" [disabled]="copyrightForm.invalid">
+        Сохранить
+      </button>
+    </form>
+  </div>
+</div>

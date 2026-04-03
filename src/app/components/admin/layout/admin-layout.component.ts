@@ -29,6 +29,7 @@ export class AdminLayoutComponent implements OnInit {
     { label: "Категории объектов", path: "/admin/geo-object-categories" },
     { label: "События", path: "/admin/historical-events" },
     { label: "Персоналии", path: "/admin/persons" },
+    { label: "Настройки", path: "/admin/settings" },
   ];
 
   ngOnInit(): void {

@@ -66,6 +66,13 @@ export const routes: Routes = [
             (m) => m.AdminPersonsComponent,
           ),
       },
+      {
+        path: "settings",
+        loadComponent: () =>
+          import("./components/admin/settings/admin-settings.component").then(
+            (m) => m.AdminSettingsComponent,
+          ),
+      },
     ],
   },
   { path: "", canActivate: [redirectGuard], component: EmptyComponent },
