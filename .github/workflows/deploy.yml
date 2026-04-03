@@ -1,0 +1,50 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout web
+        uses: actions/checkout@v4
+        with:
+          path: kraeved-web
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Build Angular
+        run: |
+          cd kraeved-web
+          npm ci
+          npm run build -- --configuration=production
+
+      - name: Upload built frontend
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "kraeved-web/dist/"
+          target: "~/kraeved/kraeved-web/"
+          strip_components: 1
+
+      - name: Deploy and restart
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ~/kraeved/kraeved-api && git pull
+            cd ~/kraeved/kraeved-web && git pull
+            cd ~/kraeved
+            sudo docker compose up -d --build api
+            sudo docker compose restart web
