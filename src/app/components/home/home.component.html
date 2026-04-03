@@ -8,7 +8,6 @@
       }
       @if (isAuthenticated()) {
         <button class="profile-link" (click)="goToProfile()">Профиль</button>
-        <button class="logout-button" (click)="onLogout()">Выйти</button>
       } @else {
         <button class="login-link" (click)="goToLogin()">Войти</button>
       }

@@ -10,8 +10,10 @@ import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { FormBuilder, Validators } from "@angular/forms";
 import { Router, RouterLink } from "@angular/router";
 import { finalize } from "rxjs";
+import { Store } from "@ngxs/store";
 import { AuthService } from "../../services/auth.service";
 import { UserOutDto } from "../../models/admin/user.model";
+import { Logout } from "../../store/auth/auth.actions";
 
 @Component({
   selector: "app-profile",
@@ -23,6 +25,7 @@ import { UserOutDto } from "../../models/admin/user.model";
 })
 export class ProfileComponent implements OnInit {
   private authService = inject(AuthService);
+  private store = inject(Store);
   private fb = inject(FormBuilder);
   private router = inject(Router);
 
@@ -100,6 +103,14 @@ export class ProfileComponent implements OnInit {
       error: () => {
         this.errorMessage.set("Ошибка при сохранении");
         this.saving.set(false);
+      },
+    });
+  }
+
+  onLogout(): void {
+    this.store.dispatch(new Logout()).subscribe({
+      next: () => {
+        this.router.navigate(["/home"]);
       },
     });
   }
