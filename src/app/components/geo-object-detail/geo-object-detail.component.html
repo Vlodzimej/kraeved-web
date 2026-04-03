@@ -51,34 +51,6 @@
         </div>
       }
 
-      @if (latestComment()) {
-        <div class="detail-section latest-comment-section">
-          <h2>Последний комментарий</h2>
-          <div class="latest-comment">
-            <div class="comment-item">
-              <div class="comment-avatar">
-                @if (latestComment()!.user?.avatar) {
-                  <img [src]="commentUserAvatar(latestComment()!)" [alt]="getCommentAuthor(latestComment()!)" />
-                } @else {
-                  <div class="comment-avatar-placeholder">
-                    {{ getCommentInitials(latestComment()!) }}
-                  </div>
-                }
-              </div>
-              <div class="comment-content">
-                <div class="comment-header">
-                  <span class="comment-author">
-                    {{ getCommentAuthor(latestComment()!) }}
-                  </span>
-                  <span class="comment-date">{{ formatDate(latestComment()!.createdAt) }}</span>
-                </div>
-                <p class="comment-text">{{ latestComment()!.text }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      }
-
       <div class="detail-section comments-section">
         <h2>Комментарии</h2>
 
