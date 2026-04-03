@@ -114,8 +114,8 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
     return `${environment.apiUrl}/Images/thumbnail/${name}`;
   }
 
-  previewImageUrl(name: string): string {
-    return `${environment.apiUrl}/Images/preview/${name}`;
+  fullImageUrl(name: string): string {
+    return `${environment.apiUrl}/Images/filename/${name}`;
   }
 
   fullName(person: PersonBrief): string {
