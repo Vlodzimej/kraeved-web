@@ -272,17 +272,30 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.25rem;
   color: #999;
-  border-radius: 4px;
+  padding: 4px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  transition: color 0.15s, background 0.15s;
+  transition: color 0.15s;
 
   &:hover {
     color: #333;
-    background: #f0f0f0;
+  }
+}
+
+.modal-detail-btn {
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #1976d2;
   }
 }
 

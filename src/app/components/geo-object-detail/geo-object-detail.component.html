@@ -1,0 +1,92 @@
+<div class="detail-container">
+  <a routerLink="/home" class="back-home">
+    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+    На главную
+  </a>
+
+  @if (loading()) {
+    <div class="loading">Загрузка...</div>
+  } @else if (geoObject()) {
+    <div class="detail-card">
+      <div class="detail-header">
+        @if (geoObject()?.thumbnail) {
+          <img class="detail-thumbnail" [src]="imageUrl(geoObject()!.thumbnail!)" [alt]="geoObject()?.name" />
+        }
+        <div class="detail-title">
+          <h1>{{ geoObject()?.name }}</h1>
+          @if (geoObject()?.type?.title) {
+            <span class="detail-type">{{ geoObject()?.type?.title }}</span>
+          }
+        </div>
+      </div>
+
+      @if (geoObject()?.description) {
+        <div class="detail-section">
+          <h2>Описание</h2>
+          <p>{{ geoObject()?.description }}</p>
+        </div>
+      }
+
+      @if (persons().length > 0) {
+        <div class="detail-section">
+          <h2>Персоналии</h2>
+          <div class="persons-list">
+            @for (person of persons(); track person.id) {
+              <div class="person-chip">{{ fullName(person) }}</div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (geoObject()?.images && geoObject()!.images!.length > 0) {
+        <div class="detail-section">
+          <h2>Изображения</h2>
+          <div class="images-grid">
+            @for (img of geoObject()?.images; track img) {
+              <img class="detail-image" [src]="imageUrl(img)" [alt]="img" />
+            }
+          </div>
+        </div>
+      }
+
+      <div class="detail-section comments-section">
+        <h2>Комментарии</h2>
+
+        @if (isAuthenticated()) {
+          <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="comment-form">
+            <textarea
+              formControlName="text"
+              placeholder="Написать комментарий..."
+              rows="3"
+            ></textarea>
+            <button type="submit" class="btn btn-info" [disabled]="commentForm.invalid">
+              Отправить
+            </button>
+          </form>
+        } @else {
+          <p class="login-hint">
+            <a routerLink="/login">Войдите</a>, чтобы оставить комментарий
+          </p>
+        }
+
+        <div class="comments-list">
+          @for (comment of comments(); track comment.id) {
+            <div class="comment-item">
+              <div class="comment-header">
+                <span class="comment-author">
+                  {{ comment.user?.name }} {{ comment.user?.surname }}
+                </span>
+                <span class="comment-date">{{ formatDate(comment.createdAt) }}</span>
+              </div>
+              <p class="comment-text">{{ comment.text }}</p>
+            </div>
+          } @empty {
+            <p class="no-comments">Комментариев пока нет</p>
+          }
+        </div>
+      </div>
+    </div>
+  }
+</div>

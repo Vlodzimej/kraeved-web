@@ -390,6 +390,11 @@ export class HomeComponent implements OnInit {
     this.router.navigate(["/admin"]);
   }
 
+  goToDetail(id: number): void {
+    this.closeObjectModal();
+    this.router.navigate(["/geo-object", id]);
+  }
+
   goToLogin(): void {
     this.router.navigate(["/login"]);
   }
@@ -410,7 +415,7 @@ export class HomeComponent implements OnInit {
 
   onSearchOpenDetails(obj: GeoObjectBrief): void {
     if (obj.id != null) {
-      this.loadObjectDetails(obj.id);
+      this.router.navigate(["/geo-object", obj.id]);
     }
   }
 

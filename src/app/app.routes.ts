@@ -27,6 +27,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: "geo-object/:id",
+    loadComponent: () =>
+      import("./components/geo-object-detail/geo-object-detail.component").then(
+        (m) => m.GeoObjectDetailComponent,
+      ),
+  },
+  {
     path: "admin",
     component: AdminLayoutComponent,
     canActivate: [adminGuard],
