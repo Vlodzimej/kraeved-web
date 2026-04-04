@@ -16,13 +16,18 @@
         <label for="email">Email</label>
         <input
           id="email"
-          type="email"
+          type="text"
           [ngModel]="email()"
           (ngModelChange)="email.set($event)"
           name="email"
           placeholder="Введите email"
           required
+          pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+          #emailInput="ngModel"
         />
+        @if (emailInput.invalid && emailInput.touched) {
+          <div class="error-message">Введите корректный email</div>
+        }
       </div>
 
       <div class="form-group">
