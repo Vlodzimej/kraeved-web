@@ -58,6 +58,7 @@ export class HomeComponent implements OnInit {
   previewImage = signal<string | null>(null);
   previewImageIndex = signal(0);
   previewImages = signal<string[]>([]);
+  showWelcomeModal = signal(false);
 
   private map: L.Map | null = null;
   private markersLayer: L.LayerGroup | null = null;
@@ -67,12 +68,22 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(new LoadAppSettings());
+    if (typeof localStorage !== "undefined" && !localStorage.getItem("welcome_shown")) {
+      this.showWelcomeModal.set(true);
+    }
     this.geoObjectsService.getAll().subscribe({
       next: (objects) => {
         this.geoObjects.set(objects);
         setTimeout(() => this.initMap(), 0);
       },
     });
+  }
+
+  closeWelcomeModal(): void {
+    this.showWelcomeModal.set(false);
+    if (typeof localStorage !== "undefined") {
+      localStorage.setItem("welcome_shown", "true");
+    }
   }
 
   private initMap(): void {

@@ -30,6 +30,36 @@
     </div>
   </main>
 
+  @if (showWelcomeModal()) {
+    <div class="welcome-backdrop" (click)="closeWelcomeModal()">
+      <div class="welcome-modal" (click)="$event.stopPropagation()">
+        <div class="welcome-header">
+          <img src="logo.png" alt="Краевед" class="welcome-logo" />
+          <h2>Добро пожаловать!</h2>
+        </div>
+        <div class="welcome-body">
+          <p>
+            Здравствуйте. Вы находитесь на сайте, который посвящен Калуге и Калужской области.
+            Здесь вы сможете найти информацию о различных исторических и природных объектах,
+            расположенных в городе и по области.
+          </p>
+          <p>
+            В настоящее время сайт находится на стадии разработки и наполнения содержанием,
+            вследствие чего возможны проблемы с доступом к материалам.
+          </p>
+          <p>
+            Будем признательны, если при обнаружении ошибок вы сообщите о них на почту
+            <a href="mailto:amel-07@mail.ru">amel-07@mail.ru</a>.
+          </p>
+          <p>Благодарим за ваш интерес к проекту!</p>
+        </div>
+        <div class="welcome-footer">
+          <button class="welcome-close" (click)="closeWelcomeModal()">Понятно</button>
+        </div>
+      </div>
+    </div>
+  }
+
   @if (selectedObject()) {
     <div class="modal-backdrop" (click)="closeObjectModal()">
       <div class="modal-container" (click)="$event.stopPropagation()">
