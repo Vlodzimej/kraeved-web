@@ -19,12 +19,7 @@ jobs:
             cd ~/kraeved/kraeved-api && git pull
             cd ~/kraeved/kraeved-web && git pull
 
-            # Build Angular on server
-            cd ~/kraeved/kraeved-web
-            docker run --rm -v $(pwd):/app -w /app node:20-alpine sh -c "npm install && npm run build -- --configuration=production"
-
             # Restart services
             cd ~/kraeved
-            sudo docker compose up -d --build api
-            sudo docker compose restart web
+            sudo docker compose up -d --build api web
           EOF
