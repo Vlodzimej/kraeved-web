@@ -13,6 +13,7 @@ import {
   geoObjectsStateDefaults,
 } from "./geo-objects.model";
 import { GeoObjectBrief } from "../../models/admin/entities.model";
+import { getBackendErrorMessage } from "../../utils/error-messages";
 
 @State<GeoObjectsStateModel>({
   name: "geoObjects",
@@ -50,7 +51,7 @@ export class GeoObjectsState {
         ctx.patchState({ items, loading: false });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -81,7 +82,7 @@ export class GeoObjectsState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -113,7 +114,7 @@ export class GeoObjectsState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -133,7 +134,7 @@ export class GeoObjectsState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );

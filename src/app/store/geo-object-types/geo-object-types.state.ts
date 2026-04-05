@@ -12,6 +12,7 @@ import {
   GeoObjectTypesStateModel,
   geoObjectTypesStateDefaults,
 } from "./geo-object-types.model";
+import { getBackendErrorMessage } from "../../utils/error-messages";
 
 @State<GeoObjectTypesStateModel>({
   name: "geoObjectTypes",
@@ -44,7 +45,7 @@ export class GeoObjectTypesState {
         ctx.patchState({ items, loading: false });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -66,7 +67,7 @@ export class GeoObjectTypesState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -88,7 +89,7 @@ export class GeoObjectTypesState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -110,7 +111,7 @@ export class GeoObjectTypesState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );

@@ -1,11 +1,11 @@
 import { Component, inject, signal } from "@angular/core";
 import { Router, RouterLink } from "@angular/router";
 import { FormsModule } from "@angular/forms";
-import { HttpErrorResponse } from "@angular/common/http";
 import { Store } from "@ngxs/store";
 import { finalize, switchMap } from "rxjs";
 import { Login, LoadCurrentUser } from "../../store/auth/auth.actions";
 import { AuthService } from "../../services/auth.service";
+import { getBackendErrorMessage } from "../../utils/error-messages";
 
 @Component({
   selector: "app-login",
@@ -68,23 +68,10 @@ export class LoginComponent {
           this.successMessage.set("");
           this.router.navigate(["/home"]);
         },
-        error: (err: HttpErrorResponse) => {
+        error: (err: Error) => {
           this.successMessage.set("");
-          if (err.status === 401) {
-            this.errorMessage.set("Введены неверные данные для входа");
-          } else if (err.status === 0) {
-            this.errorMessage.set("Не удалось подключиться к серверу");
-          } else if (err.error?.data) {
-            const errorData = err.error.data;
-            if (typeof errorData === "object" && errorData.message) {
-              this.errorMessage.set(errorData.message);
-            } else if (typeof errorData === "string") {
-              this.errorMessage.set(errorData);
-            } else {
-              this.errorMessage.set("Ошибка при входе");
-            }
-          } else if (err.error?.message) {
-            this.errorMessage.set(err.error.message);
+          if (err.message) {
+            this.errorMessage.set(err.message);
           } else {
             this.errorMessage.set("Ошибка при входе");
           }
@@ -120,22 +107,11 @@ export class LoginComponent {
         this.regPasswordConfirm.set("");
         this.isLoading.set(false);
       },
-      error: (err: HttpErrorResponse) => {
+      error: (err: Error) => {
         this.isLoading.set(false);
         this.successMessage.set("");
-        if (err.status === 0) {
-          this.errorMessage.set("Не удалось подключиться к серверу");
-        } else if (err.error?.message) {
-          this.errorMessage.set(err.error.message);
-        } else if (err.error?.data) {
-          const errorData = err.error.data;
-          if (typeof errorData === "object" && errorData.message) {
-            this.errorMessage.set(errorData.message);
-          } else if (typeof errorData === "string") {
-            this.errorMessage.set(errorData);
-          } else {
-            this.errorMessage.set("Ошибка при регистрации");
-          }
+        if (err.message) {
+          this.errorMessage.set(getBackendErrorMessage(err.message));
         } else {
           this.errorMessage.set("Ошибка при регистрации");
         }

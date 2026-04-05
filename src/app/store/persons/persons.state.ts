@@ -10,6 +10,7 @@ import {
 } from "./persons.actions";
 import { PersonsStateModel, personsStateDefaults } from "./persons.model";
 import { Person } from "../../models/admin/entities.model";
+import { getBackendErrorMessage } from "../../utils/error-messages";
 
 @State<PersonsStateModel>({
   name: "persons",
@@ -42,7 +43,7 @@ export class PersonsState {
         ctx.patchState({ items, loading: false });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -53,7 +54,7 @@ export class PersonsState {
     return this.service.create(person).pipe(
       switchMap(() => ctx.dispatch(new LoadPersons())),
       catchError((err) => {
-        ctx.patchState({ error: err.message });
+        ctx.patchState({ error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -64,7 +65,7 @@ export class PersonsState {
     return this.service.update(person).pipe(
       switchMap(() => ctx.dispatch(new LoadPersons())),
       catchError((err) => {
-        ctx.patchState({ error: err.message });
+        ctx.patchState({ error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -75,7 +76,7 @@ export class PersonsState {
     return this.service.delete(id).pipe(
       switchMap(() => ctx.dispatch(new LoadPersons())),
       catchError((err) => {
-        ctx.patchState({ error: err.message });
+        ctx.patchState({ error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );

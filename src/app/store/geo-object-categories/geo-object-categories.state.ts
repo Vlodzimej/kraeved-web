@@ -13,6 +13,7 @@ import {
   geoObjectCategoriesStateDefaults,
 } from "./geo-object-categories.model";
 import { GeoObjectCategory } from "../../models/admin/entities.model";
+import { getBackendErrorMessage } from "../../utils/error-messages";
 
 @State<GeoObjectCategoriesStateModel>({
   name: "geoObjectCategories",
@@ -45,7 +46,7 @@ export class GeoObjectCategoriesState {
         ctx.patchState({ items, loading: false });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -67,7 +68,7 @@ export class GeoObjectCategoriesState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -89,7 +90,7 @@ export class GeoObjectCategoriesState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -111,7 +112,7 @@ export class GeoObjectCategoriesState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );

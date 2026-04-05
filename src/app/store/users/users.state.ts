@@ -4,6 +4,7 @@ import { tap, catchError } from "rxjs";
 import { AdminUsersService } from "../../services/admin/admin-users.service";
 import { LoadUsers, DeleteUser, UpdateUserRole } from "./users.actions";
 import { UsersStateModel, usersStateDefaults } from "./users.model";
+import { getBackendErrorMessage } from "../../utils/error-messages";
 
 @State<UsersStateModel>({
   name: "users",
@@ -36,7 +37,7 @@ export class UsersState {
         ctx.patchState({ users, loading: false });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -50,6 +51,10 @@ export class UsersState {
         ctx.patchState({
           users: state.users.filter((u) => u.id !== id),
         });
+      }),
+      catchError((err) => {
+        ctx.patchState({ error: getBackendErrorMessage(err.message) });
+        throw err;
       }),
     );
   }
@@ -65,6 +70,10 @@ export class UsersState {
         ctx.patchState({
           users: state.users.map((u) => (u.id === id ? updatedUser : u)),
         });
+      }),
+      catchError((err) => {
+        ctx.patchState({ error: getBackendErrorMessage(err.message) });
+        throw err;
       }),
     );
   }

@@ -1,6 +1,6 @@
 import { HttpInterceptorFn, HttpErrorResponse } from "@angular/common/http";
-import { inject } from "@angular/core";
 import { catchError, throwError } from "rxjs";
+import { getBackendErrorMessage } from "../utils/error-messages";
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
@@ -10,24 +10,26 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       if (error.error instanceof ErrorEvent) {
         errorMessage = `Ошибка: ${error.error.message}`;
       } else {
+        const serverMessage = error.error?.data?.message ?? error.error?.message;
+
         switch (error.status) {
           case 400:
-            errorMessage = error.error?.data?.message || "Неверный запрос";
+            errorMessage = serverMessage ? getBackendErrorMessage(serverMessage) : "Неверный запрос";
             break;
           case 401:
-            errorMessage = "Требуется авторизация";
+            errorMessage = serverMessage ? getBackendErrorMessage(serverMessage) : "Требуется авторизация";
             break;
           case 403:
             errorMessage = "Доступ запрещен";
             break;
           case 404:
-            errorMessage = "Ресурс не найден";
+            errorMessage = serverMessage ? getBackendErrorMessage(serverMessage) : "Ресурс не найден";
             break;
           case 500:
-            errorMessage = "Внутренняя ошибка сервера";
+            errorMessage = serverMessage ? getBackendErrorMessage(serverMessage) : "Внутренняя ошибка сервера";
             break;
           default:
-            errorMessage = error.error?.data?.message || `Ошибка: ${error.message}`;
+            errorMessage = serverMessage ? getBackendErrorMessage(serverMessage) : `Ошибка: ${error.message}`;
             break;
         }
       }

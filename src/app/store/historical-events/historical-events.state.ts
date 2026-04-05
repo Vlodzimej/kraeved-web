@@ -12,6 +12,7 @@ import {
   HistoricalEventsStateModel,
   historicalEventsStateDefaults,
 } from "./historical-events.model";
+import { getBackendErrorMessage } from "../../utils/error-messages";
 
 @State<HistoricalEventsStateModel>({
   name: "historicalEvents",
@@ -44,7 +45,7 @@ export class HistoricalEventsState {
         ctx.patchState({ items, loading: false });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -66,7 +67,7 @@ export class HistoricalEventsState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -88,7 +89,7 @@ export class HistoricalEventsState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
@@ -110,7 +111,7 @@ export class HistoricalEventsState {
         });
       }),
       catchError((err) => {
-        ctx.patchState({ loading: false, error: err.message });
+        ctx.patchState({ loading: false, error: getBackendErrorMessage(err.message) });
         throw err;
       }),
     );
