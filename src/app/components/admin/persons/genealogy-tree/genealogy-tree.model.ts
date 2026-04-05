@@ -1,3 +1,5 @@
+import { ImageInfo } from "../../../../models/admin/entities.model";
+
 export interface PersonTreeNode {
   id: number;
   surname?: string | null;
@@ -5,7 +7,7 @@ export interface PersonTreeNode {
   patronymic?: string | null;
   birthDate?: string | null;
   deathDate?: string | null;
-  photos?: string[] | null;
+  photos?: ImageInfo[] | null;
   parents?: PersonTreeNode[] | null;
   spouses?: PersonRelationDto[] | null;
   children?: PersonRelationDto[] | null;
@@ -19,6 +21,6 @@ export interface PersonRelationDto {
   patronymic?: string | null;
   birthDate?: string | null;
   deathDate?: string | null;
-  photos?: string[] | null;
+  photos?: ImageInfo[] | null;
   relationTitle?: string | null;
 }

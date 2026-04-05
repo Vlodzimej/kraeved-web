@@ -21,11 +21,21 @@
 
   @if (images().length > 0) {
     <div class="image-grid">
-      @for (img of images(); track img) {
-        <div class="image-item" [class.thumbnail]="images()[0] === img">
-          <img [src]="imageUrl(img)" [alt]="img" />
+      @for (img of images(); track img.filename) {
+        <div class="image-item" [class.thumbnail]="images()[0].filename === img.filename">
+          <img [src]="imageUrl(img)" [alt]="img.caption || img.filename" />
           <div class="image-actions">
-            @if (images()[0] !== img) {
+            <button
+              class="img-btn"
+              (click)="startEditCaption(img)"
+              title="Добавить подпись"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
+            @if (images()[0].filename !== img.filename) {
               <button
                 class="img-btn"
                 (click)="setAsThumbnail(img)"
@@ -47,8 +57,27 @@
               </svg>
             </button>
           </div>
-          @if (images()[0] === img) {
+          @if (images()[0].filename === img.filename) {
             <span class="thumb-badge">Миниатюра</span>
+          }
+          @if (img.caption) {
+            <span class="caption-badge">{{ img.caption }}</span>
+          }
+          @if (isEditing(img)) {
+            <div class="caption-editor" (click)="$event.stopPropagation()">
+              <input
+                type="text"
+                [(ngModel)]="editingCaptionValue"
+                placeholder="Подпись к изображению"
+                (keyup.enter)="saveCaption(img)"
+                (keyup.escape)="cancelEditCaption()"
+                autofocus
+              />
+              <div class="caption-editor-actions">
+                <button class="caption-btn caption-btn-save" (click)="saveCaption(img)">✓</button>
+                <button class="caption-btn caption-btn-cancel" (click)="cancelEditCaption()">✕</button>
+              </div>
+            </div>
           }
         </div>
       }

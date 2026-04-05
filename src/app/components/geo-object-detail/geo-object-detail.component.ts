@@ -14,7 +14,7 @@ import { FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { CommentsService, CommentDto } from "../../services/comments.service";
-import { GeoObject, PersonBrief } from "../../models/admin/entities.model";
+import { GeoObject, PersonBrief, ImageInfo } from "../../models/admin/entities.model";
 import { environment } from "../../../environments/environment";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
@@ -119,6 +119,10 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
 
   imageUrl(name: string): string {
     return `${environment.apiUrl}/Images/thumbnail/${name}`;
+  }
+
+  getGeoObjectImageFilenames(): string[] {
+    return this.geoObject()?.images?.map((img: ImageInfo) => img.filename) ?? [];
   }
 
   fullImageUrl(name: string): string {

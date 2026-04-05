@@ -29,6 +29,7 @@ import {
   GeoObjectBrief,
   GeoObjectType,
   Person,
+  ImageInfo,
 } from "../../../models/admin/entities.model";
 import { AdminGeoObjectsService } from "../../../services/admin/admin-geo-objects.service";
 import { AdminPersonsService } from "../../../services/admin/admin-persons.service";
@@ -74,7 +75,7 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   cardLoading = signal(false);
 
-  images = signal<string[]>([]);
+  images = signal<ImageInfo[]>([]);
   linkedPersons = signal<Person[]>([]);
 
   searchQuery = signal("");
@@ -251,7 +252,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       regionId: formValue.regionId,
       typeId: formValue.typeId,
       images: imgs.length > 0 ? imgs : null,
-      thumbnail: imgs.length > 0 ? imgs[0] : null,
+      thumbnail: imgs.length > 0 ? imgs[0].filename : null,
     };
 
     if (this.crud.isNewItem()) {
@@ -298,7 +299,7 @@ export class AdminGeoObjectsComponent implements OnInit {
     this.currentPage.set(1);
   }
 
-  onImagesChange(images: string[]): void {
+  onImagesChange(images: ImageInfo[]): void {
     this.images.set(images);
   }
 

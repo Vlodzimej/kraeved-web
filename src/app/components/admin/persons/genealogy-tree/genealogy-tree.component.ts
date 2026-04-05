@@ -10,6 +10,8 @@ import { AdminPersonsService } from "../../../../services/admin/admin-persons.se
 import { PersonTreeNode } from "./genealogy-tree.model";
 import { environment } from "../../../../../environments/environment";
 
+import { ImageInfo } from "../../../../models/admin/entities.model";
+
 @Component({
   selector: "app-genealogy-tree",
   standalone: true,
@@ -39,8 +41,8 @@ export class GenealogyTreeComponent {
     });
   }
 
-  imageUrl(photo: string): string {
-    return `${environment.apiUrl}/Images/thumbnail/${photo}`;
+  imageUrl(photo: ImageInfo): string {
+    return `${environment.apiUrl}/Images/thumbnail/${photo.filename}`;
   }
 
   fullName(node: { surname?: string | null; firstName?: string | null; patronymic?: string | null }): string {
