@@ -140,10 +140,6 @@
 
         <img class="preview-image" [src]="fullImageUrl(previewImage() ?? '')" [alt]="previewImage()" />
 
-        @if (currentPreviewCaption()) {
-          <div class="preview-caption">{{ currentPreviewCaption() }}</div>
-        }
-
         <div class="preview-counter">
           {{ previewImageIndex() + 1 }} / {{ previewImages().length }}
         </div>
