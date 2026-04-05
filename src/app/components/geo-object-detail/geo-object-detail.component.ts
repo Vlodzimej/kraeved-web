@@ -219,22 +219,4 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
     this.previewImageIndex.set(0);
     this.previewImages.set([]);
   }
-
-  prevImage(): void {
-    const images = this.previewImages();
-    if (this.previewImageIndex() > 0) {
-      const newIndex = this.previewImageIndex() - 1;
-      this.previewImageIndex.set(newIndex);
-      this.previewImage.set(images[newIndex]);
-    }
-  }
-
-  nextImage(): void {
-    const images = this.previewImages();
-    if (this.previewImageIndex() < images.length - 1) {
-      const newIndex = this.previewImageIndex() + 1;
-      this.previewImageIndex.set(newIndex);
-      this.previewImage.set(images[newIndex]);
-    }
-  }
 }

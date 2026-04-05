@@ -71,6 +71,12 @@ export class AdminPersonsComponent implements OnInit {
   selectedRelationPerson = signal<Person | null>(null);
   selectedRelationTypeId = signal<number | null>(null);
 
+  searchQuery = signal("");
+  currentPage = signal(1);
+  pageSize = signal(10);
+  sortColumn = signal<string>("id");
+  sortDirection = signal<SortDirection>("asc");
+
   form = this.fb.group({
     surname: ["", Validators.required],
     firstName: ["", Validators.required],
