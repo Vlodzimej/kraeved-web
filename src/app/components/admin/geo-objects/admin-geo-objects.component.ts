@@ -37,7 +37,7 @@ import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dial
 import { AdminCardComponent } from "../shared/card/admin-card.component";
 import { PaginationComponent } from "../../shared/pagination/pagination.component";
 import { SortableHeaderComponent, SortDirection } from "../../shared/sortable-header/sortable-header.component";
-import { ImageUploaderComponent } from "../../shared/image-uploader/image-uploader.component";
+import { ImageManagerComponent } from "../../shared/image-manager/image-manager.component";
 import { PersonSearchComponent } from "../persons/person-search/person-search.component";
 import { useAdminCrud } from "../shared/use-admin-crud";
 
@@ -54,7 +54,7 @@ const DEFAULT_REGION_ID = 40;
     AdminCardComponent,
     PaginationComponent,
     SortableHeaderComponent,
-    ImageUploaderComponent,
+    ImageManagerComponent,
     PersonSearchComponent,
   ],
   templateUrl: "./admin-geo-objects.component.html",
@@ -74,6 +74,7 @@ export class AdminGeoObjectsComponent implements OnInit {
   types = this.store.selectSignal(GeoObjectTypesState.items);
 
   cardLoading = signal(false);
+  showImageManager = signal(false);
 
   images = signal<ImageInfo[]>([]);
   linkedPersons = signal<Person[]>([]);

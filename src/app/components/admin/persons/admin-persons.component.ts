@@ -30,7 +30,7 @@ import { PaginationComponent } from "../../shared/pagination/pagination.componen
 import { SortableHeaderComponent, SortDirection } from "../../shared/sortable-header/sortable-header.component";
 import { GenealogyTreeComponent } from "./genealogy-tree/genealogy-tree.component";
 import { useAdminCrud } from "../shared/use-admin-crud";
-import { ImageUploaderComponent } from "../../shared/image-uploader/image-uploader.component";
+import { ImageManagerComponent } from "../../shared/image-manager/image-manager.component";
 import { PersonSearchComponent } from "./person-search/person-search.component";
 import { viewChild } from "@angular/core";
 
@@ -45,7 +45,7 @@ import { viewChild } from "@angular/core";
     AdminCardComponent,
     PaginationComponent,
     SortableHeaderComponent,
-    ImageUploaderComponent,
+    ImageManagerComponent,
     PersonSearchComponent,
     GenealogyTreeComponent,
   ],
@@ -63,13 +63,7 @@ export class AdminPersonsComponent implements OnInit {
   error = this.store.selectSignal(PersonsState.error);
 
   cardLoading = signal(false);
-
-  searchQuery = signal("");
-  currentPage = signal(1);
-  pageSize = signal(10);
-  sortColumn = signal<string>("id");
-  sortDirection = signal<SortDirection>("asc");
-
+  showImageManager = signal(false);
   photos = signal<ImageInfo[]>([]);
   relations = signal<PersonRelationDto[]>([]);
   relationSearch = viewChild.required<PersonSearchComponent>("relationSearch");

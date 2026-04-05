@@ -35,10 +35,7 @@
           <div class="images-grid">
             @for (img of geoObject()?.images; track img.filename) {
               <div class="image-wrapper">
-                <img class="detail-image" [src]="imageUrl(img.filename)" [alt]="img.caption || img.filename" (click)="openImagePreview(img.filename, getGeoObjectImageFilenames())" />
-                @if (img.caption) {
-                  <span class="image-caption">{{ img.caption }}</span>
-                }
+                <img class="detail-image" [src]="imageUrl(img.filename)" [alt]="img.caption || img.filename" (click)="openImagePreview(img.filename, getGeoObjectImageFilenames(), getGeoObjectImageCaptions())" />
               </div>
             }
           </div>
@@ -53,9 +50,6 @@
               <div class="person-card">
                 @if (person.photos && person.photos.length > 0) {
                   <img [src]="personImageUrl(person.photos[0].filename)" [alt]="person.surname" />
-                  @if (person.photos[0].caption) {
-                    <span class="person-photo-caption">{{ person.photos[0].caption }}</span>
-                  }
                 } @else {
                   <div class="person-placeholder">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -145,6 +139,10 @@
         }
 
         <img class="preview-image" [src]="fullImageUrl(previewImage() ?? '')" [alt]="previewImage()" />
+
+        @if (currentPreviewCaption()) {
+          <div class="preview-caption">{{ currentPreviewCaption() }}</div>
+        }
 
         <div class="preview-counter">
           {{ previewImageIndex() + 1 }} / {{ previewImages().length }}
