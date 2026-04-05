@@ -15,7 +15,7 @@ import { Logout } from "../../store/auth/auth.actions";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { AdminPersonsService } from "../../services/admin/admin-persons.service";
 import { CommentsService } from "../../services/comments.service";
-import { GeoObject, GeoObjectBrief, Person, PersonBrief } from "../../models/admin/entities.model";
+import { GeoObject, GeoObjectBrief, Person, PersonBrief, ImageInfo } from "../../models/admin/entities.model";
 import { CommentDto } from "../../services/comments.service";
 import { createTypeIcon } from "../../utils/map-icons";
 import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
@@ -407,6 +407,10 @@ export class HomeComponent implements OnInit {
     this.previewImage.set(filename);
     this.previewImageIndex.set(index >= 0 ? index : 0);
     this.previewImages.set(imgList);
+  }
+
+  getGeoObjectImageFilenames(): string[] {
+    return this.selectedObject()?.images?.map((img: ImageInfo) => img.filename) ?? [];
   }
 
   closeImagePreview(): void {

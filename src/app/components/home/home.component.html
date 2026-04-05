@@ -93,12 +93,15 @@
             <div class="detail-section">
               <label>Изображения</label>
               <div class="carousel">
-                @for (img of selectedObject()?.images; track img) {
+                @for (img of selectedObject()?.images; track img.filename) {
                   <div
                     class="carousel-item"
-                    (click)="openImagePreview(img, selectedObject()?.images ?? [])"
+                    (click)="openImagePreview(img.filename, getGeoObjectImageFilenames())"
                   >
-                    <img [src]="thumbnailUrl(img)" [alt]="img" />
+                    <img [src]="thumbnailUrl(img.filename)" [alt]="img.caption || img.filename" />
+                    @if (img.caption) {
+                      <span class="carousel-item-caption">{{ img.caption }}</span>
+                    }
                   </div>
                 }
               </div>

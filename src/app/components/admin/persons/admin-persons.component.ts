@@ -22,7 +22,7 @@ import {
   UpdatePerson,
   DeletePerson,
 } from "../../../store/persons/persons.actions";
-import { Person, PersonRelationType, PersonRelationDto } from "../../../models/admin/entities.model";
+import { Person, PersonRelationType, PersonRelationDto, ImageInfo } from "../../../models/admin/entities.model";
 import { AdminPersonsService } from "../../../services/admin/admin-persons.service";
 import { ConfirmDialogComponent } from "../../shared/confirm-dialog/confirm-dialog.component";
 import { AdminCardComponent } from "../shared/card/admin-card.component";
@@ -70,7 +70,7 @@ export class AdminPersonsComponent implements OnInit {
   sortColumn = signal<string>("id");
   sortDirection = signal<SortDirection>("asc");
 
-  photos = signal<string[]>([]);
+  photos = signal<ImageInfo[]>([]);
   relations = signal<PersonRelationDto[]>([]);
   relationSearch = viewChild.required<PersonSearchComponent>("relationSearch");
   relationTypes = signal<PersonRelationType[]>([]);
@@ -287,7 +287,7 @@ export class AdminPersonsComponent implements OnInit {
     this.currentPage.set(1);
   }
 
-  onPhotosChange(photos: string[]): void {
+  onPhotosChange(photos: ImageInfo[]): void {
     this.photos.set(photos);
   }
 

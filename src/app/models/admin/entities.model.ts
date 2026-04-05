@@ -1,3 +1,9 @@
+export interface ImageInfo {
+  id?: number | null;
+  filename: string;
+  caption?: string | null;
+}
+
 export interface GeoObject {
   id?: number | null;
   name: string;
@@ -8,7 +14,7 @@ export interface GeoObject {
   latitude?: number | null;
   longitude?: number | null;
   regionId?: number | null;
-  images?: string[] | null;
+  images?: ImageInfo[] | null;
   thumbnail?: string | null;
   personGeoObjects?: PersonGeoObjectBrief[] | null;
 }
@@ -72,7 +78,7 @@ export interface Person {
   biography?: string | null;
   birthDate?: string | null;
   deathDate?: string | null;
-  photos?: string[] | null;
+  photos?: ImageInfo[] | null;
   personGeoObjects?: PersonGeoObjectBrief[] | null;
 }
 
@@ -83,7 +89,7 @@ export interface PersonBrief {
   patronymic?: string | null;
   birthDate?: string | null;
   deathDate?: string | null;
-  photos?: string[] | null;
+  photos?: ImageInfo[] | null;
 }
 
 export interface PersonGeoObjectBrief {
@@ -107,7 +113,7 @@ export interface PersonRelationDto {
   patronymic?: string | null;
   birthDate?: string | null;
   deathDate?: string | null;
-  photos?: string[] | null;
+  photos?: ImageInfo[] | null;
   relationTitle?: string | null;
 }
 
@@ -118,7 +124,7 @@ export interface PersonTreeNode {
   patronymic?: string | null;
   birthDate?: string | null;
   deathDate?: string | null;
-  photos?: string[] | null;
+  photos?: ImageInfo[] | null;
   father?: PersonTreeNode | null;
   mother?: PersonTreeNode | null;
   spouses?: PersonRelationDto[] | null;
