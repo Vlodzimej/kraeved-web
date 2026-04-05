@@ -413,6 +413,10 @@ export class HomeComponent implements OnInit {
     return this.selectedObject()?.images?.map((img: ImageInfo) => img.filename) ?? [];
   }
 
+  getPersonPhotoFilenames(): string[] {
+    return this.selectedPerson()?.photos?.map((img: ImageInfo) => img.filename) ?? [];
+  }
+
   closeImagePreview(): void {
     this.previewImage.set(null);
     this.previewImageIndex.set(0);
