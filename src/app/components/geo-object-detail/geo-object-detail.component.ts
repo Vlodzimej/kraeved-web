@@ -49,6 +49,8 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
   previewImage = signal<string | null>(null);
   previewImageIndex = signal(0);
   previewImages = signal<string[]>([]);
+  previewCaptions = signal<Record<string, string | null>>({});
+  currentPreviewCaption = signal<string | null>(null);
 
   commentForm = this.fb.group({
     text: ["", Validators.required],
@@ -125,6 +127,34 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
     return this.geoObject()?.images?.map((img: ImageInfo) => img.filename) ?? [];
   }
 
+  getGeoObjectImageCaptions(): Record<string, string | null> {
+    const result: Record<string, string | null> = {};
+    this.geoObject()?.images?.forEach((img: ImageInfo) => {
+      result[img.filename] = img.caption ?? null;
+    });
+    return result;
+  }
+
+  prevImage(): void {
+    const images = this.previewImages();
+    if (this.previewImageIndex() > 0) {
+      const newIndex = this.previewImageIndex() - 1;
+      this.previewImageIndex.set(newIndex);
+      this.previewImage.set(images[newIndex]);
+      this.currentPreviewCaption.set(this.previewCaptions()[images[newIndex]] ?? null);
+    }
+  }
+
+  nextImage(): void {
+    const images = this.previewImages();
+    if (this.previewImageIndex() < images.length - 1) {
+      const newIndex = this.previewImageIndex() + 1;
+      this.previewImageIndex.set(newIndex);
+      this.previewImage.set(images[newIndex]);
+      this.currentPreviewCaption.set(this.previewCaptions()[images[newIndex]] ?? null);
+    }
+  }
+
   fullImageUrl(name: string): string {
     return `${environment.apiUrl}/Images/filename/${name}`;
   }
@@ -175,11 +205,13 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
     this.router.navigate(["/home"]);
   }
 
-  openImagePreview(filename: string, images: string[]): void {
+  openImagePreview(filename: string, images: string[], captions?: Record<string, string | null>): void {
     const index = images.indexOf(filename);
     this.previewImage.set(filename);
     this.previewImageIndex.set(index >= 0 ? index : 0);
     this.previewImages.set(images);
+    this.previewCaptions.set(captions ?? {});
+    this.currentPreviewCaption.set(captions?.[filename] ?? null);
   }
 
   closeImagePreview(): void {
