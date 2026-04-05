@@ -281,6 +281,7 @@
 .comment-content {
   flex: 1;
   min-width: 0;
+  position: relative;
 }
 
 .comment-header {
@@ -305,6 +306,9 @@
 }
 
 .comment-delete {
+  position: absolute;
+  bottom: 0;
+  right: 0;
   background: none;
   border: none;
   cursor: pointer;
@@ -328,6 +332,7 @@
   color: #555;
   line-height: 1.5;
   font-size: 14px;
+  padding-bottom: 24px;
 }
 
 .no-comments {
