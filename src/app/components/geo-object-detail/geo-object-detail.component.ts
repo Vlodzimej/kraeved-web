@@ -42,6 +42,8 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
   comments = signal<CommentDto[]>([]);
   loading = signal(false);
   isAuthenticated = this.store.selectSignal(AuthState.isAuthenticated);
+  isAdmin = this.store.selectSignal(AuthState.isAdmin);
+  currentUser = this.store.selectSignal(AuthState.currentUser);
   currentUserId = signal<number | null>(null);
 
   previewImage = signal<string | null>(null);
@@ -108,6 +110,11 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
         this.comments.set(this.comments().filter((c) => c.id !== commentId));
       },
     });
+  }
+
+  canDeleteComment(comment: CommentDto): boolean {
+    if (this.isAdmin()) return true;
+    return comment.userId === this.currentUser()?.id;
   }
 
   imageUrl(name: string): string {
