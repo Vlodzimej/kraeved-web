@@ -76,15 +76,13 @@
         <div class="generation children">
           @for (child of tree()!.children; track child.personId) {
             <div class="person-card child">
-              <div class="photo">
-                @if (child.photos && child.photos.length > 0) {
-                  <img [src]="imageUrl(child.photos[0])" [alt]="child.surname" />
-                } @else {
-                  <div class="placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  </div>
-                }
-              </div>
+              <app-thumbnail
+                [filename]="child.photos?.[0]?.filename ?? null"
+                [alt]="child.surname || ''"
+                [size]="56"
+                shape="circle"
+                [showPlaceholder]="true"
+              />
               <div class="info">
                 <span class="name">{{ shortName(child) }}</span>
                 @if (yearRange(child)) {
@@ -102,15 +100,13 @@
         <div class="generation siblings">
           @for (sibling of tree()!.siblings; track sibling.personId) {
             <div class="person-card sibling">
-              <div class="photo">
-                @if (sibling.photos && sibling.photos.length > 0) {
-                  <img [src]="imageUrl(sibling.photos[0])" [alt]="sibling.surname" />
-                } @else {
-                  <div class="placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  </div>
-                }
-              </div>
+              <app-thumbnail
+                [filename]="sibling.photos?.[0]?.filename ?? null"
+                [alt]="sibling.surname || ''"
+                [size]="56"
+                shape="circle"
+                [showPlaceholder]="true"
+              />
               <div class="info">
                 <span class="name">{{ shortName(sibling) }}</span>
                 @if (yearRange(sibling)) {
