@@ -41,14 +41,21 @@
               <div class="image-info">
                 @if (isEditing(img)) {
                   <div class="caption-edit">
-                    <input
-                      type="text"
+                    <textarea
                       [(ngModel)]="editingCaptionValue"
                       placeholder="Подпись..."
                       (keyup.enter)="saveCaption(img)"
                       (keyup.escape)="cancelEditCaption()"
+                      [maxlength]="captionMaxLength + 50"
+                      rows="3"
                       autofocus
-                    />
+                    ></textarea>
+                    <div class="caption-counter" [class.error]="editingCaptionValue.length > captionMaxLength">
+                      {{ editingCaptionValue.length }} / {{ captionMaxLength }}
+                    </div>
+                    @if (editingCaptionValue.length > captionMaxLength) {
+                      <div class="caption-error">Превышен лимит в {{ captionMaxLength }} символов</div>
+                    }
                     <div class="caption-actions">
                       <button class="cap-btn cap-btn-save" (click)="saveCaption(img)">✓</button>
                       <button class="cap-btn cap-btn-cancel" (click)="cancelEditCaption()">✕</button>

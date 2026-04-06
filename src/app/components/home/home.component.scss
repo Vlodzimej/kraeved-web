@@ -471,6 +471,19 @@
   }
 }
 
+.preview-caption {
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  margin-top: 12px;
+  max-width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 .preview-counter {
   position: absolute;
   bottom: -36px;

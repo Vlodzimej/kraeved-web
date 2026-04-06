@@ -141,18 +141,39 @@
 .caption-edit {
   margin-bottom: 6px;
 
-  input {
+  textarea {
     width: 100%;
     padding: 6px 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 12px;
+    font-family: inherit;
+    resize: vertical;
     outline: none;
+    line-height: 1.4;
 
     &:focus {
       border-color: #2196f3;
     }
   }
+}
+
+.caption-counter {
+  font-size: 11px;
+  color: #999;
+  text-align: right;
+  margin-top: 2px;
+
+  &.error {
+    color: #e53935;
+  }
+}
+
+.caption-error {
+  font-size: 11px;
+  color: #e53935;
+  margin-top: 4px;
+  line-height: 1.3;
 }
 
 .caption-actions {

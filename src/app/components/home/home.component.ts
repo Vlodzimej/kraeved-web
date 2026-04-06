@@ -58,6 +58,8 @@ export class HomeComponent implements OnInit {
   previewImage = signal<string | null>(null);
   previewImageIndex = signal(0);
   previewImages = signal<string[]>([]);
+  previewCaptions = signal<Record<string, string | null>>({});
+  currentPreviewCaption = signal<string | null>(null);
   showWelcomeModal = signal(false);
 
   private map: L.Map | null = null;
@@ -401,16 +403,26 @@ export class HomeComponent implements OnInit {
   previewUrl = (name: string): string =>
     `${environment.apiUrl}/Images/preview/${name}`;
 
-  openImagePreview(filename: string, images?: string[]): void {
+  openImagePreview(filename: string, images?: string[], captions?: Record<string, string | null>): void {
     const imgList = images ?? [];
     const index = imgList.indexOf(filename);
     this.previewImage.set(filename);
     this.previewImageIndex.set(index >= 0 ? index : 0);
     this.previewImages.set(imgList);
+    this.previewCaptions.set(captions ?? {});
+    this.currentPreviewCaption.set(captions?.[filename] ?? null);
   }
 
   getGeoObjectImageFilenames(): string[] {
     return this.selectedObject()?.images?.map((img: ImageInfo) => img.filename) ?? [];
+  }
+
+  getGeoObjectImageCaptions(): Record<string, string | null> {
+    const result: Record<string, string | null> = {};
+    this.selectedObject()?.images?.forEach((img: ImageInfo) => {
+      result[img.filename] = img.caption ?? null;
+    });
+    return result;
   }
 
   getPersonPhotoFilenames(): string[] {
@@ -421,6 +433,7 @@ export class HomeComponent implements OnInit {
     this.previewImage.set(null);
     this.previewImageIndex.set(0);
     this.previewImages.set([]);
+    this.currentPreviewCaption.set(null);
   }
 
   prevImage(): void {
@@ -429,6 +442,7 @@ export class HomeComponent implements OnInit {
       const newIndex = this.previewImageIndex() - 1;
       this.previewImageIndex.set(newIndex);
       this.previewImage.set(images[newIndex]);
+      this.currentPreviewCaption.set(this.previewCaptions()[images[newIndex]] ?? null);
     }
   }
 
@@ -438,6 +452,7 @@ export class HomeComponent implements OnInit {
       const newIndex = this.previewImageIndex() + 1;
       this.previewImageIndex.set(newIndex);
       this.previewImage.set(images[newIndex]);
+      this.currentPreviewCaption.set(this.previewCaptions()[images[newIndex]] ?? null);
     }
   }
 

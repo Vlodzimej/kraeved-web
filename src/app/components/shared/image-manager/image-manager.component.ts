@@ -17,6 +17,8 @@ export interface ManagedImage {
   caption?: string | null;
 }
 
+export const CAPTION_MAX_LENGTH = 500;
+
 @Component({
   selector: "app-image-manager",
   standalone: true,
@@ -30,9 +32,12 @@ export class ImageManagerComponent {
   imagesChange = output<ManagedImage[]>();
   closed = output<void>();
 
+  readonly captionMaxLength = CAPTION_MAX_LENGTH;
+
   uploadLoading = signal(false);
   editingCaptionId: number | null = null;
   editingCaptionValue = "";
+  captionError = signal(false);
 
   private imagesService = inject(ImagesService);
 
@@ -81,9 +86,15 @@ export class ImageManagerComponent {
   startEditCaption(item: ManagedImage): void {
     this.editingCaptionId = item.id ?? null;
     this.editingCaptionValue = item.caption ?? "";
+    this.captionError.set(false);
   }
 
   saveCaption(item: ManagedImage): void {
+    if (this.editingCaptionValue.length > CAPTION_MAX_LENGTH) {
+      this.captionError.set(true);
+      return;
+    }
+    this.captionError.set(false);
     const current = this.images();
     const updated = current.map((i) =>
       i.filename === item.filename && i.id === item.id
