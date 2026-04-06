@@ -44,6 +44,7 @@ export interface GeoObjectTypeBrief {
   id?: number | null;
   name: string;
   title: string;
+  categoryId?: number | null;
   categoryName?: string | null;
 }
 

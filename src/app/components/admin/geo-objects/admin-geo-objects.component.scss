@@ -190,6 +190,11 @@
       border-color: #2196f3;
       box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.15);
     }
+
+    &.ng-invalid.ng-touched {
+      border-color: #e53935;
+      box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.15);
+    }
   }
 
   .error-text {

@@ -190,12 +190,19 @@
 
     <div class="field-row">
       <div class="field-group">
-        <label>Регион ID</label>
-        <input
-          type="number"
-          [formControl]="form.controls.regionId"
-          placeholder="Region ID"
-        />
+        <label>Категория</label>
+        <select
+          [formControl]="form.controls.categoryId"
+          (change)="onCategoryChange(form.controls.categoryId.value)"
+        >
+          <option [ngValue]="null">Выберите категорию</option>
+          @for (category of categories(); track category.id) {
+            <option [ngValue]="category.id">{{ category.title }}</option>
+          }
+        </select>
+        @if (form.controls.categoryId.touched && !form.controls.categoryId.value) {
+          <div class="error-text">Выберите категорию</div>
+        }
       </div>
 
       <div class="field-group">
@@ -203,11 +210,14 @@
         <select
           [formControl]="form.controls.typeId"
         >
-          <option [ngValue]="null">Без типа</option>
-          @for (type of types(); track type.id) {
+          <option [ngValue]="null">Выберите тип</option>
+          @for (type of filteredTypes(); track type.id) {
             <option [ngValue]="type.id">{{ type.title }}</option>
           }
         </select>
+        @if (form.controls.typeId.touched && !form.controls.typeId.value) {
+          <div class="error-text">Выберите тип</div>
+        }
       </div>
     </div>
 
