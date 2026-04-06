@@ -4,9 +4,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   inject,
   OnInit,
   signal,
+  viewChild,
 } from "@angular/core";
 import {
   NonNullableFormBuilder,
@@ -110,6 +112,10 @@ export class AdminGeoObjectsComponent implements OnInit {
   showParentSearch = signal(false);
 
   childrenGeoObjects = signal<GeoObject[]>([]);
+
+  fileInput = viewChild<ElementRef<HTMLInputElement>>("fileInput");
+  importLoading = signal(false);
+  importResult = signal<{ imported: number; failed: number; errors: string[] | null } | null>(null);
 
   searchQuery = signal("");
   currentPage = signal(1);
@@ -471,5 +477,36 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   getPersonFullName(person: Person): string {
     return [person.surname, person.firstName, person.patronymic].filter(Boolean).join(" ");
+  }
+
+  triggerFileInput(): void {
+    this.fileInput()?.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.importLoading.set(true);
+    this.importResult.set(null);
+
+    this.service.importFromJson(file).subscribe({
+      next: (result) => {
+        this.importResult.set(result);
+        this.importLoading.set(false);
+        this.store.dispatch(new LoadGeoObjects());
+        input.value = "";
+      },
+      error: (err) => {
+        this.importResult.set({ imported: 0, failed: 1, errors: [err.error?.message || "Ошибка импорта"] });
+        this.importLoading.set(false);
+        input.value = "";
+      },
+    });
+  }
+
+  clearImportResult(): void {
+    this.importResult.set(null);
   }
 }

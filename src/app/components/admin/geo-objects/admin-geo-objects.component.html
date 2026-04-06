@@ -1,7 +1,24 @@
 <div class="admin-page">
   <div class="page-header">
     <h1>Объекты</h1>
-    <button class="btn btn-info" (click)="openCreate()">+ Добавить</button>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary btn-import" (click)="triggerFileInput()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Импорт JSON
+      </button>
+      <input
+        #fileInput
+        type="file"
+        accept=".json"
+        (change)="onFileSelected($event)"
+        style="display: none"
+      />
+      <button class="btn btn-info" (click)="openCreate()">+ Добавить</button>
+    </div>
   </div>
 
   @if (loading()) {
@@ -10,6 +27,37 @@
 
   @if (error()) {
     <div class="error">{{ error() }}</div>
+  }
+
+  @if (importResult()) {
+    <div class="import-result" [class.success]="importResult()!.failed === 0" [class.partial]="importResult()!.failed > 0">
+      <div class="import-result-header">
+        <span>Результат импорта</span>
+        <button class="import-close" (click)="clearImportResult()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="import-stats">
+        <span class="stat-ok">Импортировано: {{ importResult()!.imported }}</span>
+        @if (importResult()!.failed > 0) {
+          <span class="stat-fail">Ошибки: {{ importResult()!.failed }}</span>
+        }
+      </div>
+      @if (importResult()!.errors && importResult()!.errors!.length > 0) {
+        <ul class="import-errors">
+          @for (err of importResult()!.errors; track $index) {
+            <li>{{ err }}</li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  @if (importLoading()) {
+    <div class="loading">Импорт...</div>
   }
 
   @if (crud.showDeleteConfirm()) {
