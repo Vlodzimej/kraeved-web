@@ -98,7 +98,7 @@ export class AdminGeoObjectsComponent implements OnInit {
     const catId = this.selectedCategoryId();
     const categories = this.categories();
     const cat = categories.find((c) => c.id === catId);
-    return cat?.name === "okn";
+    return cat?.name?.toUpperCase() === "OKN";
   });
 
   images = signal<ImageInfo[]>([]);

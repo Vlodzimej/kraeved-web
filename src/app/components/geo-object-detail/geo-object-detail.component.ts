@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   OnInit,
   signal,
@@ -14,7 +15,7 @@ import { FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { CommentsService, CommentDto } from "../../services/comments.service";
-import { GeoObject, PersonBrief, ImageInfo } from "../../models/admin/entities.model";
+import { GeoObject, GeoObjectCustomFields, PersonBrief, ImageInfo } from "../../models/admin/entities.model";
 import { environment } from "../../../environments/environment";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
@@ -52,6 +53,25 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
 
   commentForm = this.fb.group({
     text: ["", Validators.required],
+  });
+
+  oknFieldLabels: Record<string, string> = {
+    okn_full_name: "Наименование ОКН",
+    regulatory_legal_info: "Наименование и реквизиты нпа органа гос. власти о постановке ОКН на гос. охрану",
+    location_description: "Местонахождение ОКН",
+    cadastral_address: "Адрес ОКН",
+    egrokn_status: "АИС ЕГРОКН (статус)",
+    object_type: "вид ОКН",
+    date: "Датировка",
+    status: "Категории историко-культурного значения",
+  };
+
+  oknFields = computed<GeoObjectCustomFields | null>(() => {
+    const obj = this.geoObject();
+    if (!obj?.customFields) return null;
+    const cf = obj.customFields;
+    if (typeof cf === "object" && cf !== null) return cf as GeoObjectCustomFields;
+    return null;
   });
 
   ngOnInit(): void {

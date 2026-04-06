@@ -70,6 +70,22 @@
         </div>
       }
 
+      @if (oknFields()) {
+        <div class="detail-section">
+          <h2>Дополнительные сведения</h2>
+          <dl class="okn-fields-list">
+            @for (key of oknFields() | keyvalue; track key.key) {
+              @if (key.value) {
+                <div class="okn-field-item">
+                  <dt>{{ oknFieldLabels[key.key] || key.key }}</dt>
+                  <dd>{{ key.value }}</dd>
+                </div>
+              }
+            }
+          </dl>
+        </div>
+      }
+
       <div class="detail-section comments-section" #commentsSection>
         <h2>Комментарии</h2>
 
