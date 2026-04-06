@@ -1,7 +1,7 @@
 import { Injectable, inject } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable, map } from "rxjs";
-import { GeoObject, GeoObjectBrief } from "../../models/admin/entities.model";
+import { GeoObject, GeoObjectBrief, GeoObjectCustomFields } from "../../models/admin/entities.model";
 import { KraevedResponse } from "../../models/kraeved-response";
 import { environment } from "../../../environments/environment";
 
@@ -19,19 +19,57 @@ export class AdminGeoObjectsService {
   getById(id: number): Observable<GeoObject> {
     return this.http
       .get<KraevedResponse<GeoObject>>(`${this.apiUrl}/${id}`)
-      .pipe(map((res) => res.data));
+      .pipe(map((res) => {
+        const data = res.data;
+        if (data.customFields && typeof data.customFields === "string") {
+          try {
+            data.customFields = JSON.parse(data.customFields) as GeoObjectCustomFields;
+          } catch {
+            data.customFields = null;
+          }
+        }
+        return data;
+      }));
   }
 
   create(geoObject: GeoObject): Observable<GeoObject> {
+    const payload = { ...geoObject };
+    if (payload.customFields && typeof payload.customFields === "object") {
+      payload.customFields = JSON.stringify(payload.customFields) as unknown as GeoObjectCustomFields;
+    }
     return this.http
-      .post<KraevedResponse<GeoObject>>(this.apiUrl, geoObject)
-      .pipe(map((res) => res.data));
+      .post<KraevedResponse<GeoObject>>(this.apiUrl, payload)
+      .pipe(map((res) => {
+        const data = res.data;
+        if (data.customFields && typeof data.customFields === "string") {
+          try {
+            data.customFields = JSON.parse(data.customFields) as GeoObjectCustomFields;
+          } catch {
+            data.customFields = null;
+          }
+        }
+        return data;
+      }));
   }
 
   update(geoObject: GeoObject): Observable<GeoObject> {
+    const payload = { ...geoObject };
+    if (payload.customFields && typeof payload.customFields === "object") {
+      payload.customFields = JSON.stringify(payload.customFields) as unknown as GeoObjectCustomFields;
+    }
     return this.http
-      .put<KraevedResponse<GeoObject>>(this.apiUrl, geoObject)
-      .pipe(map((res) => res.data));
+      .put<KraevedResponse<GeoObject>>(this.apiUrl, payload)
+      .pipe(map((res) => {
+        const data = res.data;
+        if (data.customFields && typeof data.customFields === "string") {
+          try {
+            data.customFields = JSON.parse(data.customFields) as GeoObjectCustomFields;
+          } catch {
+            data.customFields = null;
+          }
+        }
+        return data;
+      }));
   }
 
   delete(id: number): Observable<GeoObject> {
