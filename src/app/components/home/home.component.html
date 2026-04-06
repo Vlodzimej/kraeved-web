@@ -99,9 +99,6 @@
                     (click)="openImagePreview(img.filename, getGeoObjectImageFilenames())"
                   >
                     <img [src]="thumbnailUrl(img.filename)" [alt]="img.caption || img.filename" />
-                    @if (img.caption) {
-                      <span class="carousel-item-caption">{{ img.caption }}</span>
-                    }
                   </div>
                 }
               </div>
@@ -198,9 +195,6 @@
                     (click)="openImagePreview(img.filename, getPersonPhotoFilenames())"
                   >
                     <img [src]="thumbnailUrl(img.filename)" [alt]="img.caption || img.filename" />
-                    @if (img.caption) {
-                      <span class="carousel-item-caption">{{ img.caption }}</span>
-                    }
                   </div>
                 }
               </div>
