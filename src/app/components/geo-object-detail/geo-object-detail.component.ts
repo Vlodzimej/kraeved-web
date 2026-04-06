@@ -86,10 +86,12 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
   });
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get("id");
-    if (id) {
-      this.loadGeoObject(+id);
-    }
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get("id");
+      if (id) {
+        this.loadGeoObject(+id);
+      }
+    });
   }
 
   ngAfterViewInit(): void {
