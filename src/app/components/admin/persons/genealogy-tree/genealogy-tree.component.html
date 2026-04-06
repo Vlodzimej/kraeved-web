@@ -9,15 +9,13 @@
         <div class="generation parents">
           @for (parent of tree()!.parents; track parent.id) {
             <div class="person-card parent">
-              <div class="photo">
-                @if (parent.photos && parent.photos.length > 0) {
-                  <img [src]="imageUrl(parent.photos[0])" [alt]="fullName(parent)" />
-                } @else {
-                  <div class="placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  </div>
-                }
-              </div>
+              <app-thumbnail
+                [filename]="parent.photos?.[0]?.filename ?? null"
+                [alt]="fullName(parent)"
+                [size]="56"
+                shape="circle"
+                [showPlaceholder]="true"
+              />
               <div class="info">
                 <span class="name">{{ fullName(parent) }}</span>
                 @if (yearRange(parent)) {
@@ -38,15 +36,13 @@
         @if (tree()!.spouses && tree()!.spouses!.length > 0) {
           @for (spouse of tree()!.spouses; track spouse.personId) {
             <div class="person-card spouse">
-              <div class="photo">
-                @if (spouse.photos && spouse.photos.length > 0) {
-                  <img [src]="imageUrl(spouse.photos[0])" [alt]="spouse.surname" />
-                } @else {
-                  <div class="placeholder">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                  </div>
-                }
-              </div>
+              <app-thumbnail
+                [filename]="spouse.photos?.[0]?.filename ?? null"
+                [alt]="spouse.surname"
+                [size]="56"
+                shape="circle"
+                [showPlaceholder]="true"
+              />
               <div class="info">
                 <span class="name">{{ shortName(spouse) }}</span>
                 @if (yearRange(spouse)) {
@@ -59,15 +55,13 @@
           <div class="couple-connector"></div>
         }
         <div class="person-card center-person">
-          <div class="photo">
-            @if (tree()!.photos && tree()!.photos!.length > 0) {
-              <img [src]="imageUrl(tree()!.photos![0])" [alt]="fullName(tree()!)" />
-            } @else {
-              <div class="placeholder">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-              </div>
-            }
-          </div>
+          <app-thumbnail
+            [filename]="tree()!.photos?.[0]?.filename ?? null"
+            [alt]="fullName(tree()!)"
+            [size]="56"
+            shape="circle"
+            [showPlaceholder]="true"
+          />
           <div class="info">
             <span class="name">{{ fullName(tree()!) }}</span>
             @if (yearRange(tree()!)) {

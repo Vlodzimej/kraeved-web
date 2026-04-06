@@ -19,11 +19,12 @@ import { environment } from "../../../environments/environment";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
 import { ImagePreviewComponent, ImagePreviewItem } from "../shared/image-preview/image-preview.component";
+import { ThumbnailComponent } from "../shared/thumbnail/thumbnail.component";
 
 @Component({
   selector: "app-geo-object-detail",
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, ImagePreviewComponent],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, ImagePreviewComponent, ThumbnailComponent],
   templateUrl: "./geo-object-detail.component.html",
   styleUrl: "./geo-object-detail.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

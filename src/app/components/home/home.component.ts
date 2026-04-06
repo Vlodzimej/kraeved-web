@@ -22,6 +22,7 @@ import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.
 import { AppSettingsState, LoadAppSettings } from "../../store/app-settings/app-settings.state";
 import { environment } from "../../../environments/environment";
 import { ImagePreviewComponent, ImagePreviewItem } from "../shared/image-preview/image-preview.component";
+import { ThumbnailComponent } from "../shared/thumbnail/thumbnail.component";
 import * as L from "leaflet";
 
 interface MarkerData {
@@ -34,7 +35,7 @@ interface MarkerData {
 @Component({
   selector: "app-home",
   standalone: true,
-  imports: [GeoObjectSearchComponent, ImagePreviewComponent],
+  imports: [GeoObjectSearchComponent, ImagePreviewComponent, ThumbnailComponent],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,

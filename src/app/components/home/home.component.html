@@ -62,13 +62,11 @@
     <div class="modal-backdrop" (click)="closeObjectModal()">
       <div class="modal-container" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          @if (selectedObject()?.thumbnail) {
-            <img
-              class="modal-thumbnail"
-              [src]="thumbnailUrl(selectedObject()?.thumbnail ?? '')"
-              [alt]="selectedObject()?.name"
-            />
-          }
+          <app-thumbnail
+            [filename]="selectedObject()?.thumbnail"
+            [alt]="selectedObject()?.name"
+            size="sm"
+          />
           <h2 class="modal-title">{{ selectedObject()?.name }}</h2>
           <button class="modal-detail-btn" (click)="goToDetail(selectedObject()?.id ?? 0)">
             Подробнее
@@ -98,7 +96,12 @@
                     class="carousel-item"
                     (click)="openImagePreview(img.filename, getGeoObjectImageFilenames())"
                   >
-                    <img [src]="thumbnailUrl(img.filename)" [alt]="img.caption || img.filename" />
+                    <app-thumbnail
+                      [filename]="img.filename"
+                      [alt]="img.caption || img.filename"
+                      size="sm"
+                      variant="clickable"
+                    />
                   </div>
                 }
               </div>
@@ -111,13 +114,14 @@
               <div class="persons-carousel">
                 @for (person of selectedObjectPersons(); track person.id) {
                   <div class="person-card" (click)="openPersonDetails(person.id!)">
-                    @if (person.photos && person.photos.length > 0) {
-                      <img [src]="thumbnailUrl(person.photos[0].filename)" [alt]="person.surname" />
-                    } @else {
-                      <div class="person-placeholder">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                      </div>
-                    }
+                    <app-thumbnail
+                      [filename]="person.photos?.[0]?.filename ?? null"
+                      [alt]="person.surname"
+                      size="md"
+                      shape="circle"
+                      variant="bordered"
+                      [showPlaceholder]="true"
+                    />
                     <span class="person-name">{{ person.firstName }} {{ person.surname }}</span>
                   </div>
                 }
@@ -155,13 +159,13 @@
     <div class="modal-backdrop" (click)="closePersonModal()">
       <div class="modal-container" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          @if (selectedPerson()?.photos && selectedPerson()!.photos!.length > 0) {
-            <img
-              class="modal-person-photo"
-              [src]="thumbnailUrl(selectedPerson()!.photos![0].filename)"
-              [alt]="selectedPerson()?.surname"
-            />
-          }
+          <app-thumbnail
+            [filename]="selectedPerson()?.photos?.[0]?.filename ?? null"
+            [alt]="selectedPerson()?.surname"
+            size="sm"
+            shape="circle"
+            [showPlaceholder]="true"
+          />
           <h2 class="modal-title">{{ getPersonFullName(selectedPerson()) }}</h2>
           <button class="modal-close" (click)="closePersonModal()" aria-label="Закрыть">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -194,7 +198,12 @@
                     class="carousel-item"
                     (click)="openImagePreview(img.filename, getPersonPhotoFilenames())"
                   >
-                    <img [src]="thumbnailUrl(img.filename)" [alt]="img.caption || img.filename" />
+                    <app-thumbnail
+                      [filename]="img.filename"
+                      [alt]="img.caption || img.filename"
+                      size="sm"
+                      variant="clickable"
+                    />
                   </div>
                 }
               </div>

@@ -8,14 +8,12 @@ import {
 import { CommonModule } from "@angular/common";
 import { AdminPersonsService } from "../../../../services/admin/admin-persons.service";
 import { PersonTreeNode } from "./genealogy-tree.model";
-import { environment } from "../../../../../environments/environment";
-
-import { ImageInfo } from "../../../../models/admin/entities.model";
+import { ThumbnailComponent } from "../../../shared/thumbnail/thumbnail.component";
 
 @Component({
   selector: "app-genealogy-tree",
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, ThumbnailComponent],
   templateUrl: "./genealogy-tree.component.html",
   styleUrl: "./genealogy-tree.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
