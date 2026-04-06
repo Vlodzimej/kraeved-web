@@ -38,7 +38,7 @@
             <div class="person-card spouse">
               <app-thumbnail
                 [filename]="spouse.photos?.[0]?.filename ?? null"
-                [alt]="spouse.surname"
+                [alt]="spouse.surname || ''"
                 [size]="56"
                 shape="circle"
                 [showPlaceholder]="true"

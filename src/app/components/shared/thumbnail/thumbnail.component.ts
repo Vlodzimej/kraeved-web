@@ -22,7 +22,7 @@ export type ThumbnailVariant = "default" | "clickable" | "bordered";
 })
 export class ThumbnailComponent {
   /** Image filename (appended to /Images/thumbnail/) */
-  filename = input<string | null>(null);
+  filename = input<string | null | undefined>(null);
 
   /** Direct image URL (overrides filename) */
   src = input<string | null>(null);

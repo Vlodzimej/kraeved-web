@@ -39,10 +39,6 @@ export class GenealogyTreeComponent {
     });
   }
 
-  imageUrl(photo: ImageInfo): string {
-    return `${environment.apiUrl}/Images/thumbnail/${photo.filename}`;
-  }
-
   fullName(node: { surname?: string | null; firstName?: string | null; patronymic?: string | null }): string {
     return [node.surname, node.firstName, node.patronymic].filter(Boolean).join(" ");
   }

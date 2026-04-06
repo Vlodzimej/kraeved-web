@@ -12,8 +12,8 @@
     <div class="detail-card">
       <div class="detail-header">
         <app-thumbnail
-          [filename]="geoObject()?.thumbnail"
-          [alt]="geoObject()?.name"
+          [filename]="geoObject()?.thumbnail ?? null"
+          [alt]="geoObject()?.name ?? ''"
           size="lg"
         />
         <div class="detail-title">

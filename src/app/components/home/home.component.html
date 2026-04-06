@@ -63,8 +63,8 @@
       <div class="modal-container" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <app-thumbnail
-            [filename]="selectedObject()?.thumbnail"
-            [alt]="selectedObject()?.name"
+            [filename]="selectedObject()?.thumbnail ?? null"
+            [alt]="selectedObject()?.name ?? ''"
             size="sm"
           />
           <h2 class="modal-title">{{ selectedObject()?.name }}</h2>
@@ -161,7 +161,7 @@
         <div class="modal-header">
           <app-thumbnail
             [filename]="selectedPerson()?.photos?.[0]?.filename ?? null"
-            [alt]="selectedPerson()?.surname"
+            [alt]="selectedPerson()?.surname ?? ''"
             size="sm"
             shape="circle"
             [showPlaceholder]="true"
