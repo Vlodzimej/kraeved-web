@@ -363,14 +363,8 @@
   flex-shrink: 0;
   cursor: pointer;
   scroll-snap-align: start;
-  border: 2px solid transparent;
   border-radius: 8px;
   overflow: hidden;
-  transition: border-color 0.15s;
-
-  &:hover {
-    border-color: #2196f3;
-  }
 }
 
 .carousel-item-caption {
