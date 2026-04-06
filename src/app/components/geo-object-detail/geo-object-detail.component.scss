@@ -69,6 +69,21 @@
     border-radius: 12px;
     font-size: 13px;
   }
+
+  .detail-category {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+}
+
+.detail-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .detail-section {
@@ -361,6 +376,30 @@
   font-size: 14px;
   text-align: center;
   padding: 24px 0;
+}
+
+.okn-fields-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.okn-field-item {
+  dt {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+  }
+
+  dd {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #333;
+    line-height: 1.6;
+  }
 }
 
 .image-preview-backdrop {

@@ -16,7 +16,19 @@ export interface GeoObject {
   regionId?: number | null;
   images?: ImageInfo[] | null;
   thumbnail?: string | null;
+  customFields?: GeoObjectCustomFields | string | null;
   personGeoObjects?: PersonGeoObjectBrief[] | null;
+}
+
+export interface GeoObjectCustomFields {
+  okn_full_name?: string | null;
+  regulatory_legal_info?: string | null;
+  location_description?: string | null;
+  cadastral_address?: string | null;
+  egrokn_status?: string | null;
+  object_type?: string | null;
+  date?: string | null;
+  status?: string | null;
 }
 
 export interface GeoObjectBrief {
@@ -44,7 +56,10 @@ export interface GeoObjectTypeBrief {
   id?: number | null;
   name: string;
   title: string;
+  categoryId?: number | null;
   categoryName?: string | null;
+  categoryTitle?: string | null;
+  category?: GeoObjectCategory | null;
 }
 
 export interface GeoObjectCategory {

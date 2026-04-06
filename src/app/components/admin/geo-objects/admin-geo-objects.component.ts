@@ -17,6 +17,7 @@ import { Store } from "@ngxs/store";
 import { finalize } from "rxjs";
 import { GeoObjectsState } from "../../../store/geo-objects/geo-objects.state";
 import { GeoObjectTypesState } from "../../../store/geo-object-types/geo-object-types.state";
+import { GeoObjectCategoriesState } from "../../../store/geo-object-categories/geo-object-categories.state";
 import {
   LoadGeoObjects,
   CreateGeoObject,
@@ -24,10 +25,12 @@ import {
   DeleteGeoObject,
 } from "../../../store/geo-objects/geo-objects.actions";
 import { LoadGeoObjectTypes } from "../../../store/geo-object-types/geo-object-types.actions";
+import { LoadGeoObjectCategories } from "../../../store/geo-object-categories/geo-object-categories.actions";
 import {
   GeoObject,
   GeoObjectBrief,
   GeoObjectType,
+  GeoObjectCustomFields,
   Person,
   ImageInfo,
 } from "../../../models/admin/entities.model";
@@ -39,6 +42,7 @@ import { PaginationComponent } from "../../shared/pagination/pagination.componen
 import { SortableHeaderComponent, SortDirection } from "../../shared/sortable-header/sortable-header.component";
 import { ImageManagerComponent } from "../../shared/image-manager/image-manager.component";
 import { PersonSearchComponent } from "../persons/person-search/person-search.component";
+import { OknFieldsDialogComponent } from "./okn-fields-dialog/okn-fields-dialog.component";
 import { useAdminCrud } from "../shared/use-admin-crud";
 
 const DEFAULT_REGION_ID = 40;
@@ -56,6 +60,7 @@ const DEFAULT_REGION_ID = 40;
     SortableHeaderComponent,
     ImageManagerComponent,
     PersonSearchComponent,
+    OknFieldsDialogComponent,
   ],
   templateUrl: "./admin-geo-objects.component.html",
   styleUrl: "./admin-geo-objects.component.scss",
@@ -72,9 +77,29 @@ export class AdminGeoObjectsComponent implements OnInit {
   error = this.store.selectSignal(GeoObjectsState.error);
 
   types = this.store.selectSignal(GeoObjectTypesState.items);
+  categories = this.store.selectSignal(GeoObjectCategoriesState.items);
+
+  selectedCategoryId = signal<number | null>(null);
+
+  filteredTypes = computed(() => {
+    const catId = this.selectedCategoryId();
+    const allTypes = this.types();
+    if (catId == null) return allTypes;
+    return allTypes.filter((t) => t.categoryId === catId);
+  });
 
   cardLoading = signal(false);
   showImageManager = signal(false);
+  showOknFields = signal(false);
+
+  customFields = signal<GeoObjectCustomFields | null>(null);
+
+  isOknCategory = computed(() => {
+    const catId = this.selectedCategoryId();
+    const categories = this.categories();
+    const cat = categories.find((c) => c.id === catId);
+    return cat?.name?.toUpperCase() === "OKN";
+  });
 
   images = signal<ImageInfo[]>([]);
   linkedPersons = signal<Person[]>([]);
@@ -91,6 +116,7 @@ export class AdminGeoObjectsComponent implements OnInit {
     shortDescription: [""],
     coordinates: this.fb.control<string>(""),
     regionId: this.fb.control<number | null>({ value: DEFAULT_REGION_ID, disabled: true }),
+    categoryId: this.fb.control<number | null>(null),
     typeId: this.fb.control<number | null>(null),
   });
 
@@ -168,6 +194,7 @@ export class AdminGeoObjectsComponent implements OnInit {
   totalFilteredItems = computed(() => this.filteredItems().length);
 
   ngOnInit(): void {
+    this.store.dispatch(new LoadGeoObjectCategories());
     this.store.dispatch(new LoadGeoObjectTypes());
     this.store.dispatch(new LoadGeoObjects());
   }
@@ -182,6 +209,14 @@ export class AdminGeoObjectsComponent implements OnInit {
         next: (data) => {
           this.crud.selectItem(data);
           this.images.set(data.images ?? []);
+          this.customFields.set(
+            (data.customFields && typeof data.customFields === "object")
+              ? data.customFields as GeoObjectCustomFields
+              : null,
+          );
+          const matchedType = this.types().find((t) => t.id === data.typeId);
+          const catId = matchedType?.categoryId ?? null;
+          this.selectedCategoryId.set(catId);
           this.form.patchValue({
             name: data.name,
             description: data.description,
@@ -190,6 +225,7 @@ export class AdminGeoObjectsComponent implements OnInit {
               ? `${data.latitude}, ${data.longitude}`
               : "",
             regionId: data.regionId ?? null,
+            categoryId: catId,
             typeId: data.typeId ?? null,
           });
           this.loadLinkedPersons(data.id!);
@@ -201,12 +237,15 @@ export class AdminGeoObjectsComponent implements OnInit {
     this.crud.openCreate();
     this.images.set([]);
     this.linkedPersons.set([]);
+    this.customFields.set(null);
+    this.selectedCategoryId.set(null);
     this.form.reset({
       name: "",
       description: "",
       shortDescription: "",
       coordinates: "",
       regionId: DEFAULT_REGION_ID,
+      categoryId: null,
       typeId: null,
     });
   }
@@ -219,12 +258,14 @@ export class AdminGeoObjectsComponent implements OnInit {
     this.crud.confirmClose();
     this.images.set([]);
     this.linkedPersons.set([]);
+    this.selectedCategoryId.set(null);
     this.form.reset({
       name: "",
       description: "",
       shortDescription: "",
       coordinates: "",
       regionId: null,
+      categoryId: null,
       typeId: null,
     });
   }
@@ -239,8 +280,13 @@ export class AdminGeoObjectsComponent implements OnInit {
       return;
     }
 
-    const item = this.crud.selectedItem();
     const formValue = this.form.getRawValue();
+    if (!formValue.categoryId || !formValue.typeId) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const item = this.crud.selectedItem();
     const coords = formValue.coordinates.split(",").map((s) => s.trim());
     const imgs = this.images();
     const geoObject: GeoObject = {
@@ -254,6 +300,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       typeId: formValue.typeId,
       images: imgs.length > 0 ? imgs : null,
       thumbnail: imgs.length > 0 ? imgs[0].filename : null,
+      customFields: this.customFields(),
     };
 
     if (this.crud.isNewItem()) {
@@ -283,6 +330,24 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   trackType(_index: number, type: GeoObjectType): number | null {
     return type.id ?? null;
+  }
+
+  onCategoryChange(categoryId: number | null): void {
+    this.selectedCategoryId.set(categoryId);
+    this.form.patchValue({ typeId: null });
+  }
+
+  openOknFields(): void {
+    this.showOknFields.set(true);
+  }
+
+  onOknFieldsSaved(data: GeoObjectCustomFields): void {
+    this.customFields.set(data);
+    this.showOknFields.set(false);
+  }
+
+  onOknFieldsCancelled(): void {
+    this.showOknFields.set(false);
   }
 
   onSort({ column, direction }: { column: string; direction: SortDirection }): void {

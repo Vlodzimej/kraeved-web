@@ -18,9 +18,14 @@
         />
         <div class="detail-title">
           <h1>{{ geoObject()?.name }}</h1>
-          @if (geoObject()?.type?.title) {
-            <span class="detail-type">{{ geoObject()?.type?.title }}</span>
-          }
+          <div class="detail-badges">
+            @if (geoObject()?.type?.category?.title) {
+              <span class="detail-category">{{ geoObject()?.type?.category?.title }}</span>
+            }
+            @if (geoObject()?.type?.title) {
+              <span class="detail-type">{{ geoObject()?.type?.title }}</span>
+            }
+          </div>
         </div>
       </div>
 
@@ -67,6 +72,22 @@
               </div>
             }
           </div>
+        </div>
+      }
+
+      @if (oknFields()) {
+        <div class="detail-section">
+          <h2>Дополнительные сведения</h2>
+          <dl class="okn-fields-list">
+            @for (key of oknFieldOrder; track key) {
+              @if (oknFields()![key]) {
+                <div class="okn-field-item">
+                  <dt>{{ oknFieldLabels[key] }}</dt>
+                  <dd>{{ oknFields()![key] }}</dd>
+                </div>
+              }
+            }
+          </dl>
         </div>
       }
 
