@@ -104,6 +104,11 @@ export class AdminGeoObjectsComponent implements OnInit {
   images = signal<ImageInfo[]>([]);
   linkedPersons = signal<Person[]>([]);
 
+  parentGeoObject = signal<GeoObjectBrief | null>(null);
+  parentSearchQuery = signal("");
+  parentSearchResults = signal<GeoObjectBrief[]>([]);
+  showParentSearch = signal(false);
+
   searchQuery = signal("");
   currentPage = signal(1);
   pageSize = signal(10);
@@ -118,6 +123,7 @@ export class AdminGeoObjectsComponent implements OnInit {
     regionId: this.fb.control<number | null>({ value: DEFAULT_REGION_ID, disabled: true }),
     categoryId: this.fb.control<number | null>(null),
     typeId: this.fb.control<number | null>(null),
+    parentId: this.fb.control<number | null>(null),
   });
 
   crud = useAdminCrud<GeoObject>(
@@ -214,6 +220,7 @@ export class AdminGeoObjectsComponent implements OnInit {
               ? data.customFields as GeoObjectCustomFields
               : null,
           );
+          this.parentGeoObject.set(data.parent ?? null);
           const matchedType = this.types().find((t) => t.id === data.typeId);
           const catId = matchedType?.categoryId ?? null;
           this.selectedCategoryId.set(catId);
@@ -227,6 +234,7 @@ export class AdminGeoObjectsComponent implements OnInit {
             regionId: data.regionId ?? null,
             categoryId: catId,
             typeId: data.typeId ?? null,
+            parentId: data.parentId ?? null,
           });
           this.loadLinkedPersons(data.id!);
         },
@@ -238,6 +246,10 @@ export class AdminGeoObjectsComponent implements OnInit {
     this.images.set([]);
     this.linkedPersons.set([]);
     this.customFields.set(null);
+    this.parentGeoObject.set(null);
+    this.parentSearchQuery.set("");
+    this.parentSearchResults.set([]);
+    this.showParentSearch.set(false);
     this.selectedCategoryId.set(null);
     this.form.reset({
       name: "",
@@ -247,6 +259,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       regionId: DEFAULT_REGION_ID,
       categoryId: null,
       typeId: null,
+      parentId: null,
     });
   }
 
@@ -258,6 +271,11 @@ export class AdminGeoObjectsComponent implements OnInit {
     this.crud.confirmClose();
     this.images.set([]);
     this.linkedPersons.set([]);
+    this.customFields.set(null);
+    this.parentGeoObject.set(null);
+    this.parentSearchQuery.set("");
+    this.parentSearchResults.set([]);
+    this.showParentSearch.set(false);
     this.selectedCategoryId.set(null);
     this.form.reset({
       name: "",
@@ -267,6 +285,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       regionId: null,
       categoryId: null,
       typeId: null,
+      parentId: null,
     });
   }
 
@@ -298,6 +317,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       longitude: coords[1] ? parseFloat(coords[1]) : null,
       regionId: formValue.regionId,
       typeId: formValue.typeId,
+      parentId: formValue.parentId,
       images: imgs.length > 0 ? imgs : null,
       thumbnail: imgs.length > 0 ? imgs[0].filename : null,
       customFields: this.customFields(),
@@ -348,6 +368,38 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   onOknFieldsCancelled(): void {
     this.showOknFields.set(false);
+  }
+
+  searchParentGeoObject(): void {
+    const query = this.parentSearchQuery().trim().toLowerCase();
+    if (!query) {
+      this.parentSearchResults.set([]);
+      return;
+    }
+    const currentId = this.crud.selectedItem()?.id;
+    const results = this.items().filter(
+      (i) =>
+        i.id !== currentId &&
+        i.name.toLowerCase().includes(query),
+    );
+    this.parentSearchResults.set(results);
+    this.showParentSearch.set(true);
+  }
+
+  selectParentGeoObject(item: GeoObjectBrief): void {
+    this.parentGeoObject.set(item);
+    this.form.patchValue({ parentId: item.id });
+    this.parentSearchQuery.set("");
+    this.parentSearchResults.set([]);
+    this.showParentSearch.set(false);
+  }
+
+  clearParentGeoObject(): void {
+    this.parentGeoObject.set(null);
+    this.form.patchValue({ parentId: null });
+    this.parentSearchQuery.set("");
+    this.parentSearchResults.set([]);
+    this.showParentSearch.set(false);
   }
 
   onSort({ column, direction }: { column: string; direction: SortDirection }): void {

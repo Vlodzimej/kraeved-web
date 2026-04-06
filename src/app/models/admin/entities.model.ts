@@ -14,6 +14,9 @@ export interface GeoObject {
   latitude?: number | null;
   longitude?: number | null;
   regionId?: number | null;
+  parentId?: number | null;
+  parent?: GeoObjectBrief | null;
+  children?: GeoObjectBrief[] | null;
   images?: ImageInfo[] | null;
   thumbnail?: string | null;
   customFields?: GeoObjectCustomFields | string | null;
