@@ -382,10 +382,12 @@ export class AdminGeoObjectsComponent implements OnInit {
       return;
     }
     const currentId = this.crud.selectedItem()?.id;
+    const childIds = this.childrenGeoObjects().map((c) => c.id);
     const results = this.items().filter(
       (i) =>
         i.id !== currentId &&
-        i.name.toLowerCase().includes(query),
+        i.name.toLowerCase().includes(query) &&
+        !childIds.includes(i.id),
     );
     this.parentSearchResults.set(results);
     this.showParentSearch.set(true);
