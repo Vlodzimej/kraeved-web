@@ -216,4 +216,8 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
   goBack(): void {
     this.router.navigate(["/home"]);
   }
+
+  navigateToChild(id: number): void {
+    this.router.navigateByUrl(`/geo-object/${id}`);
+  }
 }
