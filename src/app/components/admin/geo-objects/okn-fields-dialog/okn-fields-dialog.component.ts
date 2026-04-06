@@ -1,4 +1,4 @@
-import { Component, input, output, signal, inject } from "@angular/core";
+import { Component, input, output, signal, inject, OnInit } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { GeoObjectCustomFields } from "../../../../models/admin/entities.model";
@@ -23,7 +23,7 @@ const OKN_FIELD_KEYS = Object.keys(OKN_FIELD_LABELS) as (keyof GeoObjectCustomFi
   templateUrl: "./okn-fields-dialog.component.html",
   styleUrl: "./okn-fields-dialog.component.scss",
 })
-export class OknFieldsDialogComponent {
+export class OknFieldsDialogComponent implements OnInit {
   initialData = input<GeoObjectCustomFields | null>(null);
 
   saved = output<GeoObjectCustomFields>();
@@ -32,15 +32,15 @@ export class OknFieldsDialogComponent {
   fieldLabels = OKN_FIELD_LABELS;
   fieldKeys = OKN_FIELD_KEYS;
 
-  formValues = signal<Record<string, string>>(this._initFormValues());
+  formValues = signal<Record<string, string>>({});
 
-  private _initFormValues(): Record<string, string> {
+  ngOnInit(): void {
     const data = this.initialData();
     const values: Record<string, string> = {};
     for (const key of OKN_FIELD_KEYS) {
       values[key] = data?.[key] ?? "";
     }
-    return values;
+    this.formValues.set(values);
   }
 
   onFieldChange(key: string, value: string): void {

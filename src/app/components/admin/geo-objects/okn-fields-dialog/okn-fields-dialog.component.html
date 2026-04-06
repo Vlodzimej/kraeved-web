@@ -18,7 +18,6 @@
             type="text"
             [ngModel]="formValues()[key]"
             (ngModelChange)="onFieldChange(key, $event)"
-            [placeholder]="fieldLabels[key]"
           />
         </div>
       }
