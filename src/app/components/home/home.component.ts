@@ -21,6 +21,7 @@ import { createTypeIcon } from "../../utils/map-icons";
 import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
 import { AppSettingsState, LoadAppSettings } from "../../store/app-settings/app-settings.state";
 import { environment } from "../../../environments/environment";
+import { ImagePreviewComponent, ImagePreviewItem } from "../shared/image-preview/image-preview.component";
 import * as L from "leaflet";
 
 interface MarkerData {
@@ -33,7 +34,7 @@ interface MarkerData {
 @Component({
   selector: "app-home",
   standalone: true,
-  imports: [GeoObjectSearchComponent],
+  imports: [GeoObjectSearchComponent, ImagePreviewComponent],
   templateUrl: "./home.component.html",
   styleUrl: "./home.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -55,11 +56,7 @@ export class HomeComponent implements OnInit {
   selectedObjectPersons = signal<PersonBrief[]>([]);
   selectedObjectLatestComment = signal<CommentDto | null>(null);
   selectedPerson = signal<Person | null>(null);
-  previewImage = signal<string | null>(null);
-  previewImageIndex = signal(0);
-  previewImages = signal<string[]>([]);
-  previewCaptions = signal<Record<string, string | null>>({});
-  currentPreviewCaption = signal<string | null>(null);
+  imagePreview = viewChild.required<ImagePreviewComponent>("imagePreview");
   showWelcomeModal = signal(false);
 
   private map: L.Map | null = null;
@@ -403,57 +400,24 @@ export class HomeComponent implements OnInit {
   previewUrl = (name: string): string =>
     `${environment.apiUrl}/Images/preview/${name}`;
 
-  openImagePreview(filename: string, images?: string[], captions?: Record<string, string | null>): void {
+  openImagePreview(filename: string, images?: ImagePreviewItem[]): void {
     const imgList = images ?? [];
-    const index = imgList.indexOf(filename);
-    this.previewImage.set(filename);
-    this.previewImageIndex.set(index >= 0 ? index : 0);
-    this.previewImages.set(imgList);
-    this.previewCaptions.set(captions ?? {});
-    this.currentPreviewCaption.set(captions?.[filename] ?? null);
+    const index = imgList.findIndex((img) => img.filename === filename);
+    this.imagePreview().open(imgList, index);
   }
 
-  getGeoObjectImageFilenames(): string[] {
-    return this.selectedObject()?.images?.map((img: ImageInfo) => img.filename) ?? [];
+  getGeoObjectImageFilenames(): ImagePreviewItem[] {
+    return this.selectedObject()?.images?.map((img: ImageInfo) => ({
+      filename: img.filename,
+      caption: img.caption ?? null,
+    })) ?? [];
   }
 
-  getGeoObjectImageCaptions(): Record<string, string | null> {
-    const result: Record<string, string | null> = {};
-    this.selectedObject()?.images?.forEach((img: ImageInfo) => {
-      result[img.filename] = img.caption ?? null;
-    });
-    return result;
-  }
-
-  getPersonPhotoFilenames(): string[] {
-    return this.selectedPerson()?.photos?.map((img: ImageInfo) => img.filename) ?? [];
-  }
-
-  closeImagePreview(): void {
-    this.previewImage.set(null);
-    this.previewImageIndex.set(0);
-    this.previewImages.set([]);
-    this.currentPreviewCaption.set(null);
-  }
-
-  prevImage(): void {
-    const images = this.previewImages();
-    if (this.previewImageIndex() > 0) {
-      const newIndex = this.previewImageIndex() - 1;
-      this.previewImageIndex.set(newIndex);
-      this.previewImage.set(images[newIndex]);
-      this.currentPreviewCaption.set(this.previewCaptions()[images[newIndex]] ?? null);
-    }
-  }
-
-  nextImage(): void {
-    const images = this.previewImages();
-    if (this.previewImageIndex() < images.length - 1) {
-      const newIndex = this.previewImageIndex() + 1;
-      this.previewImageIndex.set(newIndex);
-      this.previewImage.set(images[newIndex]);
-      this.currentPreviewCaption.set(this.previewCaptions()[images[newIndex]] ?? null);
-    }
+  getPersonPhotoFilenames(): ImagePreviewItem[] {
+    return this.selectedPerson()?.photos?.map((img: ImageInfo) => ({
+      filename: img.filename,
+      caption: img.caption ?? null,
+    })) ?? [];
   }
 
   onLogout(): void {

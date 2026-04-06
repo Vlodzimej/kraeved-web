@@ -18,11 +18,12 @@ import { GeoObject, PersonBrief, ImageInfo } from "../../models/admin/entities.m
 import { environment } from "../../../environments/environment";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
+import { ImagePreviewComponent, ImagePreviewItem } from "../shared/image-preview/image-preview.component";
 
 @Component({
   selector: "app-geo-object-detail",
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterLink, ImagePreviewComponent],
   templateUrl: "./geo-object-detail.component.html",
   styleUrl: "./geo-object-detail.component.scss",
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -46,11 +47,7 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
   currentUser = this.store.selectSignal(AuthState.currentUser);
   currentUserId = signal<number | null>(null);
 
-  previewImage = signal<string | null>(null);
-  previewImageIndex = signal(0);
-  previewImages = signal<string[]>([]);
-  previewCaptions = signal<Record<string, string | null>>({});
-  currentPreviewCaption = signal<string | null>(null);
+  imagePreview = viewChild.required<ImagePreviewComponent>("imagePreview");
 
   commentForm = this.fb.group({
     text: ["", Validators.required],
@@ -123,36 +120,17 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
     return `${environment.apiUrl}/Images/thumbnail/${name}`;
   }
 
-  getGeoObjectImageFilenames(): string[] {
-    return this.geoObject()?.images?.map((img: ImageInfo) => img.filename) ?? [];
+  getGeoObjectImageFilenames(): ImagePreviewItem[] {
+    return this.geoObject()?.images?.map((img: ImageInfo) => ({
+      filename: img.filename,
+      caption: img.caption ?? null,
+    })) ?? [];
   }
 
-  getGeoObjectImageCaptions(): Record<string, string | null> {
-    const result: Record<string, string | null> = {};
-    this.geoObject()?.images?.forEach((img: ImageInfo) => {
-      result[img.filename] = img.caption ?? null;
-    });
-    return result;
-  }
-
-  prevImage(): void {
-    const images = this.previewImages();
-    if (this.previewImageIndex() > 0) {
-      const newIndex = this.previewImageIndex() - 1;
-      this.previewImageIndex.set(newIndex);
-      this.previewImage.set(images[newIndex]);
-      this.currentPreviewCaption.set(this.previewCaptions()[images[newIndex]] ?? null);
-    }
-  }
-
-  nextImage(): void {
-    const images = this.previewImages();
-    if (this.previewImageIndex() < images.length - 1) {
-      const newIndex = this.previewImageIndex() + 1;
-      this.previewImageIndex.set(newIndex);
-      this.previewImage.set(images[newIndex]);
-      this.currentPreviewCaption.set(this.previewCaptions()[images[newIndex]] ?? null);
-    }
+  openImagePreview(filename: string): void {
+    const images = this.getGeoObjectImageFilenames();
+    const index = images.findIndex((img) => img.filename === filename);
+    this.imagePreview().open(images, index);
   }
 
   fullImageUrl(name: string): string {
@@ -205,18 +183,9 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
     this.router.navigate(["/home"]);
   }
 
-  openImagePreview(filename: string, images: string[], captions?: Record<string, string | null>): void {
-    const index = images.indexOf(filename);
-    this.previewImage.set(filename);
-    this.previewImageIndex.set(index >= 0 ? index : 0);
-    this.previewImages.set(images);
-    this.previewCaptions.set(captions ?? {});
-    this.currentPreviewCaption.set(captions?.[filename] ?? null);
-  }
-
-  closeImagePreview(): void {
-    this.previewImage.set(null);
-    this.previewImageIndex.set(0);
-    this.previewImages.set([]);
+  openImagePreview(filename: string): void {
+    const images = this.getGeoObjectImageFilenames();
+    const index = images.findIndex((img) => img.filename === filename);
+    this.imagePreview().open(images, index);
   }
 }
