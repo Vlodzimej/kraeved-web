@@ -16,7 +16,7 @@ export interface GeoObject {
   regionId?: number | null;
   parentId?: number | null;
   parent?: GeoObjectBrief | null;
-  children?: GeoObjectBrief[] | null;
+  children?: GeoObject[] | null;
   images?: ImageInfo[] | null;
   thumbnail?: string | null;
   customFields?: GeoObjectCustomFields | string | null;
