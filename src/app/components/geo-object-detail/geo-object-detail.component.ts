@@ -182,10 +182,4 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
   goBack(): void {
     this.router.navigate(["/home"]);
   }
-
-  openImagePreview(filename: string): void {
-    const images = this.getGeoObjectImageFilenames();
-    const index = images.findIndex((img) => img.filename === filename);
-    this.imagePreview().open(images, index);
-  }
 }
