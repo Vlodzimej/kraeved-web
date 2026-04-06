@@ -256,26 +256,49 @@
           <input
             type="text"
             [ngModel]="parentSearchQuery()"
-            (ngModelChange)="parentSearchQuery.set($event)"
-            (keyup.enter)="searchParentGeoObject()"
-            placeholder="Поиск объекта..."
+            (ngModelChange)="onParentSearchQueryChange($event)"
+            placeholder="Введите минимум 3 символа..."
           />
-          <button class="btn btn-search-parent" (click)="searchParentGeoObject()">Найти</button>
         </div>
         @if (showParentSearch() && parentSearchResults().length > 0) {
           <div class="parent-search-results">
             @for (result of parentSearchResults(); track result.id) {
               <div class="parent-search-item" (click)="selectParentGeoObject(result)">
-                {{ result.name }}
+                <span>{{ result.name }}</span>
+                @if (result.typeTitle) {
+                  <span class="result-type">{{ result.typeTitle }}</span>
+                }
               </div>
             }
           </div>
         }
-        @if (showParentSearch() && parentSearchResults().length === 0 && parentSearchQuery().trim()) {
+        @if (showParentSearch() && parentSearchResults().length === 0 && parentSearchQuery().trim().length >= 3) {
           <div class="parent-search-empty">Ничего не найдено</div>
         }
       }
     </div>
+
+    @if (childrenGeoObjects().length > 0) {
+      <div class="field-group">
+        <label>Дочерние объекты</label>
+        <div class="children-geo-objects-list">
+          @for (child of childrenGeoObjects(); track child.id) {
+            <div class="child-geo-object-item">
+              <span>{{ child.name }}</span>
+              @if (child.type?.title) {
+                <span class="child-type-badge">{{ child.type?.title }}</span>
+              }
+              <button class="remove-child" (click)="removeChildGeoObject(child.id!)" title="Отвязать">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
 
     <div class="field-group">
       <label>Изображения</label>

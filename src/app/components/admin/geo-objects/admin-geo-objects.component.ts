@@ -109,6 +109,8 @@ export class AdminGeoObjectsComponent implements OnInit {
   parentSearchResults = signal<GeoObjectBrief[]>([]);
   showParentSearch = signal(false);
 
+  childrenGeoObjects = signal<GeoObject[]>([]);
+
   searchQuery = signal("");
   currentPage = signal(1);
   pageSize = signal(10);
@@ -221,6 +223,7 @@ export class AdminGeoObjectsComponent implements OnInit {
               : null,
           );
           this.parentGeoObject.set(data.parent ?? null);
+          this.childrenGeoObjects.set(data.children ?? []);
           const matchedType = this.types().find((t) => t.id === data.typeId);
           const catId = matchedType?.categoryId ?? null;
           this.selectedCategoryId.set(catId);
@@ -247,6 +250,7 @@ export class AdminGeoObjectsComponent implements OnInit {
     this.linkedPersons.set([]);
     this.customFields.set(null);
     this.parentGeoObject.set(null);
+    this.childrenGeoObjects.set([]);
     this.parentSearchQuery.set("");
     this.parentSearchResults.set([]);
     this.showParentSearch.set(false);
@@ -372,8 +376,9 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   searchParentGeoObject(): void {
     const query = this.parentSearchQuery().trim().toLowerCase();
-    if (!query) {
+    if (query.length < 3) {
       this.parentSearchResults.set([]);
+      this.showParentSearch.set(false);
       return;
     }
     const currentId = this.crud.selectedItem()?.id;
@@ -386,8 +391,13 @@ export class AdminGeoObjectsComponent implements OnInit {
     this.showParentSearch.set(true);
   }
 
+  onParentSearchQueryChange(value: string): void {
+    this.parentSearchQuery.set(value);
+    this.searchParentGeoObject();
+  }
+
   selectParentGeoObject(item: GeoObjectBrief): void {
-    this.parentGeoObject.set(item);
+    this.parentGeoObject.set(item as GeoObject);
     this.form.patchValue({ parentId: item.id });
     this.parentSearchQuery.set("");
     this.parentSearchResults.set([]);
@@ -400,6 +410,11 @@ export class AdminGeoObjectsComponent implements OnInit {
     this.parentSearchQuery.set("");
     this.parentSearchResults.set([]);
     this.showParentSearch.set(false);
+  }
+
+  removeChildGeoObject(childId: number): void {
+    this.childrenGeoObjects.set(this.childrenGeoObjects().filter((c) => c.id !== childId));
+    this.form.patchValue({ parentId: null });
   }
 
   onSort({ column, direction }: { column: string; direction: SortDirection }): void {
