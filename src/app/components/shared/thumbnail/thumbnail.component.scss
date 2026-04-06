@@ -3,6 +3,7 @@
   overflow: hidden;
   flex-shrink: 0;
   cursor: default;
+  border-radius: 8px;
 
   &.clickable {
     cursor: pointer;
