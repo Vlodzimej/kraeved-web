@@ -66,6 +66,17 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
     status: "Категории историко-культурного значения",
   };
 
+  oknFieldOrder: (keyof GeoObjectCustomFields)[] = [
+    "okn_full_name",
+    "regulatory_legal_info",
+    "location_description",
+    "cadastral_address",
+    "egrokn_status",
+    "object_type",
+    "date",
+    "status",
+  ];
+
   oknFields = computed<GeoObjectCustomFields | null>(() => {
     const obj = this.geoObject();
     if (!obj?.customFields) return null;

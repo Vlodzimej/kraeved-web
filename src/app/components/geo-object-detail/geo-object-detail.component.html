@@ -74,11 +74,11 @@
         <div class="detail-section">
           <h2>Дополнительные сведения</h2>
           <dl class="okn-fields-list">
-            @for (key of oknFields() | keyvalue; track key.key) {
-              @if (key.value) {
+            @for (key of oknFieldOrder; track key) {
+              @if (oknFields()![key]) {
                 <div class="okn-field-item">
-                  <dt>{{ oknFieldLabels[key.key] || key.key }}</dt>
-                  <dd>{{ key.value }}</dd>
+                  <dt>{{ oknFieldLabels[key] }}</dt>
+                  <dd>{{ oknFields()![key] }}</dd>
                 </div>
               }
             }
