@@ -58,6 +58,8 @@ export interface GeoObjectTypeBrief {
   title: string;
   categoryId?: number | null;
   categoryName?: string | null;
+  categoryTitle?: string | null;
+  category?: GeoObjectCategory | null;
 }
 
 export interface GeoObjectCategory {

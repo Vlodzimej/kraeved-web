@@ -18,9 +18,14 @@
         />
         <div class="detail-title">
           <h1>{{ geoObject()?.name }}</h1>
-          @if (geoObject()?.type?.title) {
-            <span class="detail-type">{{ geoObject()?.type?.title }}</span>
-          }
+          <div class="detail-badges">
+            @if (geoObject()?.type?.category?.title) {
+              <span class="detail-category">{{ geoObject()?.type?.category?.title }}</span>
+            }
+            @if (geoObject()?.type?.title) {
+              <span class="detail-type">{{ geoObject()?.type?.title }}</span>
+            }
+          </div>
         </div>
       </div>
 

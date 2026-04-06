@@ -69,6 +69,21 @@
     border-radius: 12px;
     font-size: 13px;
   }
+
+  .detail-category {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #f3e5f5;
+    color: #7b1fa2;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+}
+
+.detail-badges {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
 .detail-section {
