@@ -1,7 +1,31 @@
 <div class="admin-page">
   <div class="page-header">
     <h1>Объекты</h1>
-    <button class="btn btn-info" (click)="openCreate()">+ Добавить</button>
+    <div class="page-header-actions">
+      <button class="btn btn-secondary btn-import" (click)="triggerFileInput()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Импорт JSON
+      </button>
+      <button class="btn btn-icon btn-info-help" (click)="showJsonFormatInfo.set(true)" title="Формат JSON">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </button>
+      <input
+        #fileInput
+        type="file"
+        accept=".json"
+        (change)="onFileSelected($event)"
+        style="display: none"
+      />
+      <button class="btn btn-info" (click)="openCreate()">+ Добавить</button>
+    </div>
   </div>
 
   @if (loading()) {
@@ -10,6 +34,37 @@
 
   @if (error()) {
     <div class="error">{{ error() }}</div>
+  }
+
+  @if (importResult()) {
+    <div class="import-result" [class.success]="importResult()!.failed === 0" [class.partial]="importResult()!.failed > 0">
+      <div class="import-result-header">
+        <span>Результат импорта</span>
+        <button class="import-close" (click)="clearImportResult()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="import-stats">
+        <span class="stat-ok">Импортировано: {{ importResult()!.imported }}</span>
+        @if (importResult()!.failed > 0) {
+          <span class="stat-fail">Ошибки: {{ importResult()!.failed }}</span>
+        }
+      </div>
+      @if (importResult()!.errors && importResult()!.errors!.length > 0) {
+        <ul class="import-errors">
+          @for (err of importResult()!.errors; track $index) {
+            <li>{{ err }}</li>
+          }
+        </ul>
+      }
+    </div>
+  }
+
+  @if (importLoading()) {
+    <div class="loading">Импорт...</div>
   }
 
   @if (crud.showDeleteConfirm()) {
@@ -221,6 +276,18 @@
       </div>
     </div>
 
+    <div class="field-group">
+      <label>Подтип</label>
+      <select
+        [formControl]="form.controls.subtypeId"
+      >
+        <option [ngValue]="null">Без подтипа</option>
+        @for (type of filteredSubtypes(); track type.id) {
+          <option [ngValue]="type.id">{{ type.title }}</option>
+        }
+      </select>
+    </div>
+
     @if (isOknCategory()) {
       <div class="field-group">
         <button class="btn btn-okn" (click)="openOknFields()">
@@ -236,6 +303,67 @@
             <span class="badge badge-okn">✓</span>
           }
         </button>
+      </div>
+    }
+
+    <div class="field-group">
+      <label>Родительский объект</label>
+      @if (parentGeoObject()) {
+        <div class="parent-geo-object-selected">
+          <span>{{ parentGeoObject()!.name }}</span>
+          <button class="remove-parent" (click)="clearParentGeoObject()" title="Убрать">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+      } @else {
+        <div class="parent-search-wrapper">
+          <input
+            type="text"
+            [ngModel]="parentSearchQuery()"
+            (ngModelChange)="onParentSearchQueryChange($event)"
+            placeholder="Введите минимум 3 символа..."
+          />
+        </div>
+        @if (showParentSearch() && parentSearchResults().length > 0) {
+          <div class="parent-search-results">
+            @for (result of parentSearchResults(); track result.id) {
+              <div class="parent-search-item" (click)="selectParentGeoObject(result)">
+                <span>{{ result.name }}</span>
+                @if (result.typeTitle) {
+                  <span class="result-type">{{ result.typeTitle }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+        @if (showParentSearch() && parentSearchResults().length === 0 && parentSearchQuery().trim().length >= 3) {
+          <div class="parent-search-empty">Ничего не найдено</div>
+        }
+      }
+    </div>
+
+    @if (childrenGeoObjects().length > 0) {
+      <div class="field-group">
+        <label>Дочерние объекты</label>
+        <div class="children-geo-objects-list">
+          @for (child of childrenGeoObjects(); track child.id) {
+            <div class="child-geo-object-item">
+              <span>{{ child.name }}</span>
+              @if (child.type?.title) {
+                <span class="child-type-badge">{{ child.type?.title }}</span>
+              }
+              <button class="remove-child" (click)="removeChildGeoObject(child.id!)" title="Отвязать">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+            </div>
+          }
+        </div>
       </div>
     }
 
@@ -294,5 +422,98 @@
       (saved)="onOknFieldsSaved($event)"
       (cancelled)="onOknFieldsCancelled()"
     />
+  }
+
+  @if (showJsonFormatInfo()) {
+    <div class="json-info-backdrop" (click)="showJsonFormatInfo.set(false)">
+      <div class="json-info-dialog" (click)="$event.stopPropagation()">
+        <div class="json-info-header">
+          <h2>Формат JSON для импорта</h2>
+          <button class="json-info-close" (click)="showJsonFormatInfo.set(false)" aria-label="Закрыть">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="json-info-body">
+          <h3>Обычный объект</h3>
+          <pre class="json-code">[
+  &#123;
+    "name": "Название объекта",
+    "typeId": 402,
+    "description": "Полное описание",
+    "shortDescription": "Краткое описание",
+    "latitude": 54.5118,
+    "longitude": 36.2305,
+    "regionId": 40
+  &#125;
+]</pre>
+
+          <h3>Объект с дочерними элементами</h3>
+          <pre class="json-code">[
+  &#123;
+    "name": "Родительский объект",
+    "typeId": 602,
+    "description": "Описание родительского объекта",
+    "latitude": 54.5118,
+    "longitude": 36.2305,
+    "regionId": 40,
+    "children": [
+      &#123;
+        "name": "Дочерний объект 1",
+        "typeId": 601,
+        "description": "Описание дочернего объекта",
+        "latitude": 54.5120,
+        "longitude": 36.2310,
+        "regionId": 40
+      &#125;
+    ]
+  &#125;
+]</pre>
+          <pre class="json-code">[
+  &#123;
+    "name": "Название ОКН",
+    "typeId": 601,
+    "description": "Полное описание",
+    "shortDescription": "Краткое описание",
+    "latitude": 54.5118,
+    "longitude": 36.2305,
+    "regionId": 40,
+    "customFields": "&#123;&quot;okn_full_name&quot;:&quot;Наименование ОКН&quot;,&quot;regulatory_legal_info&quot;:&quot;Реквизиты НПА&quot;,&quot;location_description&quot;:&quot;Местонахождение&quot;,&quot;cadastral_address&quot;:&quot;Адрес&quot;,&quot;egrokn_status&quot;:&quot;Статус ЕГРОКН&quot;,&quot;object_type&quot;:&quot;Вид ОКН&quot;,&quot;date&quot;:&quot;Датировка&quot;,&quot;status&quot;:&quot;Категория значения&quot;&#125;"
+  &#125;
+]</pre>
+
+          <h3>Доступные поля CustomFields для ОКН</h3>
+          <table class="json-fields-table">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>okn_full_name</code></td><td>Наименование ОКН</td></tr>
+              <tr><td><code>regulatory_legal_info</code></td><td>Наименование и реквизиты нпа органа гос. власти о постановке ОКН на гос. охрану</td></tr>
+              <tr><td><code>location_description</code></td><td>Местонахождение ОКН</td></tr>
+              <tr><td><code>cadastral_address</code></td><td>Адрес ОКН</td></tr>
+              <tr><td><code>egrokn_status</code></td><td>АИС ЕГРОКН (статус)</td></tr>
+              <tr><td><code>object_type</code></td><td>вид ОКН</td></tr>
+              <tr><td><code>date</code></td><td>Датировка</td></tr>
+              <tr><td><code>status</code></td><td>Категории историко-культурного значения</td></tr>
+            </tbody>
+          </table>
+
+          <p class="json-info-note">
+            <strong>Важно:</strong> поле <code>customFields</code> должно содержать сериализованную JSON-строку (экранированный JSON внутри строки).
+          </p>
+        </div>
+
+        <div class="json-info-footer">
+          <button class="btn btn-primary" (click)="showJsonFormatInfo.set(false)">Закрыть</button>
+        </div>
+      </div>
+    </div>
   }
 </div>

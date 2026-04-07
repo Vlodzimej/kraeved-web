@@ -9,11 +9,16 @@ export interface GeoObject {
   name: string;
   typeId?: number | null;
   type?: GeoObjectTypeBrief | null;
+  subtypeId?: number | null;
+  subtype?: GeoObjectTypeBrief | null;
   description: string;
   shortDescription: string;
   latitude?: number | null;
   longitude?: number | null;
   regionId?: number | null;
+  parentId?: number | null;
+  parent?: GeoObjectBrief | null;
+  children?: GeoObject[] | null;
   images?: ImageInfo[] | null;
   thumbnail?: string | null;
   customFields?: GeoObjectCustomFields | string | null;
@@ -39,6 +44,9 @@ export interface GeoObjectBrief {
   typeName?: string | null;
   typeTitle?: string | null;
   typeCategoryName?: string | null;
+  subtypeId?: number | null;
+  subtypeName?: string | null;
+  subtypeTitle?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   thumbnail?: string | null;

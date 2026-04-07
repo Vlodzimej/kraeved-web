@@ -15,7 +15,7 @@ import { FormBuilder, Validators } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { CommentsService, CommentDto } from "../../services/comments.service";
-import { GeoObject, GeoObjectCustomFields, PersonBrief, ImageInfo } from "../../models/admin/entities.model";
+import { GeoObject, GeoObjectBrief, GeoObjectCustomFields, PersonBrief, ImageInfo } from "../../models/admin/entities.model";
 import { environment } from "../../../environments/environment";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
@@ -86,10 +86,12 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
   });
 
   ngOnInit(): void {
-    const id = this.route.snapshot.paramMap.get("id");
-    if (id) {
-      this.loadGeoObject(+id);
-    }
+    this.route.paramMap.subscribe((params) => {
+      const id = params.get("id");
+      if (id) {
+        this.loadGeoObject(+id);
+      }
+    });
   }
 
   ngAfterViewInit(): void {
@@ -213,5 +215,9 @@ export class GeoObjectDetailComponent implements OnInit, AfterViewInit {
 
   goBack(): void {
     this.router.navigate(["/home"]);
+  }
+
+  navigateToChild(id: number): void {
+    this.router.navigateByUrl(`/geo-object/${id}`);
   }
 }

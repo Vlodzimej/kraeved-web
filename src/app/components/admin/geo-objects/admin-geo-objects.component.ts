@@ -4,9 +4,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   inject,
   OnInit,
   signal,
+  viewChild,
 } from "@angular/core";
 import {
   NonNullableFormBuilder,
@@ -88,6 +90,10 @@ export class AdminGeoObjectsComponent implements OnInit {
     return allTypes.filter((t) => t.categoryId === catId);
   });
 
+  filteredSubtypes = computed(() => {
+    return this.types();
+  });
+
   cardLoading = signal(false);
   showImageManager = signal(false);
   showOknFields = signal(false);
@@ -104,6 +110,18 @@ export class AdminGeoObjectsComponent implements OnInit {
   images = signal<ImageInfo[]>([]);
   linkedPersons = signal<Person[]>([]);
 
+  parentGeoObject = signal<GeoObjectBrief | null>(null);
+  parentSearchQuery = signal("");
+  parentSearchResults = signal<GeoObjectBrief[]>([]);
+  showParentSearch = signal(false);
+
+  childrenGeoObjects = signal<GeoObject[]>([]);
+
+  fileInput = viewChild<ElementRef<HTMLInputElement>>("fileInput");
+  importLoading = signal(false);
+  importResult = signal<{ imported: number; failed: number; errors: string[] | null } | null>(null);
+  showJsonFormatInfo = signal(false);
+
   searchQuery = signal("");
   currentPage = signal(1);
   pageSize = signal(10);
@@ -118,6 +136,8 @@ export class AdminGeoObjectsComponent implements OnInit {
     regionId: this.fb.control<number | null>({ value: DEFAULT_REGION_ID, disabled: true }),
     categoryId: this.fb.control<number | null>(null),
     typeId: this.fb.control<number | null>(null),
+    subtypeId: this.fb.control<number | null>(null),
+    parentId: this.fb.control<number | null>(null),
   });
 
   crud = useAdminCrud<GeoObject>(
@@ -214,6 +234,8 @@ export class AdminGeoObjectsComponent implements OnInit {
               ? data.customFields as GeoObjectCustomFields
               : null,
           );
+          this.parentGeoObject.set(data.parent ?? null);
+          this.childrenGeoObjects.set(data.children ?? []);
           const matchedType = this.types().find((t) => t.id === data.typeId);
           const catId = matchedType?.categoryId ?? null;
           this.selectedCategoryId.set(catId);
@@ -227,6 +249,8 @@ export class AdminGeoObjectsComponent implements OnInit {
             regionId: data.regionId ?? null,
             categoryId: catId,
             typeId: data.typeId ?? null,
+            subtypeId: data.subtypeId ?? null,
+            parentId: data.parentId ?? null,
           });
           this.loadLinkedPersons(data.id!);
         },
@@ -238,6 +262,11 @@ export class AdminGeoObjectsComponent implements OnInit {
     this.images.set([]);
     this.linkedPersons.set([]);
     this.customFields.set(null);
+    this.parentGeoObject.set(null);
+    this.childrenGeoObjects.set([]);
+    this.parentSearchQuery.set("");
+    this.parentSearchResults.set([]);
+    this.showParentSearch.set(false);
     this.selectedCategoryId.set(null);
     this.form.reset({
       name: "",
@@ -247,6 +276,8 @@ export class AdminGeoObjectsComponent implements OnInit {
       regionId: DEFAULT_REGION_ID,
       categoryId: null,
       typeId: null,
+      subtypeId: null,
+      parentId: null,
     });
   }
 
@@ -258,6 +289,11 @@ export class AdminGeoObjectsComponent implements OnInit {
     this.crud.confirmClose();
     this.images.set([]);
     this.linkedPersons.set([]);
+    this.customFields.set(null);
+    this.parentGeoObject.set(null);
+    this.parentSearchQuery.set("");
+    this.parentSearchResults.set([]);
+    this.showParentSearch.set(false);
     this.selectedCategoryId.set(null);
     this.form.reset({
       name: "",
@@ -267,6 +303,8 @@ export class AdminGeoObjectsComponent implements OnInit {
       regionId: null,
       categoryId: null,
       typeId: null,
+      subtypeId: null,
+      parentId: null,
     });
   }
 
@@ -298,6 +336,8 @@ export class AdminGeoObjectsComponent implements OnInit {
       longitude: coords[1] ? parseFloat(coords[1]) : null,
       regionId: formValue.regionId,
       typeId: formValue.typeId,
+      subtypeId: formValue.subtypeId,
+      parentId: formValue.parentId,
       images: imgs.length > 0 ? imgs : null,
       thumbnail: imgs.length > 0 ? imgs[0].filename : null,
       customFields: this.customFields(),
@@ -348,6 +388,51 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   onOknFieldsCancelled(): void {
     this.showOknFields.set(false);
+  }
+
+  searchParentGeoObject(): void {
+    const query = this.parentSearchQuery().trim().toLowerCase();
+    if (query.length < 3) {
+      this.parentSearchResults.set([]);
+      this.showParentSearch.set(false);
+      return;
+    }
+    const currentId = this.crud.selectedItem()?.id;
+    const childIds = this.childrenGeoObjects().map((c) => c.id);
+    const results = this.items().filter(
+      (i) =>
+        i.id !== currentId &&
+        i.name.toLowerCase().includes(query) &&
+        !childIds.includes(i.id),
+    );
+    this.parentSearchResults.set(results);
+    this.showParentSearch.set(true);
+  }
+
+  onParentSearchQueryChange(value: string): void {
+    this.parentSearchQuery.set(value);
+    this.searchParentGeoObject();
+  }
+
+  selectParentGeoObject(item: GeoObjectBrief): void {
+    this.parentGeoObject.set(item as GeoObject);
+    this.form.patchValue({ parentId: item.id });
+    this.parentSearchQuery.set("");
+    this.parentSearchResults.set([]);
+    this.showParentSearch.set(false);
+  }
+
+  clearParentGeoObject(): void {
+    this.parentGeoObject.set(null);
+    this.form.patchValue({ parentId: null });
+    this.parentSearchQuery.set("");
+    this.parentSearchResults.set([]);
+    this.showParentSearch.set(false);
+  }
+
+  removeChildGeoObject(childId: number): void {
+    this.childrenGeoObjects.set(this.childrenGeoObjects().filter((c) => c.id !== childId));
+    this.form.patchValue({ parentId: null });
   }
 
   onSort({ column, direction }: { column: string; direction: SortDirection }): void {
@@ -402,5 +487,36 @@ export class AdminGeoObjectsComponent implements OnInit {
 
   getPersonFullName(person: Person): string {
     return [person.surname, person.firstName, person.patronymic].filter(Boolean).join(" ");
+  }
+
+  triggerFileInput(): void {
+    this.fileInput()?.nativeElement.click();
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.importLoading.set(true);
+    this.importResult.set(null);
+
+    this.service.importFromJson(file).subscribe({
+      next: (result) => {
+        this.importResult.set(result);
+        this.importLoading.set(false);
+        this.store.dispatch(new LoadGeoObjects());
+        input.value = "";
+      },
+      error: (err) => {
+        this.importResult.set({ imported: 0, failed: 1, errors: [err.error?.message || "Ошибка импорта"] });
+        this.importLoading.set(false);
+        input.value = "";
+      },
+    });
+  }
+
+  clearImportResult(): void {
+    this.importResult.set(null);
   }
 }

@@ -77,4 +77,12 @@ export class AdminGeoObjectsService {
       .delete<KraevedResponse<GeoObject>>(`${this.apiUrl}/${id}`)
       .pipe(map((res) => res.data));
   }
+
+  importFromJson(file: File): Observable<{ imported: number; failed: number; errors: string[] | null }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http
+      .post<KraevedResponse<{ imported: number; failed: number; errors: string[] | null }>>(`${this.apiUrl}/import`, formData)
+      .pipe(map((res) => res.data));
+  }
 }
