@@ -276,6 +276,18 @@
       </div>
     </div>
 
+    <div class="field-group">
+      <label>Подтип</label>
+      <select
+        [formControl]="form.controls.subtypeId"
+      >
+        <option [ngValue]="null">Без подтипа</option>
+        @for (type of filteredSubtypes(); track type.id) {
+          <option [ngValue]="type.id">{{ type.title }}</option>
+        }
+      </select>
+    </div>
+
     @if (isOknCategory()) {
       <div class="field-group">
         <button class="btn btn-okn" (click)="openOknFields()">

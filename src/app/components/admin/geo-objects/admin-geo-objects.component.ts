@@ -90,6 +90,13 @@ export class AdminGeoObjectsComponent implements OnInit {
     return allTypes.filter((t) => t.categoryId === catId);
   });
 
+  filteredSubtypes = computed(() => {
+    const catId = this.selectedCategoryId();
+    const allTypes = this.types();
+    if (catId == null) return allTypes;
+    return allTypes.filter((t) => t.categoryId === catId);
+  });
+
   cardLoading = signal(false);
   showImageManager = signal(false);
   showOknFields = signal(false);
@@ -132,6 +139,7 @@ export class AdminGeoObjectsComponent implements OnInit {
     regionId: this.fb.control<number | null>({ value: DEFAULT_REGION_ID, disabled: true }),
     categoryId: this.fb.control<number | null>(null),
     typeId: this.fb.control<number | null>(null),
+    subtypeId: this.fb.control<number | null>(null),
     parentId: this.fb.control<number | null>(null),
   });
 
@@ -244,6 +252,7 @@ export class AdminGeoObjectsComponent implements OnInit {
             regionId: data.regionId ?? null,
             categoryId: catId,
             typeId: data.typeId ?? null,
+            subtypeId: data.subtypeId ?? null,
             parentId: data.parentId ?? null,
           });
           this.loadLinkedPersons(data.id!);
@@ -270,6 +279,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       regionId: DEFAULT_REGION_ID,
       categoryId: null,
       typeId: null,
+      subtypeId: null,
       parentId: null,
     });
   }
@@ -296,6 +306,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       regionId: null,
       categoryId: null,
       typeId: null,
+      subtypeId: null,
       parentId: null,
     });
   }
@@ -328,6 +339,7 @@ export class AdminGeoObjectsComponent implements OnInit {
       longitude: coords[1] ? parseFloat(coords[1]) : null,
       regionId: formValue.regionId,
       typeId: formValue.typeId,
+      subtypeId: formValue.subtypeId,
       parentId: formValue.parentId,
       images: imgs.length > 0 ? imgs : null,
       thumbnail: imgs.length > 0 ? imgs[0].filename : null,

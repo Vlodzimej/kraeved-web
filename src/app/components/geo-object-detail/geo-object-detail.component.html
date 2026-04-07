@@ -25,6 +25,9 @@
             @if (geoObject()?.type?.title) {
               <span class="detail-type">{{ geoObject()?.type?.title }}</span>
             }
+            @if (geoObject()?.subtype?.title) {
+              <span class="detail-subtype">{{ geoObject()?.subtype?.title }}</span>
+            }
           </div>
         </div>
       </div>
