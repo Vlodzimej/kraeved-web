@@ -91,10 +91,7 @@ export class AdminGeoObjectsComponent implements OnInit {
   });
 
   filteredSubtypes = computed(() => {
-    const catId = this.selectedCategoryId();
-    const allTypes = this.types();
-    if (catId == null) return allTypes;
-    return allTypes.filter((t) => t.categoryId === catId);
+    return this.types();
   });
 
   cardLoading = signal(false);
