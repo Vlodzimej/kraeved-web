@@ -116,6 +116,7 @@ export class AdminGeoObjectsComponent implements OnInit {
   fileInput = viewChild<ElementRef<HTMLInputElement>>("fileInput");
   importLoading = signal(false);
   importResult = signal<{ imported: number; failed: number; errors: string[] | null } | null>(null);
+  showJsonFormatInfo = signal(false);
 
   searchQuery = signal("");
   currentPage = signal(1);

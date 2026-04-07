@@ -10,6 +10,13 @@
         </svg>
         Импорт JSON
       </button>
+      <button class="btn btn-icon btn-info-help" (click)="showJsonFormatInfo.set(true)" title="Формат JSON">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </button>
       <input
         #fileInput
         type="file"
@@ -403,5 +410,78 @@
       (saved)="onOknFieldsSaved($event)"
       (cancelled)="onOknFieldsCancelled()"
     />
+  }
+
+  @if (showJsonFormatInfo()) {
+    <div class="json-info-backdrop" (click)="showJsonFormatInfo.set(false)">
+      <div class="json-info-dialog" (click)="$event.stopPropagation()">
+        <div class="json-info-header">
+          <h2>Формат JSON для импорта</h2>
+          <button class="json-info-close" (click)="showJsonFormatInfo.set(false)" aria-label="Закрыть">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
+
+        <div class="json-info-body">
+          <h3>Обычный объект</h3>
+          <pre class="json-code">[
+  &#123;
+    "name": "Название объекта",
+    "typeId": 402,
+    "description": "Полное описание",
+    "shortDescription": "Краткое описание",
+    "latitude": 54.5118,
+    "longitude": 36.2305,
+    "regionId": 40
+  &#125;
+]</pre>
+
+          <h3>Объект ОКН (с CustomFields)</h3>
+          <pre class="json-code">[
+  &#123;
+    "name": "Название ОКН",
+    "typeId": 601,
+    "description": "Полное описание",
+    "shortDescription": "Краткое описание",
+    "latitude": 54.5118,
+    "longitude": 36.2305,
+    "regionId": 40,
+    "customFields": "&#123;&quot;okn_full_name&quot;:&quot;Наименование ОКН&quot;,&quot;regulatory_legal_info&quot;:&quot;Реквизиты НПА&quot;,&quot;location_description&quot;:&quot;Местонахождение&quot;,&quot;cadastral_address&quot;:&quot;Адрес&quot;,&quot;egrokn_status&quot;:&quot;Статус ЕГРОКН&quot;,&quot;object_type&quot;:&quot;Вид ОКН&quot;,&quot;date&quot;:&quot;Датировка&quot;,&quot;status&quot;:&quot;Категория значения&quot;&#125;"
+  &#125;
+]</pre>
+
+          <h3>Доступные поля CustomFields для ОКН</h3>
+          <table class="json-fields-table">
+            <thead>
+              <tr>
+                <th>Поле</th>
+                <th>Описание</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>okn_full_name</code></td><td>Наименование ОКН</td></tr>
+              <tr><td><code>regulatory_legal_info</code></td><td>Наименование и реквизиты нпа органа гос. власти о постановке ОКН на гос. охрану</td></tr>
+              <tr><td><code>location_description</code></td><td>Местонахождение ОКН</td></tr>
+              <tr><td><code>cadastral_address</code></td><td>Адрес ОКН</td></tr>
+              <tr><td><code>egrokn_status</code></td><td>АИС ЕГРОКН (статус)</td></tr>
+              <tr><td><code>object_type</code></td><td>вид ОКН</td></tr>
+              <tr><td><code>date</code></td><td>Датировка</td></tr>
+              <tr><td><code>status</code></td><td>Категории историко-культурного значения</td></tr>
+            </tbody>
+          </table>
+
+          <p class="json-info-note">
+            <strong>Важно:</strong> поле <code>customFields</code> должно содержать сериализованную JSON-строку (экранированный JSON внутри строки).
+          </p>
+        </div>
+
+        <div class="json-info-footer">
+          <button class="btn btn-primary" (click)="showJsonFormatInfo.set(false)">Закрыть</button>
+        </div>
+      </div>
+    </div>
   }
 </div>
