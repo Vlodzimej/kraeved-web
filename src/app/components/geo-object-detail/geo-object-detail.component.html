@@ -127,8 +127,8 @@
               placeholder="Написать комментарий..."
               rows="3"
             ></textarea>
-            <button type="submit" class="btn btn-info" [disabled]="commentForm.invalid">
-              Отправить
+            <button type="submit" class="btn btn-info send-button" [disabled]="commentForm.invalid">
+              <img src="/assets/send.svg">
             </button>
           </form>
         } @else {
