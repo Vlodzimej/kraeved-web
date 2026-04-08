@@ -63,11 +63,13 @@
     <div class="modal-backdrop" (click)="closeObjectModal()">
       <div class="modal-container" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <app-thumbnail
-            [filename]="selectedObject()?.thumbnail ?? null"
-            [alt]="selectedObject()?.name ?? ''"
-            size="sm"
-          />
+          @if (selectedObject()?.thumbnail; as thumbnail) {
+            <app-thumbnail
+              [filename]="thumbnail"
+              [alt]="selectedObject()?.name ?? ''"
+              size="sm"
+            />
+          }
           <h2 class="modal-title">{{ selectedObject()?.name }}</h2>
           <button class="modal-detail-btn" (click)="goToDetail(selectedObject()?.id ?? 0)">
             Подробнее
@@ -159,13 +161,15 @@
     <div class="modal-backdrop" (click)="closePersonModal()">
       <div class="modal-container" (click)="$event.stopPropagation()">
         <div class="modal-header">
-          <app-thumbnail
-            [filename]="selectedPerson()?.photos?.[0]?.filename ?? null"
-            [alt]="selectedPerson()?.surname ?? ''"
-            size="sm"
-            shape="circle"
-            [showPlaceholder]="true"
-          />
+          @if (selectedPerson()?.photos?.[0]?.filename; as thumbnail) {
+            <app-thumbnail
+              [filename]="thumbnail"
+              [alt]="selectedPerson()?.surname ?? ''"
+              size="sm"
+              shape="circle"
+              [showPlaceholder]="true"
+            />
+          }
           <h2 class="modal-title">{{ getPersonFullName(selectedPerson()) }}</h2>
           <button class="modal-close" (click)="closePersonModal()" aria-label="Закрыть">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
