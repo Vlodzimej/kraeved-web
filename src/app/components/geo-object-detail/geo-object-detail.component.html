@@ -11,11 +11,13 @@
   } @else if (geoObject()) {
     <div class="detail-card">
       <div class="detail-header">
-        <app-thumbnail
-          [filename]="geoObject()?.thumbnail ?? null"
-          [alt]="geoObject()?.name ?? ''"
-          size="lg"
-        />
+        @if (geoObject()?.thumbnail; as thumbnail) {
+          <app-thumbnail
+            [filename]="thumbnail"
+            [alt]="geoObject()?.name ?? ''"
+            size="lg"
+          />
+        }
         <div class="detail-title">
           <h1>{{ geoObject()?.name }}</h1>
           <div class="detail-badges">
@@ -125,8 +127,8 @@
               placeholder="Написать комментарий..."
               rows="3"
             ></textarea>
-            <button type="submit" class="btn btn-info" [disabled]="commentForm.invalid">
-              Отправить
+            <button type="submit" class="btn btn-info send-button" [disabled]="commentForm.invalid">
+              <img src="/assets/send.svg">
             </button>
           </form>
         } @else {

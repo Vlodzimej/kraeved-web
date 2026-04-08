@@ -32,6 +32,7 @@ export class GeoObjectSearchComponent {
   selectObject = output<GeoObjectBrief>();
   openObjectDetails = output<GeoObjectBrief>();
   panelClosed = output<void>();
+  typeChanged = output<number | null>();
 
   isOpen = signal(false);
   searchText = signal("");
@@ -45,23 +46,23 @@ export class GeoObjectSearchComponent {
     const text = this.searchText().toLowerCase().trim();
     const typeId = this.selectedTypeId();
 
-    if (!text && typeId === null) {
-      return [];
+    if (text === '' && typeId === null) {
+      return objects.map((obj) => ({ obj }));
     }
 
     const results: SearchResult[] = [];
 
     for (const obj of objects) {
-      const matchesText = !text ||
+      const matchesText = text === '' ||
         obj.name?.toLowerCase().includes(text) ||
         obj.shortDescription?.toLowerCase().includes(text) ||
         obj.typeName?.toLowerCase().includes(text) ||
         obj.typeTitle?.toLowerCase().includes(text) ||
         obj.typeCategoryName?.toLowerCase().includes(text);
 
-      const matchesType = typeId === null || obj.typeId === typeId;
+      const matchesType = typeId === null || obj.typeId === typeId || obj.subtypeId === typeId;
 
-      if (matchesText && matchesType) {
+      if (matchesType && matchesText) {
         results.push({ obj });
       }
     }
@@ -93,6 +94,7 @@ export class GeoObjectSearchComponent {
     this.searchText.set("");
     this.selectedTypeId.set(null);
     this.panelClosed.emit();
+    this.typeChanged.emit(null);
   }
 
   onResultClick(result: SearchResult): void {
@@ -108,7 +110,9 @@ export class GeoObjectSearchComponent {
   }
 
   onTypeChange(value: string): void {
-    this.selectedTypeId.set(value ? +value : null);
+    const typeId = value ? +value : null;
+    this.selectedTypeId.set(typeId);
+    this.typeChanged.emit(typeId);
   }
 
   trackByResult(_index: number, result: SearchResult): number | null {
