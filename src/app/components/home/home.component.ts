@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   effect,
   inject,
   OnInit,
@@ -12,6 +13,8 @@ import { Router } from "@angular/router";
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../store/auth/auth.state";
 import { Logout } from "../../store/auth/auth.actions";
+import { GeoObjectsState } from "../../store/geo-objects/geo-objects.state";
+import { LoadGeoObjects } from "../../store/geo-objects/geo-objects.actions";
 import { GeoObjectsService } from "../../services/geo-objects.service";
 import { AdminPersonsService } from "../../services/admin/admin-persons.service";
 import { CommentsService } from "../../services/comments.service";
@@ -52,7 +55,8 @@ export class HomeComponent implements OnInit {
   isAuthenticated = this.store.selectSignal(AuthState.isAuthenticated);
   mapContainer = viewChild<ElementRef<HTMLDivElement>>("mapContainer");
 
-  geoObjects = signal<GeoObjectBrief[]>([]);
+  geoObjects = this.store.selectSignal(GeoObjectsState.items);
+  selectedTypeId = signal<number | null>(null);
   selectedObject = signal<GeoObject | null>(null);
   selectedObjectPersons = signal<PersonBrief[]>([]);
   selectedObjectLatestComment = signal<CommentDto | null>(null);
@@ -60,23 +64,44 @@ export class HomeComponent implements OnInit {
   imagePreview = viewChild.required<ImagePreviewComponent>("imagePreview");
   showWelcomeModal = signal(false);
 
+  filteredGeoObjects = computed(() => {
+    const objects = this.geoObjects();
+    const typeId = this.selectedTypeId();
+    if (typeId === null) return objects;
+    return objects.filter((obj) => obj.typeId === typeId || obj.subtypeId === typeId);
+  });
+
+  private mapInitialized = false;
   private map: L.Map | null = null;
   private markersLayer: L.LayerGroup | null = null;
   private highlightLayer: L.LayerGroup | null = null;
   private allMarkers: MarkerData[] = [];
   private _highlightedMarkerId: number | null = null;
 
+  constructor() {
+    effect(() => {
+      const typeId = this.selectedTypeId();
+      console.log('Type changed:', typeId);
+      console.log('Filtered objects count:', this.filteredGeoObjects().length);
+      this.createMarkers();
+      this.updateVisibleMarkers();
+    });
+
+    effect(() => {
+      const objects = this.geoObjects();
+      if (objects.length > 0 && !this.mapInitialized) {
+        this.mapInitialized = true;
+        setTimeout(() => this.initMap(), 0);
+      }
+    });
+  }
+
   ngOnInit(): void {
     this.store.dispatch(new LoadAppSettings());
+    this.store.dispatch(new LoadGeoObjects());
     if (typeof localStorage !== "undefined" && !localStorage.getItem("welcome_shown")) {
       this.showWelcomeModal.set(true);
     }
-    this.geoObjectsService.getAll().subscribe({
-      next: (objects) => {
-        this.geoObjects.set(objects);
-        setTimeout(() => this.initMap(), 0);
-      },
-    });
   }
 
   closeWelcomeModal(): void {
@@ -159,7 +184,7 @@ export class HomeComponent implements OnInit {
 
   private createMarkers(): void {
     this.allMarkers = [];
-    const objects = this.geoObjects();
+    const objects = this.filteredGeoObjects();
     for (const obj of objects) {
       if (obj.latitude == null || obj.longitude == null) continue;
 
@@ -469,6 +494,10 @@ export class HomeComponent implements OnInit {
     this.clearHighlight();
   }
 
+  onTypeChanged(typeId: number | null): void {
+    this.selectedTypeId.set(typeId);
+  }
+
   private _pendingHighlightId: number | null = null;
 
   private applyPendingHighlight(): void {
@@ -505,10 +534,10 @@ export class HomeComponent implements OnInit {
   }
 
   private reapplyHighlight(): void {
-    if (this._highlightedMarkerId !== null) {
+    if (this._highlightedMarkerId !== null && this.highlightLayer) {
       const obj = this.geoObjects().find((o) => o.id === this._highlightedMarkerId);
       if (obj) {
-        this.highlightLayer?.clearLayers();
+        this.highlightLayer.clearLayers();
         const md = this.allMarkers.find((m) => m.obj.id === obj.id);
         if (md) {
           const circle = L.circleMarker([md.lat, md.lng], {
@@ -518,7 +547,7 @@ export class HomeComponent implements OnInit {
             fillOpacity: 0,
             weight: 3,
           });
-          this.highlightLayer!.addLayer(circle);
+          this.highlightLayer.addLayer(circle);
         }
       }
     }
