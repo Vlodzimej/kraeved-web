@@ -30,4 +30,8 @@ export class ImagesService {
   previewUrl(name: string): string {
     return `${environment.apiUrl}/Images/preview/${name}`;
   }
+
+  delete(filename: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${filename}`);
+  }
 }

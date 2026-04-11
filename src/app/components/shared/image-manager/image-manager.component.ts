@@ -67,6 +67,13 @@ export class ImageManagerComponent {
   }
 
   removeImage(item: ManagedImage): void {
+    if (item.id != null) {
+      this.imagesService.delete(item.filename).subscribe({
+        error: (err) => {
+          console.error("Failed to delete image:", err);
+        },
+      });
+    }
     const current = this.images();
     this.imagesChange.emit(
       current.filter(
