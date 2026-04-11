@@ -28,6 +28,7 @@
         <span>{{ currentUser()?.name }} {{ currentUser()?.surname }}</span>
         <small>{{ currentUser()?.email }}</small>
       </div>
+      <div class="version">v{{ version }}</div>
       <button class="logout-btn" (click)="onLogout()">Выйти</button>
     </div>
   </aside>

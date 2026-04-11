@@ -8,6 +8,7 @@ import {
 import { Store } from "@ngxs/store";
 import { AuthState } from "../../../store/auth/auth.state";
 import { Logout } from "../../../store/auth/auth.actions";
+import { environment } from "../../../../environments/environment";
 
 @Component({
   selector: "app-admin-layout",
@@ -21,6 +22,7 @@ export class AdminLayoutComponent implements OnInit {
   private router = inject(Router);
 
   currentUser = this.store.selectSignal(AuthState.currentUser);
+  version = environment.version;
 
   navLinks = [
     { label: "Пользователи", path: "/admin/users" },
