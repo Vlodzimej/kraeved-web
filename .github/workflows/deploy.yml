@@ -19,10 +19,12 @@ jobs:
             cd ~/kraeved/kraeved-api
             git config --global credential.helper store
             echo "https://${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-            git pull
+            git fetch origin
+            git reset --hard origin/main
 
             cd ~/kraeved/kraeved-web
-            git pull
+            git fetch origin
+            git reset --hard origin/main
 
             cd ~/kraeved
             sudo docker compose up -d --build api web
