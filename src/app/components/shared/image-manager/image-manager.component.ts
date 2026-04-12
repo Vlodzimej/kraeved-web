@@ -10,7 +10,7 @@ import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { HttpClient } from "@angular/common/http";
 import { Observable, forkJoin, of } from "rxjs";
-import { switchMap, catchError, finalize } from "rxjs/operators";
+import { catchError, finalize } from "rxjs/operators";
 import { ImagesService } from "../../../services/images.service";
 import { environment } from "../../../../environments/environment";
 
@@ -43,6 +43,7 @@ export class ImageManagerComponent {
   editingCaptionId: number | null = null;
   editingCaptionValue = "";
   captionError = signal(false);
+  draggedIndex: number | null = null;
 
   private http = inject(HttpClient);
   private imagesService = inject(ImagesService);
@@ -76,7 +77,7 @@ export class ImageManagerComponent {
             )
           );
 
-forkJoin(requests).subscribe({
+          forkJoin(requests).subscribe({
             next: results => {
               const newImages = results.map((r: any) => {
                 const data = r.data || r;
@@ -131,6 +132,44 @@ forkJoin(requests).subscribe({
       (i) => i.filename !== item.filename && i.id !== item.id,
     );
     this.imagesChange.emit([item, ...updated]);
+  }
+
+  onDragStart(index: number): void {
+    this.draggedIndex = index;
+  }
+
+  onDragOver(event: DragEvent, index: number): void {
+    event.preventDefault();
+    if (this.draggedIndex === null || this.draggedIndex === index) return;
+
+    const current = [...this.images()];
+    const draggedItem = current[this.draggedIndex];
+    current.splice(this.draggedIndex, 1);
+    current.splice(index, 0, draggedItem);
+    this.draggedIndex = index;
+    this.imagesChange.emit(current);
+    this.saveImagesOrder(current);
+  }
+
+  onDragEnd(): void {
+    this.draggedIndex = null;
+  }
+
+  private saveImagesOrder(images: ManagedImage[]): void {
+    const objId = this.objectId();
+    const objType = this.objectType();
+    if (objId == null || objType == null) return;
+
+    const imageIds = images.map(img => img.id).filter((id): id is number => id != null);
+    if (imageIds.length === 0) return;
+
+    const endpoint = objType === "geoObject"
+      ? `${environment.apiUrl}/GeoObjects/${objId}/images/order`
+      : `${environment.apiUrl}/Persons/${objId}/images/order`;
+    
+    this.http.put(endpoint, { imageIds }).subscribe({
+      error: (err) => console.error("Failed to save images order:", err)
+    });
   }
 
   startEditCaption(item: ManagedImage): void {
