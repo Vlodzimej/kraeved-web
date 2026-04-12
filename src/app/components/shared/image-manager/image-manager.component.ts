@@ -148,10 +148,12 @@ export class ImageManagerComponent {
     current.splice(index, 0, draggedItem);
     this.draggedIndex = index;
     this.imagesChange.emit(current);
-    this.saveImagesOrder(current);
   }
 
   onDragEnd(): void {
+    if (this.draggedIndex !== null) {
+      this.saveImagesOrder(this.images());
+    }
     this.draggedIndex = null;
   }
 
