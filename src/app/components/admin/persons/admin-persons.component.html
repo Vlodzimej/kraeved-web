@@ -295,6 +295,8 @@
   @if (showImageManager()) {
     <app-image-manager
       [images]="photos()"
+      [objectId]="crud.selectedItem()?.id ?? null"
+      objectType="person"
       (imagesChange)="onPhotosChange($event)"
       (closed)="showImageManager.set(false)"
     ></app-image-manager>

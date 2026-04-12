@@ -8,6 +8,9 @@ import {
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
 import { FormsModule } from "@angular/forms";
+import { HttpClient } from "@angular/common/http";
+import { Observable, forkJoin, of } from "rxjs";
+import { switchMap, catchError, finalize } from "rxjs/operators";
 import { ImagesService } from "../../../services/images.service";
 import { environment } from "../../../../environments/environment";
 
@@ -31,6 +34,8 @@ export class ImageManagerComponent {
   images = input<ManagedImage[]>([]);
   imagesChange = output<ManagedImage[]>();
   closed = output<void>();
+  objectId = input<number | null>(null);
+  objectType = input<"geoObject" | "person" | null>(null);
 
   readonly captionMaxLength = CAPTION_MAX_LENGTH;
 
@@ -39,6 +44,7 @@ export class ImageManagerComponent {
   editingCaptionValue = "";
   captionError = signal(false);
 
+  private http = inject(HttpClient);
   private imagesService = inject(ImagesService);
 
   imageUrl(filename: string): string {
@@ -51,19 +57,56 @@ export class ImageManagerComponent {
     if (!files?.length) return;
 
     this.uploadLoading.set(true);
-    this.imagesService.upload(Array.from(files)).subscribe({
-      next: (filenames: string[]) => {
-        const current = this.images();
-        const newItems: ManagedImage[] = filenames.map((f) => ({ filename: f }));
-        this.imagesChange.emit([...current, ...newItems]);
+    const objId = this.objectId();
+    const objType = this.objectType();
+
+    this.imagesService.upload(Array.from(files)).pipe(
+      finalize(() => {
         this.uploadLoading.set(false);
         input.value = "";
+      })
+    ).subscribe({
+      next: (filenames: string[]) => {
+        const current = this.images();
+
+        if (objId != null && objType != null) {
+          const requests = filenames.map(filename => 
+            this.addImageToObject(objId, objType, filename).pipe(
+              catchError(() => of({ filename, id: null, caption: null }))
+            )
+          );
+
+forkJoin(requests).subscribe({
+            next: results => {
+              const newImages = results.map((r: any) => {
+                const data = r.data || r;
+                return {
+                  id: data.id ?? null,
+                  filename: data.filename || '',
+                  caption: data.caption ?? null
+                };
+              });
+              this.imagesChange.emit([...current, ...newImages]);
+            },
+            error: err => console.error("forkJoin error:", err)
+          });
+        } else {
+          const newItems = filenames.map(f => ({ filename: f }));
+          this.imagesChange.emit([...current, ...newItems]);
+        }
       },
       error: () => {
         this.uploadLoading.set(false);
         input.value = "";
       },
     });
+  }
+
+  private addImageToObject(objectId: number, objectType: "geoObject" | "person", filename: string): Observable<any> {
+    const endpoint = objectType === "geoObject"
+      ? `${environment.apiUrl}/GeoObjects/${objectId}/images`
+      : `${environment.apiUrl}/Persons/${objectId}/images`;
+    return this.http.post(endpoint, { filename });
   }
 
   removeImage(item: ManagedImage): void {
