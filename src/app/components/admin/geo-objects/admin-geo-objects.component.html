@@ -411,6 +411,8 @@
   @if (showImageManager()) {
     <app-image-manager
       [images]="images()"
+      [objectId]="crud.selectedItem()?.id ?? null"
+      objectType="geoObject"
       (imagesChange)="onImagesChange($event)"
       (closed)="showImageManager.set(false)"
     ></app-image-manager>

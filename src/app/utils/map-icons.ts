@@ -68,3 +68,13 @@ export function createTypeIcon(typeName: string | undefined): L.DivIcon {
     tooltipAnchor: [0, -48],
   });
 }
+
+export function createThumbnailIcon(thumbnailUrl: string): L.DivIcon {
+  return L.divIcon({
+    html: `<div class="marker-bg marker-thumbnail"><img src="${thumbnailUrl}" class="marker-thumbnail-img" alt="thumbnail" /></div>`,
+    className: "custom-marker-wrapper",
+    iconSize: [48, 48],
+    iconAnchor: [24, 48],
+    tooltipAnchor: [0, -48],
+  });
+}

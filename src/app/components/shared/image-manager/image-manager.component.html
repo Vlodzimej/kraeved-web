@@ -32,9 +32,23 @@
       </label>
 
       @if (images().length > 0) {
+        <p class="drag-hint">Перетаскивайте изображения для изменения порядка</p>
         <div class="image-grid">
-          @for (img of images(); track img.filename) {
-            <div class="image-card" [class.is-thumbnail]="images()[0].filename === img.filename">
+          @for (img of images(); track $index) {
+            <div class="image-card" 
+                 [class.is-thumbnail]="images()[0].filename === img.filename"
+                 [class.dragging]="$index === draggedIndex"
+                 draggable="true"
+                 (dragstart)="onDragStart($index)"
+                 (dragover)="onDragOver($event, $index)"
+                 (dragend)="onDragEnd()">
+              <div class="drag-handle" title="Перетащить">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="8" y1="6" x2="16" y2="6"></line>
+                  <line x1="8" y1="12" x2="16" y2="12"></line>
+                  <line x1="8" y1="18" x2="16" y2="18"></line>
+                </svg>
+              </div>
               <div class="image-preview">
                 <img [src]="imageUrl(img.filename)" [alt]="img.caption || img.filename" />
               </div>

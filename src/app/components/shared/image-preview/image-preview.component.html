@@ -17,7 +17,7 @@
       }
 
       <div class="preview-content">
-        <img class="preview-image" [src]="imageUrl(currentImage()!.filename)" [alt]="currentImage()!.caption || currentImage()!.filename" />
+        <img class="preview-image" [src]="currentImageUrl()" [alt]="currentImage()!.caption || currentImage()!.filename" />
 
         @if (currentCaption()) {
           <div class="preview-caption">{{ currentCaption() }}</div>

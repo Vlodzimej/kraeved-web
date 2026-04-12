@@ -20,7 +20,7 @@ import { AdminPersonsService } from "../../services/admin/admin-persons.service"
 import { CommentsService } from "../../services/comments.service";
 import { GeoObject, GeoObjectBrief, Person, PersonBrief, ImageInfo } from "../../models/admin/entities.model";
 import { CommentDto } from "../../services/comments.service";
-import { createTypeIcon } from "../../utils/map-icons";
+import { createTypeIcon, createThumbnailIcon } from "../../utils/map-icons";
 import { GeoObjectSearchComponent } from "./geo-object-search/geo-object-search.component";
 import { AppSettingsState, LoadAppSettings } from "../../store/app-settings/app-settings.state";
 import { environment } from "../../../environments/environment";
@@ -188,8 +188,9 @@ export class HomeComponent implements OnInit {
     for (const obj of objects) {
       if (obj.latitude == null || obj.longitude == null) continue;
 
-      const typeName = obj.subtypeName ?? obj.typeName ?? undefined;
-      const icon = createTypeIcon(typeName);
+      const icon = obj.thumbnail
+        ? createThumbnailIcon(`${environment.apiUrl}/Images/thumbnail/${obj.thumbnail}`)
+        : createTypeIcon(obj.subtypeName ?? obj.typeName ?? undefined);
       const marker = L.marker([obj.latitude, obj.longitude], { icon });
       marker.bindTooltip(obj.name, {
         permanent: false,
