@@ -2,11 +2,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   HostListener,
+  inject,
   signal,
 } from "@angular/core";
 import { CommonModule } from "@angular/common";
-import { environment } from "../../../../environments/environment";
+import { ImageCacheService } from "../../../services/image-cache.service";
 
 export interface ImagePreviewItem {
   filename: string;
@@ -22,9 +24,12 @@ export interface ImagePreviewItem {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ImagePreviewComponent {
+  private imageCache = inject(ImageCacheService);
+
   images = signal<ImagePreviewItem[]>([]);
   currentIndex = signal(0);
   isOpen = signal(false);
+  currentImageUrl = signal<string | null>(null);
 
   currentImage = computed(() => {
     const imgs = this.images();
@@ -37,8 +42,29 @@ export class ImagePreviewComponent {
     return img?.caption ?? null;
   });
 
-  imageUrl(filename: string): string {
-    return `${environment.apiUrl}/Images/filename/${filename}`;
+  constructor() {
+    effect(() => {
+      const img = this.currentImage();
+      if (img) {
+        this.imageCache.getImageUrl(img.filename).subscribe((url) => {
+          this.currentImageUrl.set(url);
+        });
+        this.preloadAdjacent();
+      } else {
+        this.currentImageUrl.set(null);
+      }
+    });
+  }
+
+  private preloadAdjacent(): void {
+    const imgs = this.images();
+    const idx = this.currentIndex();
+    if (idx > 0) {
+      this.imageCache.preloadImage(imgs[idx - 1].filename);
+    }
+    if (idx < imgs.length - 1) {
+      this.imageCache.preloadImage(imgs[idx + 1].filename);
+    }
   }
 
   open(images: ImagePreviewItem[], startIndex: number = 0): void {
@@ -51,6 +77,7 @@ export class ImagePreviewComponent {
     this.isOpen.set(false);
     this.images.set([]);
     this.currentIndex.set(0);
+    this.currentImageUrl.set(null);
   }
 
   prev(): void {
