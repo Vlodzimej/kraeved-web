@@ -59,6 +59,22 @@ body {
   max-height: 34px;
 }
 
+.marker-thumbnail {
+  overflow: hidden;
+}
+
+.marker-thumbnail-img {
+  display: block;
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+  min-height: 42px;
+  max-width: 42px;
+  max-height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
 .cluster-count {
   display: block;
   width: 34px;
@@ -74,5 +90,9 @@ body {
   svg {
     display: none !important;
   }
+}
+
+.leaflet-container .leaflet-marker-pane img {
+  width: 42px !important;
 }
 
